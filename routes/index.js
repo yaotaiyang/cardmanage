@@ -8,6 +8,7 @@
 var express = require('express');
 var router = express.Router();
 router.get('/',function(req,res){
-    res.render('index');
+    var cur_data = {urlParams : req.body};
+    res.render('index',{tplData:cur_data});
 });
 module.exports = router;
