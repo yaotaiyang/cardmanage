@@ -16,6 +16,7 @@ app.engine('.html', template.__express);
 app.set('view engine', 'html');
 //app.set("views",__dirname+"/views");
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cookieParser());app.use(session({saveUninitialized: true, resave:true, secret: 'website', cookie: { maxAge: 60000 }}));
+app.use(cookieParser());
+app.use(session({saveUninitialized: true, resave:true, secret: 'website', cookie: { maxAge: 60000 }}));
 router(app);
 app.listen(3000);
