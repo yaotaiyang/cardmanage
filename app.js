@@ -19,7 +19,7 @@ app.set('view engine', 'html');
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use('/public', express.static(__dirname + '/public'));
-router(express.Router());
+app.use(router);
 var server = app.listen(3000, function() {
     console.log('Listening on port %d', server.address().port);
 });
