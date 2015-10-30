@@ -8,7 +8,8 @@
 var express = require('express');
 var router = express.Router();
 router.get('/',function(req,res){
-    var cur_data = {urlParams : req.body};
-    res.render('index',{tplData:cur_data});
+    var cur_data = {urlParams : req.query,title:"首页"};
+	cur_data.str_data = JSON.stringify(cur_data);
+    res.render('index',cur_data);
 });
 module.exports = router;
