@@ -6,5 +6,10 @@
     "start": "node app.js"
   },
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "art-template": "3.0.3",
+    "body-parser": "1.14.1",
+    "express": "4.13.3",
+    "leanengine": "^0.2.0"
+  }
 }
