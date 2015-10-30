@@ -5,18 +5,21 @@
  * Time: 下午9:38
  * To change this template use File | Settings | File Templates.
  */
-var express=require("express");
+var express = require("express");
 var router=require("./routes");
-var cookieParser=require('cookie-parser');
-var session = require('express-session');
-var template = require('ejs');
-var path=require("path");
-var app=express();
+var bodyParser=require("body-parser");
+var app = express();
+var template = require('art-template');
+template.config('base', '');
+template.config('compress',true);
+template.config('extname', '.html');
 app.engine('.html', template.__express);
+app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
-//app.set("views",__dirname+"/views");
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(cookieParser());
-app.use(session({saveUninitialized: true, resave:true, secret: 'website', cookie: { maxAge: 60000 }}));
-router(app);
-app.listen(3000);
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use('/public', express.static(__dirname + '/public'));
+router(express.Router());
+var server = app.listen(3000, function() {
+    console.log('Listening on port %d', server.address().port);
+});
