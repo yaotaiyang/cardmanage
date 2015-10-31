@@ -1,4 +1,48 @@
 {%include "layout/header"%}
-        首页{%title%}
-{%str_data%}
+<link rel="stylesheet" href="/public/css/style.css"/>
+<div class="calender"><div class="calenderContent"></div></div>
+<div class="body cls">
+        <div id="header" class="header"><h2>上线卡片管理平台</h2>
+            <span class="dateselect-wrap"><label for="dateselect">日期：</label>
+                <select name="dateselect" id="dateselect">
+
+                </select>
+            </span>
+                <form id="filter" class="filter">
+                        <label for="groupfilter">组：</label>
+                        <select name="groupfilter" id="groupfilter">
+                                <option value="全部" selected="">全部</option>
+                                <option value="摇太阳">摇太阳</option>
+                                <option value="bugs">bugs</option>
+                                <option value="test">test</option>
+                                <option value="abctest">abctest</option>
+                        </select>
+                        <label for="filtername">搜索：</label><input id="filtername" class="namelist" type="text" placeholder="多关键词空格分隔">  <input type="submit" value="筛选"></form><span class="notice">看不到先前卡片，左侧切换</span>
+                <span class="user">欢迎：admin<a class="add" href="./admin.php">后台管理</a> <a href="./login.php?logout=1">退出</a>　<a id="seebugs" href="./?analyze=1&amp;week=2015.10.26-2015.11.01">查看分析</a></span></div>
+        <div id="content" class="content cls" style="min-height: 620px;">
+                <div class="wrap fold ui-droppable" data-name="未开始"><h3><span class="title">未开始</span><span class="add">添加</span><span class="switch"></span></h3><ul class="cardlist cls" style="position: relative; height: 90px;"><li class="card ui-draggable ui-draggable-handle" style="position: absolute; left: 0px; top: 0px;">
+                        <h4>测试卡片</h4>
+                        <!--<p class="description">这里是描述</p>-->
+                        <ul class="ownerslist cls">
+                                <li class="name owner">责任人:</li>
+
+                                <li class="owner">摇太阳</li>
+
+                        </ul>
+                        <ul class="ownerslist cls">
+                                <li class="name owner">创建人:</li>
+                                <li class="owner"><em class="red">管理员</em></li>
+                        </ul>
+
+                        <div class="completetime"><span class="owner">完成日:</span><span class="owner">2015-10-13</span></div>
+
+                </li></ul></div>
+
+                <div class="wrap fold ui-droppable" data-name="进行中"><h3><span class="title">进行中</span><span class="switch"></span></h3><ul class="cardlist cls" style="position: relative; height: 0px;"></ul></div>
+
+                <div class="wrap fold ui-droppable" data-name="已完成"><h3><span class="title">已完成</span><span class="switch"></span></h3><ul class="cardlist cls" style="position: relative; height: 0px;"></ul></div>
+
+                <div class="wrap fold ui-droppable" data-name="已验收"><h3><span class="title">已验收</span><span class="switch"></span></h3><ul class="cardlist cls" style="position: relative; height: 0px;"></ul></div>
+        </div>
+</div>
 {%include "layout/footer"%}

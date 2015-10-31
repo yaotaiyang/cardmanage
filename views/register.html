@@ -9,7 +9,7 @@
     <div class="outer-width">
         <div class="login-wrap">
             <form method="POST">
-                <h3>用户登录</h3>
+                <h3>用户注册</h3>
                 <ul>
                     {%if err%}
                     <li class="form-group">
@@ -18,7 +18,8 @@
                     {%/if%}
                     <li class="form-group name"><input type="text" name="username" placeholder="用户名"><i class="form-icon"></i></li>
                     <li class="form-group pwd"><input type="password" name="password" placeholder="密码"><i class="form-icon"></i></li>
-                    <li class="form-group"><button class="submit" type="submit">登 录</button></li>
+                    <li class="form-group code"><input type="text" name="code" placeholder="注册码"><i class="form-icon"></i></li>
+                    <li class="form-group"><button class="submit" type="submit">注 册</button></li>
                 </ul>
             </form>
         </div>
