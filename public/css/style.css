@@ -65,8 +65,10 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content h3 .switch:after{content: "‹";font-size:20px;font-weight: bold;color:#07e}
 .content .fold h3 .switch:after{content:"›"}
 .content .cardlist{text-align:left;font-size:12px;background-color:#fff;padding-bottom:10px;}
-.content .card{transition:opacity 300ms linear;-webkit-transition:opacity 300ms linear;float:left;width:180px;margin:8px 0 0 8px;padding-bottom:2px;cursor:default;background-color:#96D0FF;box-sizing:border-box;-webkit-box-sizing:border-box;}
+.content .card{position:relative;-webkit-user-select:none;transition:opacity 300ms linear;-webkit-transition:opacity 300ms linear;float:left;width:180px;margin:8px 0 0 8px;padding-bottom:2px;cursor:default;background-color:#96D0FF;box-sizing:border-box;-webkit-box-sizing:border-box;}
 .content.hidecard .card{opacity:0;}
+.content .card.moving{visibility:hidden;}
+.content .card.dragging{z-index:100}
 .content .card.bug:after,.content .card.highlightcard:after{content:"";font-size:10px;position: absolute;top: 2px;right: 2px;border-width:6px 6px;border-color:#ff0 #ff0 transparent transparent;border-style: solid;height: 0;width: 0;}
 .content .card.highlightcard:after{border-color:#48D31C #48D31C transparent transparent;}
 .content .card h4{padding:4px;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp:4;-webkit-box-orient: vertical;}
@@ -133,3 +135,8 @@ form .v input.completetime{width:88px;}
 .calender .preMonth, .calender .nextMonth{font-weight:bold;cursor:pointer;color:#96D0FF;font-size:18px;}
 .calender .preMonth{padding:0 5px;}
 .calender .nextMonth{padding:0 5px;}
+
+.carddetail{position:fixed;top:0;right:0;background-color:rgba(255,255,255,0.95);bottom:0;width:500px;border-left:1px solid #ddd;overflow:auto;}
+.carddetail span.close{position:absolute;right:0;top:0;font-size:24px;cursor:pointer;text-align:center;width:32px;}
+.carddetail span.close:hover{color:#f00;}
+.carddetail form ul{padding-right:0;}
