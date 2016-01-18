@@ -5,13 +5,18 @@
  * Time: 下午9:38
  * To change this template use File | Settings | File Templates.
  */
-/*var express = require("express");
+var express = require("express");
 //var router=require("./routes");
 var bodyParser=require("body-parser");
 var app = express();
 //var multipart = require('connect-multiparty');
 //var multipartMiddleware = multipart();
 var template = require('art-template');
+
+var cookieParser = require('cookie-parser');
+var todos = require('./routes/todos');
+
+var cloud = require('./cloud');
 //var AV = require('leanengine');
 
 template.config('base', '');
@@ -23,12 +28,36 @@ template.config('extname', '.html');
 app.engine('.html', template.__express);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
+app.use(express.static(__dirname + '/public'));
 // 加载 cookieSession 以支持 AV.User  的会话状态
 //app.use(AV.Cloud.CookieSession({ secret: '05XgTktKPMkU', maxAge: 1000*60*60*24, fetchUser: true }));
-//app.use(bodyParser.json({limit: '50mb'}));
-//app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 //app.use('/public', express.static(__dirname + '/public'));
 //app.use(router);
+app.use(cloud);
+app.use(cookieParser());
+
+app.use(function(req, res, next) {
+    var d = null;
+    if (process.domain) {
+        d = process.domain;
+    } else {
+        d = domain.create();
+    }
+    d.add(req);
+    d.add(res);
+    d.on('error', function(err) {
+        console.error('uncaughtException url=%s, msg=%s', req.url, err.stack || err.message || err);
+        if(!res.finished) {
+            res.statusCode = 500;
+            res.setHeader('content-type', 'application/json; charset=UTF-8');
+            res.end('uncaughtException');
+        }
+    });
+    d.run(next);
+});
+
 app.get('/', function(req, res) {
     res.render('index', { currentTime: new Date() });
 });
@@ -36,7 +65,9 @@ app.use(function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
-});*/
+});
+
+/*
 var domain = require('domain');
 var express = require('express');
 var path = require('path');
@@ -120,6 +151,6 @@ app.use(function(err, req, res, next) { // jshint ignore:line
         error: {}
     });
 });
-
+*/
 module.exports = app;
 //module.exports = app;
