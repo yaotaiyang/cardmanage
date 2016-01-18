@@ -57,8 +57,10 @@ app.use(function(req, res, next) {
     });
     d.run(next);
 });
-app.use(router);
-
+//app.use(router);
+app.get('/', function(req, res) {
+    res.render('index', { currentTime: new Date() });
+});
 /*
 var domain = require('domain');
 var express = require('express');

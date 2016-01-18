@@ -6,8 +6,8 @@
  * To change this template use File | Settings | File Templates.
  */
 var express = require('express');
-var multipart = require('connect-multiparty');
-var multipartMiddleware = multipart();
+//var multipart = require('connect-multiparty');
+//var multipartMiddleware = multipart();
 var router = express.Router();
 /*
 var AV = require('leanengine');
@@ -19,7 +19,7 @@ var AV = require('leanengine');
 var APP_ID = process.env.LC_APP_ID;
 var APP_KEY = process.env.LC_APP_KEY;
 var MASTER_KEY = process.env.LC_APP_MASTER_KEY;
-AV.initialize(APP_ID, APP_KEY, MASTER_KEY);
+//AV.initialize(APP_ID, APP_KEY, MASTER_KEY);
 var Todo = AV.Object.extend('Card');
 
 router.get('/', function(req, res, next) {
