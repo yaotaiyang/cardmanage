@@ -1,1 +1,3 @@
-Cloud code project for cardmanage. Cloud Code Guide: https://cn.avoscloud.com/docs/cloud_code_guide.html
+# cardmanage
+卡片管理 管理项目卡片
+
