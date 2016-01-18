@@ -9,13 +9,46 @@ var express = require('express');
 var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
 var router = express.Router();
+/*
 var AV = require('leanengine');
 var APP_ID = 'h229mcsmVjAhq3Ju7jccfqjy'; // your app id
 var APP_KEY = 'U8iBLQrsjrE7A32kgjeN2YJm'; // your app key
 var MASTER_KEY =  'IslyhutDnP72E60ccOXERCfW'; // your app master key
-
+*/
+var AV = require('leanengine');
+var APP_ID = process.env.LC_APP_ID;
+var APP_KEY = process.env.LC_APP_KEY;
+var MASTER_KEY = process.env.LC_APP_MASTER_KEY;
 AV.initialize(APP_ID, APP_KEY, MASTER_KEY);
-router.get("*",function(req,res,next){ //判断登录没登录去登录页
+var Todo = AV.Object.extend('Card');
+
+router.get('/', function(req, res, next) {
+    var query = new AV.Query(Todo);
+    query.descending('createdAt');
+    query.find({
+        success: function(results) {
+            res.render('index', {
+                title: 'TODO 列表',
+                todos: results
+            });
+        },
+        error: function(err) {
+            if (err.code === 101) {
+                // 该错误的信息为：{ code: 101, message: 'Class or object doesn\'t exists.' }，说明 Todo 数据表还未创建，所以返回空的 Todo 列表。
+                // 具体的错误代码详见：https://leancloud.cn/docs/error_code.html
+                res.render('index', {
+                    title: 'TODO 列表',
+                    todos: []
+                });
+            } else {
+                next(err);
+            }
+        }
+    });
+});
+
+
+/*router.get("*",function(req,res,next){ //判断登录没登录去登录页
     if(!(req.path == "/login") && !(req.path == "/register") && !AV.User.current()){
         res.redirect('/login');
     }else{
@@ -49,7 +82,7 @@ router.post('/register', function(req, res, next) {
     var cur_controller = require('../controller/register.js');
     cur_controller.init(req,res,{render:render,AV:AV});
 });
-/**ajax接口**/
+*//**ajax接口**//*
 router.get('/ajax', function(req, res, next) {//获取卡片
     var cur_controller = require('../controller/ajax.js');
     cur_controller.init(req,res,{render:ajaxrender,AV:AV});
@@ -62,7 +95,7 @@ router.post('/ajax', function(req, res, next) {//获取卡片
 router.post('/upload',multipartMiddleware, function(req, res, next) {//文件上传
     var cur_controller = require('../controller/upload.js');
     cur_controller.init(req,res,{render:ajaxrender,AV:AV});
-});
+});*/
 function ajaxrender(req,res,obj){
     res.writeHead(200, {'Content-Type': 'application/json'});
     var res_obj = {
