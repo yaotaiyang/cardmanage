@@ -5,7 +5,7 @@
  * Time: 下午9:38
  * To change this template use File | Settings | File Templates.
  */
-var domain = require('domain');
+/*var domain = require('domain');
 var path = require('path');
 var express = require("express");
 var router=require("./routes");
@@ -63,8 +63,8 @@ app.use(function(req, res, next) {
 //app.use(router);
 app.get('/', function(req, res) {
     res.render('index', { currentTime: new Date() });
-});
-/*
+});*/
+
 var domain = require('domain');
 var express = require('express');
 var path = require('path');
@@ -72,12 +72,21 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var todos = require('./routes/todos');
 var cloud = require('./cloud');
+var template = require('art-template');
 
 var app = express();
 
 // 设置 view 引擎
+template.config('base', '');
+template.config('openTag','{%');
+template.config('closeTag','%}');
+template.config('compress',true);
+template.config('extname', '.html');
+
+app.engine('.html', template.__express);
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+app.set('view engine', 'html');
+
 app.use(express.static('public'));
 
 // 加载云代码方法
@@ -148,6 +157,6 @@ app.use(function(err, req, res, next) { // jshint ignore:line
         error: {}
     });
 });
-*/
+
 module.exports = app;
 //module.exports = app;
