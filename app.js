@@ -121,8 +121,8 @@ app.use(function(req, res, next) {
     });
     d.run(next);
 });
-
-app.get('/', function(req, res) {
+app.use(router);
+/*app.get('/', function(req, res) {
     res.render('index', { currentTime: new Date() });
 });
 
@@ -161,7 +161,7 @@ app.use(function(err, req, res, next) { // jshint ignore:line
         message: err.message || err,
         error: {}
     });
-});
+});*/
 
 module.exports = app;
 //module.exports = app;
