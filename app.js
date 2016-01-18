@@ -5,12 +5,13 @@
  * Time: 下午9:38
  * To change this template use File | Settings | File Templates.
  */
+var domain = require('domain');
 var express = require("express");
-//var router=require("./routes");
+var router=require("./routes");
 var bodyParser=require("body-parser");
 var app = express();
-//var multipart = require('connect-multiparty');
-//var multipartMiddleware = multipart();
+var multipart = require('connect-multiparty');
+var multipartMiddleware = multipart();
 var template = require('art-template');
 
 var cookieParser = require('cookie-parser');
@@ -34,8 +35,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 //app.use('/public', express.static(__dirname + '/public'));
-//app.use(router);
-app.use(cloud);
+
 app.use(cookieParser());
 
 app.use(function(req, res, next) {
@@ -57,15 +57,7 @@ app.use(function(req, res, next) {
     });
     d.run(next);
 });
-
-app.get('/', function(req, res) {
-    res.render('index', { currentTime: new Date() });
-});
-app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
+app.use(router);
 
 /*
 var domain = require('domain');
