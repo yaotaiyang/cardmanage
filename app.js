@@ -28,5 +28,9 @@ app.use(AV.Cloud.CookieSession({ secret: '05XgTktKPMkU', maxAge: 1000*60*60*24, 
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use('/public', express.static(__dirname + '/public'));
-app.use(router);
+//app.use(router);
+app.get('/', function(req, res) {
+    res.render('index', { currentTime: new Date() });
+});
+
 module.exports = app;
