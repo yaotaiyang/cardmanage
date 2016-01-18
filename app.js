@@ -34,6 +34,7 @@ app.set('view engine', 'html');
 
 
 // 加载云代码方法
+app.use(cloud);
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use('/public', express.static(__dirname + '/public'));
