@@ -6,6 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 var domain = require('domain');
+var path = require('path');
 var express = require("express");
 var router=require("./routes");
 var bodyParser=require("body-parser");
@@ -15,21 +16,23 @@ var multipartMiddleware = multipart();
 var template = require('art-template');
 
 var cookieParser = require('cookie-parser');
-var todos = require('./routes/todos');
+//var todos = require('./routes/todos');
 
-var cloud = require('./cloud');
+//var cloud = require('./cloud');
 //var AV = require('leanengine');
 
-template.config('base', '');
+//template.config('base', '');
 template.config('openTag','{%');
 template.config('closeTag','%}');
 template.config('compress',true);
 template.config('extname', '.html');
 
 app.engine('.html', template.__express);
-app.set('views', __dirname + '/views');
+app.set('views', path.join(__dirname, 'views'));
+//app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
-app.use(express.static(__dirname + '/public'));
+//app.use(express.static(__dirname + '/public'));
+app.use(express.static('public'));
 // 加载 cookieSession 以支持 AV.User  的会话状态
 //app.use(AV.Cloud.CookieSession({ secret: '05XgTktKPMkU', maxAge: 1000*60*60*24, fetchUser: true }));
 app.use(bodyParser.json({limit: '50mb'}));
