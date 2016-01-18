@@ -1,0 +1,43 @@
+*{padding:0;margin:0;}
+ul,li{list-style:none;}
+.cls{}
+.cls:after{content:"";display:block;height:0;line-height:0;overflow:hidden;clear:both;}
+body{font-size:12px;color:#333;line-height:1.5em;font-family:"microsoft yahei", "宋体", "arial"}
+.outer-width{width:1000px;margin:0 auto;}
+.top{height:60px;line-height:60px;font-size:0;}
+.top img{vertical-align:middle;}
+
+.banner{background:url(../images/banner.jpg) center top no-repeat;}
+.banner .outer-width{;height:414px;}
+.banner .login-wrap{float:right;margin-top:39px;box-shadow:0 0 3px 3px rgba(100,100,100,0.3)}
+.login-wrap{background-color:#fff;width:274px;padding:24px 30px;}
+.login-wrap h3{font-size:18px;font-weight:normal;}
+.form-icon-before:before{content:"";display:inline-block;}
+.form-icon,.form-icon-before:before{background-image:url(../images/form-icons.png);background-repeat:no-repeat;}
+.form-group{position:relative;margin:10px 0;}
+.form-group .form-icon{width:24px;height:24px;}
+.form-group i{position:absolute;top:8px;left:8px;}
+.form-group input[type='text'],.form-group input[type='password']{display:block;padding-left:44px;border:1px solid #ccc;width:225px;height:38px;background:url(../images/input_line.jpg) no-repeat 35px 0;}
+.form-group input:focus{border-color:#3C75B9;}
+.form-group .code{padding-right:96px;}
+.form-group.code img{position:absolute;right:24px;top:0;height:40px;width:72px;}
+.form-group.code .refresh{position:absolute;right:0px;top:8px;background-position:0 -98px;cursor:pointer}
+.form-group.code .refresh:hover{background-position-x:-24px;}
+.form-group.pwd i{background-position:0 -25px;}
+.form-group.code i{background-position:0 -50px;}
+.form-group input:focus+i.form-icon{background-position-x:-24px!important;}
+.form-group .error{color:#f00;}
+.checkbox-label input[type='checkbox']{width:0;height:0;visibility:hidden;overflow:hidden;}
+.checkbox-label .form-icon-before:before{width:24px;height:24px;vertical-align:middle;background-position:-3px -76px;}
+.checkbox-label input:checked+.form-icon-before:before{width:24px;height:24px;vertical-align:middle;background-position:-27px -76px;}
+.form-group .submit{display:block;width:100%;height:40px;color:#fff;line-height:40px;font-size:16px;border:none;background-color:#3C75B9;}
+.list {padding-top: 80px;}
+.list li{float:left;width:25%;text-align:center;}
+.list li p{padding:18px 0;}
+.list li h4{font-size:22px;font-weight:normal;color:#000;}
+.list li .img{background:url(../images/login_icon.jpg) no-repeat;height:175px;width:175px;margin:24px auto;}
+.list .forms .img{background-position:-39px -22px;}
+.list .leave .img{background-position:-293px -22px;}
+.list .research .img{background-position:-542px -22px;}
+.list .manage .img{background-position:-792px -22px;}
+.footer{text-align:center;color:#666;padding:20px 0;}
