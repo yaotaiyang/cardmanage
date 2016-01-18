@@ -12,7 +12,7 @@ var app = express();
 //var multipart = require('connect-multiparty');
 //var multipartMiddleware = multipart();
 var template = require('art-template');
-var AV = require('leanengine');
+//var AV = require('leanengine');
 
 template.config('base', '');
 template.config('openTag','{%');
@@ -25,12 +25,16 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
 // 加载 cookieSession 以支持 AV.User  的会话状态
 //app.use(AV.Cloud.CookieSession({ secret: '05XgTktKPMkU', maxAge: 1000*60*60*24, fetchUser: true }));
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
-app.use('/public', express.static(__dirname + '/public'));
+//app.use(bodyParser.json({limit: '50mb'}));
+//app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+//app.use('/public', express.static(__dirname + '/public'));
 //app.use(router);
 app.get('/', function(req, res) {
     res.render('index', { currentTime: new Date() });
 });
-
+app.use(function(req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
 module.exports = app;
