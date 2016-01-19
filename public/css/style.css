@@ -94,10 +94,10 @@ form h4{background-color:#96D0FF;line-height:40px;text-align:center;font-size:1.
 form li{padding:3px 0}
 form .k{display: inline-block;vertical-align: middle;width:90px;text-align:right;}
 form .k .red{color:#f00;font-weight: bold;vertical-align:middle;padding-right:2px;}
-form .v{display:inline-block;vertical-align:middle;text-align:left;}
-form .v input[type='text'],form .v textarea{width: 300px;border:1px solid #ddd;}
-form input.btn{background: #ececec;border:1px solid #ddd;
-    background: -webkit-linear-gradient(top,#f9f9f9,#e7e9eb);width: 80px;line-height:24px;text-align: center;cursor: default;}
+form .v{display:inline-block;vertical-align:middle;text-align:left;font-size:0;}
+form .v *{font-size:14px;}
+form .v input[type='text'],form .v textarea{width: 300px;border:1px solid #ddd;padding:4px;font-size:14px;}
+form input.btn{background: #ececec;border:1px solid #ddd;background: -webkit-linear-gradient(top,#f9f9f9,#e7e9eb);width: 80px;line-height:24px;text-align: center;cursor: default;}
 form li.longwrap{width:668px;}
 form li.longwrap .v textarea{width:575px}
 form input[type='radio']{vertical-align:-2px;margin-left:10px;margin-right:3px;}
@@ -136,7 +136,10 @@ form .v input.completetime{width:88px;}
 .calender .preMonth{padding:0 5px;}
 .calender .nextMonth{padding:0 5px;}
 
-.carddetail{position:fixed;top:0;right:0;background-color:rgba(255,255,255,0.95);bottom:0;width:500px;border-left:1px solid #ddd;overflow:auto;}
+.carddetail{position:fixed;top:0;right:0;background-color:rgba(255,255,255,0.95);bottom:0;width:500px;border-left:1px solid #ddd;overflow:auto;padding:10px;}
 .carddetail span.close{position:absolute;right:0;top:0;font-size:24px;cursor:pointer;text-align:center;width:32px;}
 .carddetail span.close:hover{color:#f00;}
 .carddetail form ul{padding-right:0;}
+.ng-animate{-webkit-transition:-webkit-transform 300ms ease-in-out;display: block!important;}
+.ng-hide{-webkit-transform:translateX(100%)}
+.ng-hide-remove-active{-webkit-transform: translateX(0px);}

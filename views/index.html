@@ -68,17 +68,16 @@
                     </select></span>
                 </li>
                 <li class="imgs"><label class="k">图片：</label><span class="v">
-                    <span class="imgs-wrap"><img  ng-repeat="img in card.images" ng-src="{{img}}"/></span>
+                    <span class="imgs-wrap"><img ng-click="showimg()"  ng-repeat="img in card.images" ng-src="{{img}}"/></span>
                     <span class="uploadbtn"><span class="text">{{btntext}}</span><input tabindex="-1" class="fileupload" type="file" name="mypic"></span></span></li>
-                <li><span class="k"></span><span class="v"><input type="submit" class="btn" value="提交"> <input
-                        class="btn close" type="button" value="取消" ng-click="closepanel()"></span></li>
+                <li><span class="k"></span><span class="v"><input type="submit" class="btn" value="提交"> <input class="btn close" type="button" value="取消" ng-click="closepanel()"></span></li>
             </ul>
             <span class="close" ng-click="closepanel()">×</span></form>
     </div>
 </div>
 <script>
-    seajs.use(["angular"],function(){
-        var app = angular.module('card', []);
+    seajs.use(["angular","angular-animate"],function(){
+        var app = angular.module('card', ['ngAnimate']);
         app.controller("body",function($scope){
             $scope.$on("headChange",function (event, obj) {
                 $scope.$broadcast("filterChange", obj);
@@ -202,12 +201,18 @@
                 $scope.show = 0;
             };
             $scope.$on("showDetail",function(event,data){
-                $scope.show = 1;
                 $scope.card = data;
+                $scope.show = 1;
                 $http.get("/ajax?type=get-people&teamId="+tplData.teamId).then(function(data){
                     $scope.owners = data.data.result;
                 });
             });
+            $scope.showimg=function(){
+                var openwindow=window.open("","","location=no,fullscreen=yes");
+                openwindow.document.write("<style type='text/css'>*{padding:0;margin:0}body{text-align:center;padding:10px;}img{border:1px solid #ddd;padding:1px;}</style>");
+                openwindow.document.write("<img style='max-width:100%' src='"+this.img+"'/>");
+                openwindow.document.title="查看图片";
+            }
         });
         app.directive('minheight',function($window){
             return function(scope,element,attr){
@@ -217,7 +222,7 @@
                 });
             };
         });
-       app.directive('paste',function(){
+        app.directive('paste',function(){
             return {
                 restrict:"EA",
                 link:function(scope,element){
