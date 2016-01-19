@@ -5,19 +5,19 @@
         <h2>卡片管理平台</h2>
         <form id="filter" class="filter">
             <label for="groupfilter">组：</label>
-            <select name="groupfilter" id="groupfilter" ng-change="change()" ng-model="teamId">
+            <select ng-cloak name="groupfilter" id="groupfilter" ng-change="change()" ng-model="teamId">
                 <option ng-repeat="val in teams" value="{{val.teamId}}">{{val.teamName}}</option>
             </select>
            <label for="dateselect">区间：</label>
-            <select name="dateselect" id="dateselect" ng-model="sprintId" ng-change="change()">
+            <select ng-cloak name="dateselect" id="dateselect" ng-model="sprintId" ng-change="change()">
                 <option ng-repeat="val in sprints" value="{{val.id}}">{{val.name}}</option>
             </select>
             <label for="filtername">搜索：</label><input id="filtername" class="namelist" type="text" placeholder="多关键词空格分隔"> <input type="submit" value="筛选">
         </form>
         <span class="notice"></span>
-        <span class="user">欢迎：{%user.username%}</span>
+        <span class="user" ng-cloak>欢迎：{%user.username%}</span>
     </div>
-    <div id="content" class="content cls" ng-controller="list">
+    <div id="content" ng-cloak class="content cls" ng-controller="list">
         <div ng-repeat="val in list" class="wrap" ng-class="{true:'fold'}[val.isFold]" data-name="{{val.type}}"><h3><span class="title">{{val.type}}</span>
             <span class="add" ng-click="addcard()" ng-if="$index==0">添加</span>
             <span class="switch" ng-click="switch(val)"></span></h3>
@@ -37,7 +37,7 @@
             </ul>
         </div>
     </div>
-    <div class="panel" ng-show="show" ng-controller="cardPanel">
+    <div class="panel" ng-show="show" ng-cloak ng-controller="cardPanel">
         <div class="mask"></div>
         <div class="form-wrap"  paste>
             <form class="addcard" ng-submit="submit()">
@@ -58,7 +58,7 @@
         </form>
         </div>
     </div>
-    <div class="carddetail" ng-show="show" ng-controller="cardDetail">
+    <div class="carddetail" ng-cloak ng-show="show" ng-controller="cardDetail">
         <form class="addcard ng-pristine ng-valid" ng-submit="submit()" paste>
             <ul>
                 <li><label class="k"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" data-check="1" rows="2" class="title"></textarea></span></li>
