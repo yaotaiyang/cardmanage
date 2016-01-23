@@ -26,11 +26,11 @@
                     <h4>{{item.title}}</h4>
                     <ul class="ownerslist cls">
                         <li class="name owner">责任人:</li>
-                        <li class="owner">{{item.owners[0].username}}</li>
+                        <li class="owner">{{item.owners | ownersname}}</li>
                     </ul>
                     <ul class="ownerslist cls">
                         <li class="name owner">创建人:</li>
-                        <li class="owner"><em class="red">{{item.createBy.userName}}</em></li>
+                        <li class="owner"><em>{{item.createdBy.userName}}</em></li>
                     </ul>
                     <div class="completetime"><span class="owner">完成日:</span><span class="owner">2015-10-13</span></div>
                 </li>
@@ -46,38 +46,78 @@
                 <li><label class="k" for="title"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" data-check="1" rows="2" id="title" class="title"></textarea></span></li>
                 <li><label class="k" for="descri"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" data-check="1" rows="4" id="descri" class="descri" name="descri"></textarea></span></li>
                 <li><label class="k" for="owners"><em class="red">*</em>负责人：</label><span class="v">
-                    <select ng-model="card.owners" name="owners" id="owners" ng-options="owner.objectId as owner.username for owner in owners">
+                     <span class="peo-wrap"><em title="双击删除" ng-repeat="peo in card.owners">{{peo.username}}</em></span>
+                    <select ng-model="cacheS" ng-change="change(cacheS)" name="owners" id="owners" ng-options="owner.objectId as owner.username for owner in companyPeople">
                 </select></span>
                 </li>
-                <li class="imgs"><label class="k">图片：</label><span class="v">
-                    <span class="imgs-wrap"><img  ng-repeat="img in card.images" ng-src="{{img}}"/></span>
-                    <span class="uploadbtn"><span class="text">{{btntext}}</span><input tabindex="-1" class="fileupload" type="file" name="mypic"></span></span></li>
-                <li><span class="k"></span><span class="v"><input type="submit" class="btn" value="提交"> <input class="btn close" type="button" value="取消" ng-click="closepanel()"></span></li>
+                <li class="imgs"><label class="k">图片：</label>
+                   <span class="v">
+                        <span class="imgs-wrap" ng-cloak><img ng-click="showimg()"  ng-repeat="img in card.images" ng-if="!img.del" ng-src="{{img.url}}"/></span>
+                        <span class="uploadbtn {{loading}}">
+                            <span class="text"><span class="normal">截屏  ctrl+v</span><i>+</i></span>
+                            <span class="status">{{loadStatus}}</span>
+                            <input tabindex="-1" class="fileupload" type="file" name="mypic" onchange="angular.element(this).scope().onFileSelect(this.files)"/>
+                        </span>
+                    </span>
+                </li>
+                <li><span class="k"></span><span class="v"><input type="submit" class="btn" value="提交" /></span></li>
             </ul>
             <span class="close" ng-click="closepanel()">×</span>
         </form>
         </div>
     </div>
-    <div class="carddetail" ng-cloak ng-show="show" ng-controller="cardDetail">
-        <form class="addcard ng-pristine ng-valid" ng-submit="submit()" paste>
+    <div class="carddetail" ng-cloak ng-show="show" ng-controller="cardDetail" paste>
+        <form class="addcard ng-pristine ng-valid" ng-submit="submit()">
             <ul>
                 <li><label class="k"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" data-check="1" rows="2" class="title"></textarea></span></li>
                 <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" data-check="1" rows="4" class="descri" name="descri"></textarea></span></li>
                 <li><label class="k"><em class="red">*</em>负责人：</label><span class="v">
-                    <select ng-model="card.owners" name="owners" ng-options="owner.objectId as owner.username for owner in owners">
+                    <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.username}}</em></span>
+                    <select ng-change="change(cacheS)" title="选择添加用户" ng-model="cacheS" name="owners" ng-options="owner.objectId as owner.username for owner in companyPeople">
                     </select></span>
                 </li>
-                <li class="imgs"><label class="k">图片：</label><span class="v">
-                    <span class="imgs-wrap"><img ng-click="showimg()"  ng-repeat="img in card.images" ng-src="{{img}}"/></span>
-                    <span class="uploadbtn"><span class="text">{{btntext}}</span><input tabindex="-1" class="fileupload" type="file" name="mypic"></span></span></li>
-                <li><span class="k"></span><span class="v"><input type="submit" class="btn" value="提交"> <input class="btn close" type="button" value="取消" ng-click="closepanel()"></span></li>
+                <li class="imgs"><label class="k">图片：</label>
+                    <span class="v">
+                        <span class="imgs-wrap" ng-cloak><img ng-click="showimg()"  ng-repeat="img in card.images" ng-if="!img.del" ng-src="{{img.url}}"/></span>
+                        <span class="uploadbtn {{loading}}">
+                            <span class="text"><span class="normal">截屏  ctrl+v</span><i>+</i></span>
+                            <span class="status">{{loadStatus}}</span>
+                            <input tabindex="-1" class="fileupload" type="file" name="mypic" onchange="angular.element(this).scope().onFileSelect(this.files)"/>
+                        </span>
+                    </span>
+                </li>
+                <li><span class="k"></span><span class="v"><input type="submit" class="btn" value="提交" /></span></li>
             </ul>
-            <span class="close" ng-click="closepanel()">×</span></form>
+            <span class="close" ng-click="closepanel()">×</span>
+        </form>
+        <div class="comment">
+            <h4>留言：</h4>
+            <ul>
+               <li ng-repeat="comment in comments">
+                   <div class="cont">{{comment.description}}</div>
+                   <div class="info"><span class="time">{{comment.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span><span class="name">{{comment.createdBy.username}}</span></div>
+               </li>
+                <li>
+                    <form  class="add-comment"  ng-submit="submit()">
+                        <textarea maxlength="200" ng-disabled="commenting"  ng-keypress="enter($event)" class="comment-input" ng-model="cacheComment" placeholder="ctrl+enter提交（200字内）"></textarea>
+                    </form>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 <script>
     seajs.use(["angular","angular-animate"],function(){
         var app = angular.module('card', ['ngAnimate']);
+        app.filter("ownersname",function(){
+            return function(owners){
+                var arr_name = [];
+                for(var i=0;i<owners.length;i++){
+                    arr_name.push(owners[i].username);
+                }
+                return arr_name.join(",");
+            }
+        });
         app.controller("body",function($scope){
             $scope.$on("headChange",function (event, obj) {
                 $scope.$broadcast("filterChange", obj);
@@ -110,16 +150,9 @@
             $scope.show = 0;
             $scope.card = {};
             $scope.card.images=[];
+            $scope.card.owners = [];
             $scope.submit=function(e){
                 var url = "/ajax?type=add-card&teamId="+tplData.teamId+"&sprintId="+tplData.sprintId;
-                var ownersId = $scope.card.owners;
-                $scope.card.owners = [];
-                for(var i=0;i<$scope.owners.length;i++){
-                    var cur_owner = $scope.owners[i];
-                    if(cur_owner.objectId == ownersId){
-                        $scope.card.owners.push({objectId:ownersId,username:cur_owner.username});
-                    }
-                }
                 $scope.card.type="未开始";
                 $http.post(url,$scope.card).success(function(data){
                     if(data.status == 1) {
@@ -133,10 +166,30 @@
             };
             $scope.$on("showcardpanel",function(){
                 $scope.show = 1;
-                $http.get("/ajax?type=get-people&teamId="+tplData.teamId).then(function(data){
-                    $scope.owners = data.data.result;
-                });
+                if(!tplData.companyPeople){
+                    $http.get("/ajax?type=get-people&teamId="+tplData.teamId).then(function(data){
+                        tplData.companyPeople = $scope.companyPeople = data.data.result;
+                    });
+                }else{
+                    $scope.companyPeople = tplData.companyPeople;
+                }
             });
+            $scope.change=function(id){
+                var ret = 0;
+                $scope.card.owners.forEach(function(obj){
+                    if(obj.objectId == id){
+                        ret = 1;
+                    }
+                });
+                if(ret){return};
+                for(var i=0;i<$scope.companyPeople.length;i++){
+                    if(id==$scope.companyPeople[i].objectId){
+                        $scope.card.owners.push($scope.companyPeople[i]);
+                        break;
+                    }
+                }
+                delete $scope.cacheS;
+            };
         });
         app.controller('list', function($scope,$rootScope,$http) {
            render({sprintId:tplData.sprints[0].id,teamId:tplData.teams[0].teamId});
@@ -159,6 +212,7 @@
                         cur_list.list.push(data);
                     }
                 }
+                $scope.apply();
             });
            $scope.$on("drop",function(event,obj){
                var newType =  $scope.list[obj.pindex].type;
@@ -180,6 +234,7 @@
            function render(obj){
                var url = "/ajax?type=get-card-list&sprintId="+ obj.sprintId+"&teamId="+obj.teamId;
                $http.get(url).then(function(data){
+                   var list = data.data.result;
                    $scope.list = data.data.result;
                    tplData.cardList = data.data.result;
                },function(data){});
@@ -189,6 +244,7 @@
             $scope.show = 0;
             $scope.card = {};
             $scope.card.images=[];
+            $scope.comments=[];
             $scope.submit=function(e){
                 var url = "/ajax?type=updata-card&teamId="+tplData.teamId+"&sprintId="+tplData.sprintId+"&cardId="+$scope.card.objectId;
                 $http.post(url,$scope.card).success(function(data){
@@ -203,15 +259,70 @@
             $scope.$on("showDetail",function(event,data){
                 $scope.card = data;
                 $scope.show = 1;
-                $http.get("/ajax?type=get-people&teamId="+tplData.teamId).then(function(data){
-                    $scope.owners = data.data.result;
-                });
+                if(!tplData.companyPeople){
+                    $http.get("/ajax?type=get-people&teamId="+tplData.teamId).then(function(data){
+                        tplData.companyPeople = $scope.companyPeople = data.data.result;
+                    });
+                }else{
+                    $scope.companyPeople =tplData.companyPeople;
+                }
+                if(data.hasComments == 1){
+                    //获取评论
+                    $http.get("/ajax?type=get-comments&cardId="+data.objectId).then(function(data){
+                        $scope.comments = data.data.result;
+                    });
+                }else{
+                    $scope.comments=[];
+                }
             });
+            $scope.change=function(id){
+                var ret = 0;
+                $scope.card.owners.forEach(function(obj){
+                    if(obj.objectId == id){
+                        ret = 1;
+                    }
+                });
+                if(ret){return};
+                for(var i=0;i<$scope.companyPeople.length;i++){
+                    if(id==$scope.companyPeople[i].objectId){
+                        $scope.card.owners.push($scope.companyPeople[i]);
+                        break;
+                    }
+                }
+                delete $scope.cacheS;
+            };
             $scope.showimg=function(){
                 var openwindow=window.open("","","location=no,fullscreen=yes");
                 openwindow.document.write("<style type='text/css'>*{padding:0;margin:0}body{text-align:center;padding:10px;}img{border:1px solid #ddd;padding:1px;}</style>");
-                openwindow.document.write("<img style='max-width:100%' src='"+this.img+"'/>");
+                openwindow.document.write("<img style='max-width:100%' src='"+this.img.url+"'/>");
                 openwindow.document.title="查看图片";
+            };
+            $scope.enter = function(ev) {
+                if($scope.commenting == 1) return;
+                var val = $scope.cacheComment;
+                if (ev.ctrlKey == true && (ev.keyCode == 13||ev.keyCode == 10) && val.length>0){
+                    $scope.commenting = 1;
+                    var url = "/ajax?type=add-comment&cardId="+$scope.card.objectId+"&description="+encodeURIComponent(val)+"&hasComments="+$scope.card.hasComments;
+                    $http.get(url).then(function(data){
+                      if(data.data.status == 1){
+                            $scope.card.hasComments = "1";
+                            $scope.comments.push(data.data.result);
+                            $scope.cacheComment = "";
+                      }else{
+                            alert("添加评论失败！");
+                      }
+                        $scope.commenting=0;
+                    },function(data){
+                        $scope.commenting=0;
+                    });
+                }
+            };
+            $scope.deletePeo=function(card,objectId){
+                for(var i=0;i<card.owners.length;i++) {
+                    if (card.owners[i].objectId == objectId) {
+                        card.owners.splice(i, 1);
+                    }
+                }
             }
         });
         app.directive('minheight',function($window){
@@ -226,7 +337,6 @@
             return {
                 restrict:"EA",
                 link:function(scope,element){
-                    scope.btntext = "拖放  ctrl+v";
                     element.on("paste",function(e){
                         var clipboardData = e.clipboardData,i = 0, item,fd = new FormData();
                         if(clipboardData && clipboardData instanceof DataTransfer){
@@ -246,7 +356,16 @@
                             };
                         }
                     });
+                    scope.loadStatus = "上传…";
+                    scope.onFileSelect=function(file){
+                        var fd = new FormData();
+                        fd.append('file', file[0]);
+                        startupload(fd,"/upload",loadprogress,loadsuccess,loaderror);
+                    };
                     function startupload(formData,url,progress,success,error){
+                        if(scope.loading == "loading") return;
+                        scope.loading = "loading";
+                        scope.$apply();
                         var xhr = new XMLHttpRequest();
                         xhr.open("post", url, true);
                         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
@@ -264,14 +383,16 @@
                         alert("上传失败！");
                     }
                     function loadsuccess(data){
-                        scope.card.images.push(data.result.url);
+                        scope.card.images.push({url:data.result.url});
                         if(data.status==1){
-                            scope.btntext = "拖放  ctrl+v";
+                            scope.loading = "";
+                            scope.loadStatus = "上传…";
                         }
                         scope.$apply();
                     }
                     function loadprogress(e){
-                        scope.btntext = Math.ceil(e.loaded/ e.total * 100);
+                        scope.loadStatus = Math.ceil(e.loaded/ e.total * 100) + "%";
+                        scope.$apply();
                     }
                 }
             }
@@ -319,6 +440,17 @@
                 }
             }
         });
+        app.directive('rightclick', function($parse) {
+            return function(scope, element, attrs) {
+                var fn = $parse(attrs.rightclick);
+                element.bind('contextmenu', function(event) {
+                    scope.$apply(function() {
+                        event.preventDefault();
+                        fn(scope, {$event:event});
+                    });
+                });
+            };
+        });
         function inSideDom(tag,dom){
             var curRectObj = dom.getBoundingClientRect(),rectObj = tag.getBoundingClientRect();
             var point = {
@@ -340,7 +472,6 @@
                 alert(e);
             };
         }
-
     });
 </script>
 {%include "layout/footer"%}

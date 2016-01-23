@@ -109,7 +109,44 @@ function init(req,res,obj){
                 obj.render(req,res,{data:{err:{}}});
             }
         });
-    }else{
+    }else if(type=="get-comments"){
+        var cardId = req.query["cardId"];
+        var Comments = AV.Object.extend('Comment');
+        var comments =  new AV.Query(Comments);
+        comments.equalTo('cardId',cardId);
+        comments.notEqualTo('deleted', '1');
+        comments.find(function(data){
+            obj.render(req,res,{data:data});
+        });
+    }else if(type=="add-comment"){
+        var description = req.query["description"];
+        var hasComments = req.query["hasComments"];
+        var user = AV.User.current();
+        var Card = AV.Object.extend('Card');
+        var card = new AV.Query(Card);
+        var cardId = req.query["cardId"];
+        var Comments = AV.Object.extend('Comment');
+        var comment = new Comments();
+        comment.set("description",description);
+        comment.set("cardId",cardId);
+        comment.set("createdBy",{"objectId":user.id,"username":user.get("username")});
+        comment.save().then(function(data){
+            if(hasComments!=1){
+                card.get(cardId).then(function(rescard){
+                    rescard.set("hasComments","1");
+                    rescard.save().then(function(){
+
+                        obj.render(req,res,{data:data});
+                    },function(){
+                        obj.render(req,res,{data:{title:"更新卡片状态失败",err:{}}});
+                    });
+                });
+            }else{
+                obj.render(req,res,{data:data});
+            }
+        },function(){ obj.render(req,res,{data:{title:"保存评论失败",err:{}}})});
+    }
+    else{
         obj.render(req,res,{data:{title:"登录失败",err:{}}});
     }
 }
