@@ -28,50 +28,18 @@
                         <li class="name owner">责任人:</li>
                         <li class="owner">{{item.owners | ownersname}}</li>
                     </ul>
-                    <ul class="ownerslist cls">
-                        <li class="name owner">创建人:</li>
-                        <li class="owner"><em>{{item.createdBy.userName}}</em></li>
-                    </ul>
-                    <div class="completetime"><span class="owner">完成日:</span><span class="owner">2015-10-13</span></div>
+                    <div class="completetime"><span class="owner">工作量:</span><span class="owner">0.5天</span></div>
                 </li>
             </ul>
-        </div>
-    </div>
-    <div class="panel" ng-show="show" ng-cloak ng-controller="cardPanel">
-        <div class="mask"></div>
-        <div class="form-wrap"  paste>
-            <form class="addcard" ng-submit="submit()">
-            <h4>添加卡片</h4>
-            <ul>
-                <li><label class="k" for="title"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" data-check="1" rows="2" id="title" class="title"></textarea></span></li>
-                <li><label class="k" for="descri"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" data-check="1" rows="4" id="descri" class="descri" name="descri"></textarea></span></li>
-                <li><label class="k" for="owners"><em class="red">*</em>负责人：</label><span class="v">
-                     <span class="peo-wrap"><em title="双击删除" ng-repeat="peo in card.owners">{{peo.username}}</em></span>
-                    <select ng-model="cacheS" ng-change="change(cacheS)" name="owners" id="owners" ng-options="owner.objectId as owner.username for owner in companyPeople">
-                </select></span>
-                </li>
-                <li class="imgs"><label class="k">图片：</label>
-                   <span class="v">
-                        <span class="imgs-wrap" ng-cloak><img ng-click="showimg()"  ng-repeat="img in card.images" ng-if="!img.del" ng-src="{{img.url}}"/></span>
-                        <span class="uploadbtn {{loading}}">
-                            <span class="text"><span class="normal">截屏  ctrl+v</span><i>+</i></span>
-                            <span class="status">{{loadStatus}}</span>
-                            <input tabindex="-1" class="fileupload" type="file" name="mypic" onchange="angular.element(this).scope().onFileSelect(this.files)"/>
-                        </span>
-                    </span>
-                </li>
-                <li><span class="k"></span><span class="v"><input type="submit" class="btn" value="提交" /></span></li>
-            </ul>
-            <span class="close" ng-click="closepanel()">×</span>
-        </form>
         </div>
     </div>
     <div class="carddetail" ng-cloak ng-show="show" ng-controller="cardDetail" paste>
         <form class="addcard ng-pristine ng-valid" ng-submit="submit()">
             <ul>
-                <li><label class="k"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" data-check="1" rows="2" class="title"></textarea></span></li>
-                <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" data-check="1" rows="4" class="descri" name="descri"></textarea></span></li>
-                <li><label class="k"><em class="red">*</em>负责人：</label><span class="v">
+                <li><label class="k"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" required rows="2" class="title"></textarea></span></li>
+                <li><label class="k"><em class="red">*</em>工作量：</label><span class="v"><input type="text" ng-model="card.amount" required  rows="1" class="amount"/>天</span></li>
+                <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" required rows="4" class="descri" name="descri"></textarea></span></li>
+                <li><label class="k">负责人：</label><span class="v">
                     <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.username}}</em></span>
                     <select ng-change="change(cacheS)" title="选择添加用户" ng-model="cacheS" name="owners" ng-options="owner.objectId as owner.username for owner in companyPeople">
                     </select></span>
@@ -90,7 +58,7 @@
             </ul>
             <span class="close" ng-click="closepanel()">×</span>
         </form>
-        <div class="comment">
+        <div class="comment" ng-if="card.objectId">
             <h4>留言：</h4>
             <ul>
                <li ng-repeat="comment in comments">
@@ -108,7 +76,7 @@
 </div>
 <script>
     seajs.use(["angular","angular-animate"],function(){
-        var app = angular.module('card', ['ngAnimate']);
+         var app = angular.module('card', ['ngAnimate']);
         app.filter("ownersname",function(){
             return function(owners){
                 var arr_name = [];
@@ -123,7 +91,7 @@
                 $scope.$broadcast("filterChange", obj);
             });
             $scope.$on("addCard",function(){
-                $scope.$broadcast("showcardpanel");
+                $scope.$broadcast("showDetail");
             });
             $scope.$on("addnewCard",function(event,data){
                 $scope.$broadcast("addedCard",data);
@@ -144,51 +112,6 @@
                 $scope.$emit("headChange", {sprintId:$scope.sprintId,teamId:$scope.teamId});
                 tplData.sprintId = $scope.sprintId;
                 tplData.teamId = $scope.teamId;
-            };
-        });
-        app.controller('cardPanel',function($scope,$http){
-            $scope.show = 0;
-            $scope.card = {};
-            $scope.card.images=[];
-            $scope.card.owners = [];
-            $scope.submit=function(e){
-                var url = "/ajax?type=add-card&teamId="+tplData.teamId+"&sprintId="+tplData.sprintId;
-                $scope.card.type="未开始";
-                $http.post(url,$scope.card).success(function(data){
-                    if(data.status == 1) {
-                        $scope.$emit("addnewCard",data.result);
-                        $scope.show = 0;
-                    }
-                });
-            };
-            $scope.closepanel= function(){
-                $scope.show = 0;
-            };
-            $scope.$on("showcardpanel",function(){
-                $scope.show = 1;
-                if(!tplData.companyPeople){
-                    $http.get("/ajax?type=get-people&teamId="+tplData.teamId).then(function(data){
-                        tplData.companyPeople = $scope.companyPeople = data.data.result;
-                    });
-                }else{
-                    $scope.companyPeople = tplData.companyPeople;
-                }
-            });
-            $scope.change=function(id){
-                var ret = 0;
-                $scope.card.owners.forEach(function(obj){
-                    if(obj.objectId == id){
-                        ret = 1;
-                    }
-                });
-                if(ret){return};
-                for(var i=0;i<$scope.companyPeople.length;i++){
-                    if(id==$scope.companyPeople[i].objectId){
-                        $scope.card.owners.push($scope.companyPeople[i]);
-                        break;
-                    }
-                }
-                delete $scope.cacheS;
             };
         });
         app.controller('list', function($scope,$rootScope,$http) {
@@ -212,7 +135,6 @@
                         cur_list.list.push(data);
                     }
                 }
-                $scope.apply();
             });
            $scope.$on("drop",function(event,obj){
                var newType =  $scope.list[obj.pindex].type;
@@ -242,22 +164,10 @@
         });
         app.controller('cardDetail',function($scope,$rootScope,$http){
             $scope.show = 0;
-            $scope.card = {};
-            $scope.card.images=[];
-            $scope.comments=[];
-            $scope.submit=function(e){
-                var url = "/ajax?type=updata-card&teamId="+tplData.teamId+"&sprintId="+tplData.sprintId+"&cardId="+$scope.card.objectId;
-                $http.post(url,$scope.card).success(function(data){
-                    if(data.status == 1) {
-                        $scope.show = 0;
-                    }
-                });
-            };
             $scope.closepanel= function(){
                 $scope.show = 0;
             };
             $scope.$on("showDetail",function(event,data){
-                $scope.card = data;
                 $scope.show = 1;
                 if(!tplData.companyPeople){
                     $http.get("/ajax?type=get-people&teamId="+tplData.teamId).then(function(data){
@@ -266,13 +176,41 @@
                 }else{
                     $scope.companyPeople =tplData.companyPeople;
                 }
-                if(data.hasComments == 1){
+                if(data && data.hasComments == 1){
                     //获取评论
                     $http.get("/ajax?type=get-comments&cardId="+data.objectId).then(function(data){
                         $scope.comments = data.data.result;
                     });
                 }else{
                     $scope.comments=[];
+                }
+                if(data){
+                    //修改卡片
+                    $scope.card = data;
+                    $scope.submit=function(e){
+                        var url = "/ajax?type=updata-card&teamId="+tplData.teamId+"&sprintId="+tplData.sprintId+"&cardId="+$scope.card.objectId;
+                        $http.post(url,$scope.card).success(function(data){
+                            if(data.status == 1) {
+                                $scope.show = 0;
+                            }
+                        });
+                    };
+                }else{
+                    //新建卡片
+                    $scope.card={
+                        images:[],
+                        owners:[]
+                    };
+                    $scope.submit=function(e){
+                        var url = "/ajax?type=add-card&teamId="+tplData.teamId+"&sprintId="+tplData.sprintId;
+                        $scope.card.type="未开始";
+                        $http.post(url,$scope.card).success(function(data){
+                            if(data.status == 1) {
+                                $scope.$emit("addnewCard",data.result);
+                                $scope.show = 0;
+                            }
+                        });
+                    };
                 }
             });
             $scope.change=function(id){

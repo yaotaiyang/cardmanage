@@ -15,12 +15,8 @@ input,button,textarea,select {margin:0;*font-size: 100%;line-height:1.2;}
 .cls:after{content:".";display:block;height:0;line-height:0;font-size:0;clear:both;visibility:hidden;}
 .cls{zoom:1;}
 article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary {display:block;}
-@keyframes hlcard {
-    30%  {background-color:#07e;}
-}
-@-webkit-keyframes hlcard{
-    30%  {background-color: #07e;}
-}
+@keyframes hlcard {30%  {background-color:#07e;}}
+@-webkit-keyframes hlcard{30%  {background-color: #07e;}}
 html,body,.body{min-height:100%;}
 .body{min-width:1000px;background-color:#fff;}
 a,a:visited{color:#07e;text-decoration: underline;}
@@ -71,7 +67,7 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .fold .card .ownerslist,.content .fold .card .completetime{display:none;}
 .content.hidecard .card{opacity:0;}
 .content .card.moving{visibility:hidden;}
-.content .card.dragging{z-index:100}
+.content .card.draging{z-index:100}
 .content .card.bug:after,.content .card.highlightcard:after{content:"";font-size:10px;position: absolute;top: 2px;right: 2px;border-width:6px 6px;border-color:#ff0 #ff0 transparent transparent;border-style: solid;height: 0;width: 0;}
 .content .card.highlightcard:after{border-color:#48D31C #48D31C transparent transparent;}
 .content .card h4{padding:4px;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp:4;-webkit-box-orient: vertical;}
@@ -94,12 +90,12 @@ form ul .qrcode{position:absolute;right:0;top:0;width:256px;height:256px;backgro
 form ul .qrcode .k{width:100%;padding-bottom:4px;}
 form ul .qrcode img{width:256px;height:256px;display:block;}
 form h4{background-color:#96D0FF;line-height:40px;text-align:center;font-size:1.2em;margin-bottom:10px;color: #fff;text-shadow:1px 1px 1px #333;}
-form li{padding:3px 0}
+form li{padding:5px 0}
 form .k{width:90px;text-align:right;float:left}
 form .k .red{color:#f00;font-weight: bold;vertical-align:middle;padding-right:2px;}
 form .v{text-align:left;margin-left:92px;display:block;}
 form .v *{font-size:14px;}
-form .v input[type='text'],form .v textarea{width:290px;border:1px solid #ddd;padding:4px;font-size:14px;}
+form .v input[type='text'],form .v textarea{width:290px;border:1px solid #ddd;padding:4px;font-size:14px;display:block;}
 form input.btn{background:#07e;width: 80px;line-height:24px;text-align: center;cursor: default;color:#fff;border:none;}
 form li.longwrap{width:668px;}
 form li.longwrap .v textarea{width:575px}
@@ -114,6 +110,7 @@ form .v .uploadbtn .status{display:none;line-height:40px;}
 form .v .uploadbtn.loading .text{display:none;}
 form .v .uploadbtn.loading input{display:none;}
 form .v .uploadbtn.loading .status{display:inline-block;}
+form .v input.amount{display:inline-block;width:48px;height:20px;padding:0;margin-right:8px;}
 .uploadbtn input{position:absolute;top:0;left:0;height:100%;width:100%;opacity:0;}
 form .imgs-wrap img,form .img-loading{display:inline-block;width:40px;height:40px;border:1px solid #ccc;margin-right:4px;}
 form .img-loading{vertical-align:top;line-height:40px;font-size:12px;text-align:center;}
@@ -156,9 +153,9 @@ form .v input.completetime{width:88px;}
 .carddetail .comment h4{font-size:12px;color:#666;padding-left:8px;line-height:2em;}
 .carddetail .comment .info{text-align:right;font-size:12px;color:#666;}
 .carddetail .comment .name{margin-left:8px;}
-.carddetail .comment li{margin:4px;padding:8px;background-color:#fff;-webkit-transition:opacity 100ms ease-in-out}
-.carddetail .comment li.ng-enter{opacity:0}
-.carddetail .comment li.ng-leave{opacity:0}
+.carddetail .comment li{margin:4px;padding:8px;background-color:#fff;-webkit-transition:opacity 50ms ease-in-out;}
+.carddetail .comment li.ng-enter{opacity:0;}
+.carddetail .comment li.ng-leave{opacity:0;}
 .carddetail .comment-input{border:1px solid #ddd;padding:4px;font-size:14px;width:100%;box-sizing:border-box;}
 .peo-wrap{cursor:default;-webkit-user-select:none;}
 .peo-wrap em{display:inline-block;height:20px;line-height:20px;vertical-align:top;margin-right:10px;padding:0 4px;border:1px solid #ccc;}

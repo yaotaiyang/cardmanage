@@ -46,6 +46,7 @@ function init(req,res,obj){
         card.set("title",req.body.title);
         card.set("type",req.body.type);
         card.set("description",req.body.description);
+        card.set("amount",req.body.amount);
         card.set("owners",req.body.owners);
         card.set("images",req.body.images);
         card.set("type",req.body.type);
@@ -63,6 +64,7 @@ function init(req,res,obj){
         card_q.get(cardId,function(card){
             card.set("title",req.body.title);
             card.set("description",req.body.description);
+            card.set("amount",req.body.amount);
             card.set("owners",req.body.owners);
             card.set("images",req.body.images);
             card.save({success:function(data){
@@ -135,7 +137,6 @@ function init(req,res,obj){
                 card.get(cardId).then(function(rescard){
                     rescard.set("hasComments","1");
                     rescard.save().then(function(){
-
                         obj.render(req,res,{data:data});
                     },function(){
                         obj.render(req,res,{data:{title:"更新卡片状态失败",err:{}}});

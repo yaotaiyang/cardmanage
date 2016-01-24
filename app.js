@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 var express = require("express");
-var router=require("./routes");  
+var router=require("./routes");
 var bodyParser=require("body-parser");
 var app = express();
 var multipart = require('connect-multiparty');
@@ -19,7 +19,6 @@ template.config('openTag','{%');
 template.config('closeTag','%}');
 //template.config('compress',true);
 template.config('extname', '.html');
-
 app.engine('.html', template.__express);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
