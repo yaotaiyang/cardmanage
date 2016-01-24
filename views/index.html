@@ -46,7 +46,7 @@
                 </li>
                 <li class="imgs"><label class="k">图片：</label>
                     <span class="v">
-                        <span class="imgs-wrap" ng-cloak><img ng-click="showimg()"  ng-repeat="img in card.images" ng-if="!img.del" ng-src="{{img.url}}"/></span>
+                        <span class="imgs-wrap" ng-cloak><img ng-click="showimg()" title="右键删除"  rightclick="deletePic(card,peo.objectId)" ng-repeat="img in card.images" ng-if="!img.del" ng-src="{{img.url}}"/></span>
                         <span class="uploadbtn {{loading}}">
                             <span class="text"><span class="normal">截屏  ctrl+v</span><i>+</i></span>
                             <span class="status">{{loadStatus}}</span>
@@ -54,7 +54,7 @@
                         </span>
                     </span>
                 </li>
-                <li><span class="k"></span><span class="v"><input type="submit" class="btn" value="提交" /></span></li>
+                <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="提交" /></span></li>
             </ul>
             <span class="close" ng-click="closepanel()">×</span>
         </form>
@@ -72,6 +72,7 @@
                 </li>
             </ul>
         </div>
+        <div ng-if="card.createdBy.userId | iscurrentUser" class="delcard" ng-click="delcard()">删除卡片</div>
     </div>
 </div>
 <script>
@@ -84,6 +85,15 @@
                     arr_name.push(owners[i].username);
                 }
                 return arr_name.join(",");
+            }
+        });
+        app.filter("iscurrentUser",function(){
+            return function(id){
+                if(tplData.user.id==id){
+                    return 1;
+                }else{
+                    return 0;
+                }
             }
         });
         app.controller("body",function($scope){
@@ -188,20 +198,20 @@
                     //修改卡片
                     $scope.card = data;
                     $scope.submit=function(e){
+                        $scope.ajaxing = 1;
                         var url = "/ajax?type=updata-card&teamId="+tplData.teamId+"&sprintId="+tplData.sprintId+"&cardId="+$scope.card.objectId;
                         $http.post(url,$scope.card).success(function(data){
                             if(data.status == 1) {
                                 $scope.show = 0;
                             }
+                            $scope.ajaxing = 0;
                         });
                     };
                 }else{
                     //新建卡片
-                    $scope.card={
-                        images:[],
-                        owners:[]
-                    };
+                    $scope.card={images:[],owners:[]};
                     $scope.submit=function(e){
+                        $scope.ajaxing = 1;
                         var url = "/ajax?type=add-card&teamId="+tplData.teamId+"&sprintId="+tplData.sprintId;
                         $scope.card.type="未开始";
                         $http.post(url,$scope.card).success(function(data){
@@ -209,6 +219,7 @@
                                 $scope.$emit("addnewCard",data.result);
                                 $scope.show = 0;
                             }
+                            $scope.ajaxing = 0;
                         });
                     };
                 }
@@ -321,7 +332,7 @@
                         alert("上传失败！");
                     }
                     function loadsuccess(data){
-                        scope.card.images.push({url:data.result.url});
+                        scope.card.images.push({url:data.result.url,name:data.result.name,id:data.result.id});
                         if(data.status==1){
                             scope.loading = "";
                             scope.loadStatus = "上传…";

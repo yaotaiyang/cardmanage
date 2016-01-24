@@ -80,11 +80,6 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .ownerslist{margin:0 2px;background-color:#fff;font-size:0;}
 .content .owner{display:inline-block;padding:0 2px;font-size:12px;}
 .content em.red{padding:0 1px;margin:0 -1px;background-color:#fffc00;font-weight:inherit}
-.panel{z-index: 101;}
-.panel .mask{position:fixed;top:0;bottom:0;left:0;right:0;background-color:rgba(0,0,0,0.1);z-index: 101}
-.panel form{position:relative;width:410px;margin:10px auto 0;padding-bottom:20px;background-color:#fff;}
-.panel form.modefy{width:688px;}
-.panel .form-wrap{position:absolute;top:0px;z-index:102;width:100%;padding-bottom:10px;}
 form ul{padding-right:260px;position:relative;width:410px;}
 form ul .qrcode{position:absolute;right:0;top:0;width:256px;height:256px;background:url(../images/code.png) no-repeat;background-size:100% 100%;}
 form ul .qrcode .k{width:100%;padding-bottom:4px;}
@@ -97,6 +92,7 @@ form .v{text-align:left;margin-left:92px;display:block;}
 form .v *{font-size:14px;}
 form .v input[type='text'],form .v textarea{width:290px;border:1px solid #ddd;padding:4px;font-size:14px;display:block;}
 form input.btn{background:#07e;width: 80px;line-height:24px;text-align: center;cursor: default;color:#fff;border:none;}
+form input.btn[disabled]{background-color:#ddd;}
 form li.longwrap{width:668px;}
 form li.longwrap .v textarea{width:575px}
 form input[type='radio']{vertical-align:-2px;margin-left:10px;margin-right:3px;}
@@ -144,7 +140,7 @@ form .v input.completetime{width:88px;}
 .carddetail{position:fixed;top:0;right:0;background-color:#f0f0f0;bottom:0;width:460px;border-left:1px solid #ddd;overflow:auto;}
 .carddetail span.close{position:absolute;right:0;top:0;font-size:24px;cursor:pointer;text-align:center;width:32px;}
 .carddetail span.close:hover{color:#f00;}
-.carddetail .addcard{background-color:#fff;padding:20px 0;}
+.carddetail .addcard{background-color:#fff;padding:20px 0 10px;}
 .carddetail .addcard ul{padding-right:0;width:auto;}
 .carddetail.ng-animate{-webkit-transition:-webkit-transform 300ms ease-in-out;display: block!important;}
 .carddetail.ng-hide{-webkit-transform:translateX(100%)}
@@ -157,6 +153,8 @@ form .v input.completetime{width:88px;}
 .carddetail .comment li.ng-enter{opacity:0;}
 .carddetail .comment li.ng-leave{opacity:0;}
 .carddetail .comment-input{border:1px solid #ddd;padding:4px;font-size:14px;width:100%;box-sizing:border-box;}
+.carddetail .delcard{position:absolute;top:2px;left:8px;font-size:12px;color:#00f;cursor:pointer}
+.carddetail .delcard:hover{text-decoration:underline;}
 .peo-wrap{cursor:default;-webkit-user-select:none;}
 .peo-wrap em{display:inline-block;height:20px;line-height:20px;vertical-align:top;margin-right:10px;padding:0 4px;border:1px solid #ccc;}
 form .v select{opacity:0.5;}
