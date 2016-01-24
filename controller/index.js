@@ -18,14 +18,23 @@ function init(req,res,obj){
                 resobj.sprints.push({name:obj.get("name"),id:obj.id});
             });
             resobj.teams = user.get("teams");
-            obj.render(req,res,{template:"index",data:resobj});
-            return;
         },
         error: function(object, error) {
             resobj.err = error;
             obj.render(req,res,resobj);
-            return;
         }
-    })
+    }).then(function(){
+        var q_user = new AV.Query(AV.User);
+        var companyId = user.get("companyId");
+        q_user.equalTo("companyId", companyId);
+        q_user.find({
+            success: function(data) {
+                resobj.companyPeople = data;
+                obj.render(req,res,{template:"index",data:resobj});
+            },error:function(){
+                obj.render(req,res,{data:{err:{}}});
+            }
+        });
+    });
 }
 exports.init=init;

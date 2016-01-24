@@ -12,7 +12,10 @@
             <select ng-cloak name="dateselect" id="dateselect" ng-model="sprintId" ng-change="change()">
                 <option ng-repeat="val in sprints" value="{{val.id}}">{{val.name}}</option>
             </select>
-            <label for="filtername">搜索：</label><input id="filtername" class="namelist" type="text" placeholder="多关键词空格分隔"> <input type="submit" value="筛选">
+            <label for="filterpeo">责任人：</label>
+            <select ng-cloak name="dateselect" id="filterpeo" ng-model="ownerId" ng-change="change()">
+                <option ng-repeat="val in companyPeople" value="{{val.objectId}}">{{val.username}}</option>
+            </select>
         </form>
         <span class="notice"></span>
         <span class="user" ng-cloak>欢迎：{%user.username%}</span>
@@ -22,13 +25,13 @@
             <span class="add" ng-click="addcard()" ng-if="$index==0">添加</span>
             <span class="switch" ng-click="switch(val)"></span></h3>
             <ul parentscope="scope" data-index="{{$index}}" data="val" class="cardlist cls" minheight dropable>
-                <li draggable ng-dblclick="cardclick(item)" data-pindex="{{$parent.$index}}" data-index="{{$index}}" class="card" ng-repeat="item in val.list">
+                <li draggable ng-dblclick="cardclick(item)" data-pindex="{{$parent.$index}}" data-index="{{$index}}" class="card del_{{item.deleted}}" ng-repeat="item in val.list">
                     <h4>{{item.title}}</h4>
                     <ul class="ownerslist cls">
                         <li class="name owner">责任人:</li>
                         <li class="owner">{{item.owners | ownersname}}</li>
                     </ul>
-                    <div class="completetime"><span class="owner">工作量:</span><span class="owner">0.5天</span></div>
+                    <div class="completetime"><span class="owner">工作量:</span><span class="owner">{{item.amount}}天</span></div>
                 </li>
             </ul>
         </div>
@@ -37,7 +40,7 @@
         <form class="addcard ng-pristine ng-valid" ng-submit="submit()">
             <ul>
                 <li><label class="k"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" required rows="2" class="title"></textarea></span></li>
-                <li><label class="k"><em class="red">*</em>工作量：</label><span class="v"><input type="text" ng-model="card.amount" required  rows="1" class="amount"/>天</span></li>
+                <li><label class="k"><em class="red">*</em>工作量：</label><span class="v"><input type="text" ng-model="card.amount" required  rows="1" class="amount"/>天 <span class="gray" ng-if="card.createdBy">{{card.createdBy.userName}} 创建于 {{card.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span></span></li>
                 <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" required rows="4" class="descri" name="descri"></textarea></span></li>
                 <li><label class="k">负责人：</label><span class="v">
                     <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.username}}</em></span>
@@ -46,7 +49,7 @@
                 </li>
                 <li class="imgs"><label class="k">图片：</label>
                     <span class="v">
-                        <span class="imgs-wrap" ng-cloak><img ng-click="showimg()" title="右键删除"  rightclick="deletePic(card,peo.objectId)" ng-repeat="img in card.images" ng-if="!img.del" ng-src="{{img.url}}"/></span>
+                        <span class="imgs-wrap" ng-cloak><img ng-click="showimg()" title="右键删除" ng-repeat="img in card.images" ng-if="!img.deleted" rightclick="deletePic(card,img.id)"  ng-src="{{img.url}}"/></span>
                         <span class="uploadbtn {{loading}}">
                             <span class="text"><span class="normal">截屏  ctrl+v</span><i>+</i></span>
                             <span class="status">{{loadStatus}}</span>
@@ -72,7 +75,7 @@
                 </li>
             </ul>
         </div>
-        <div ng-if="card.createdBy.userId | iscurrentUser" class="delcard" ng-click="delcard()">删除卡片</div>
+        <div ng-if="card.createdBy.userId | iscurrentUser" class="delcard" ng-click="delcard()">删除</div>
     </div>
 </div>
 <script>
@@ -115,13 +118,24 @@
             $scope.teams = tplData.teams;
             $scope.teamId=tplData.teams[0].teamId;
             $scope.sprints = tplData.sprints;
+            $scope.companyPeople=[{"objectId":"all","username":"全部"}];//下拉选择添加全部
+            $scope.ownerId="all";
             $scope.sprintId = tplData.sprints[0].id;
             tplData.sprintId = $scope.sprintId;
             tplData.teamId = $scope.teamId;
+            for(var i=0;i<tplData.companyPeople.length;i++){
+                var inteam = 0;
+                for(var j=0;j<tplData.companyPeople[i].teams.length;j++){
+                    if(tplData.companyPeople[i].teams[j].teamId == $scope.teamId){
+                        inteam = 1;
+                    }
+                }
+                if(inteam){
+                    $scope.companyPeople.push(tplData.companyPeople[i])
+                }
+            }
             $scope.change = function (name) {
-                $scope.$emit("headChange", {sprintId:$scope.sprintId,teamId:$scope.teamId});
-                tplData.sprintId = $scope.sprintId;
-                tplData.teamId = $scope.teamId;
+                $scope.$emit("headChange", {sprintId:$scope.sprintId,teamId:$scope.teamId,ownerId:$scope.ownerId});
             };
         });
         app.controller('list', function($scope,$rootScope,$http) {
@@ -164,12 +178,41 @@
                }
            });
            function render(obj){
-               var url = "/ajax?type=get-card-list&sprintId="+ obj.sprintId+"&teamId="+obj.teamId;
-               $http.get(url).then(function(data){
-                   var list = data.data.result;
-                   $scope.list = data.data.result;
-                   tplData.cardList = data.data.result;
-               },function(data){});
+               if(($scope.allList && $scope.allList.length) && obj.sprintId==tplData.sprintId && obj.teamId ==  tplData.teamId){
+                   if(obj.ownerId == "all"){
+                       $scope.list = $scope.allList;
+                   }else{
+                       var arr=JSON.parse(JSON.stringify($scope.allList));
+                       for(var m =0;m<$scope.allList.length;m++){
+                           var cur_obj = $scope.allList[m];
+                           arr[m].list=[];
+                           for(var i=0;i<cur_obj.list.length;i++){
+                               var ino = 0;
+                               for(var j=0;j<cur_obj.list[i].owners.length;j++){
+                                   if(cur_obj.list[i].owners[j].objectId == obj.ownerId){
+                                       ino = 1;
+                                       break;
+                                   }
+                               }
+                               if(ino == 1){
+                                   arr[m].list.push(cur_obj.list[i]);
+                               }
+                           }
+                       }
+                       $scope.list = arr;
+                   }
+               }else{
+                   var url = "/ajax?type=get-card-list&sprintId="+ obj.sprintId+"&teamId="+obj.teamId;
+                   $http.get(url).then(function(data){
+                       var list = data.data.result;
+                       $scope.allList = data.data.result;
+                       $scope.list = $scope.allList;
+                       tplData.cardList = data.data.result;
+                       tplData.sprintId = obj.sprintId;
+                       tplData.teamId = obj.teamId;
+                       tplData.ownerId = obj.ownerId;
+                   },function(data){});
+               }
            }
         });
         app.controller('cardDetail',function($scope,$rootScope,$http){
@@ -179,13 +222,7 @@
             };
             $scope.$on("showDetail",function(event,data){
                 $scope.show = 1;
-                if(!tplData.companyPeople){
-                    $http.get("/ajax?type=get-people&teamId="+tplData.teamId).then(function(data){
-                        tplData.companyPeople = $scope.companyPeople = data.data.result;
-                    });
-                }else{
-                    $scope.companyPeople =tplData.companyPeople;
-                }
+                $scope.companyPeople =tplData.companyPeople;
                 if(data && data.hasComments == 1){
                     //获取评论
                     $http.get("/ajax?type=get-comments&cardId="+data.objectId).then(function(data){
@@ -272,6 +309,28 @@
                         card.owners.splice(i, 1);
                     }
                 }
+            };
+            $scope.deletePic=function(card,imgId){
+                for(var i=0;i<card.images.length;i++){
+                    if(card.images[i].id == imgId){
+                        card.images[i].deleted = 1;
+                        break;
+                    }
+                }
+            };
+            $scope.delcard=function(cardId){
+                var url = "/ajax?type=del-card&cardId="+$scope.card.objectId;
+                $http.get(url).then(function(data){
+                    if(data.data.status == 1){
+                        $scope.card.deleted = "1";
+                        $scope.show=0;
+                    }else{
+                        alert("删除失败！");
+                    }
+                    $scope.commenting=0;
+                },function(data){
+                    $scope.commenting=0;
+                });
             }
         });
         app.directive('minheight',function($window){
@@ -296,7 +355,7 @@
                                 }
                             };
                             var blob = item&&item.getAsFile();
-                            if(!blob||!blob.type) return;/*正常粘贴行为，返回*/
+                            if(!blob||!blob.type) return;//正常粘贴行为，返回
                             if(blob.type.match(/^image\//i)&&blob.size>0){
                                 fd.append('file', blob);
                                 startupload(fd,"/upload",loadprogress,loadsuccess,loaderror);

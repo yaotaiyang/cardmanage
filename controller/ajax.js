@@ -11,6 +11,7 @@ function init(req,res,obj){
         var card_q = new AV.Query(Card);
         card_q.equalTo("teamId", teamId);
         card_q.equalTo("sprintId", sprintId);
+        card_q.notEqualTo('deleted', '1');
         card_q.find({
             success:function(data){
                 var Team = AV.Object.extend('Team');
@@ -74,6 +75,23 @@ function init(req,res,obj){
             },error:function(){
                 obj.render(req,res,{data:{title:"登录失败",err:{}}});
             }});
+        });
+    } else if(type=="del-card"){
+        var cardId = req.query["cardId"];
+        var cur_user = AV.User.current();
+        var Card = AV.Object.extend('Card');
+        var card_q = new AV.Query(Card);
+        card_q.get(cardId,function(card){
+            if(card.get("createdBy").userId == cur_user.id){
+                card.set("deleted","1");
+                card.save({success:function(data){
+                    obj.render(req,res,{data:data});
+                },error:function(){
+                    obj.render(req,res,{data:{title:"删除失败",err:{}}});
+                }});
+            }else{
+                obj.render(req,res,{data:{title:"无权删除",err:{}}});
+            }
         });
     }
     else if(type=="card-move"){

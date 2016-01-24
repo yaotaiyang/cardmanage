@@ -63,6 +63,7 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .cardlist{text-align:left;font-size:12px;background-color:#fff;padding-bottom:10px;background-color:#fdfdfd;}
 .content .card{position:relative;-webkit-user-select:none;transition:opacity 300ms linear;-webkit-transition:opacity 300ms linear;float:left;width:180px;margin:8px 0 0 8px;padding-bottom:2px;cursor:default;background-color:#96D0FF;box-sizing:border-box;-webkit-box-sizing:border-box;}
 .content .fold .card{width:84px;}
+.content .card.del_1{display:none;}
 .content .fold .card h4{white-space:nowrap;width:100%;overflow:hidden;text-overflow:ellipsis;display:block;box-sizing:border-box;}
 .content .fold .card .ownerslist,.content .fold .card .completetime{display:none;}
 .content.hidecard .card{opacity:0;}
@@ -113,6 +114,7 @@ form .img-loading{vertical-align:top;line-height:40px;font-size:12px;text-align:
 form .imgs-wrap{font-size:0;}
 form .imgs-wrap img:hover{border-color:#aaa;}
 form .v input.completetime{width:88px;}
+form .v .gray{color:#666;font-size:12px;margin-left:46px;}
 .panel span.close{position:absolute;font-size:24px;cursor:pointer;height:30px;width:30px;right:0;line-height:30px;text-align:center;top:0;color:#07e;}
 .panel span.close:hover{color:#f00;}
 .admin .ullist li{float: left;width:210px;margin:10px 0px 0px 10px;border:1px solid #f0f0f0;border-radius:5px;line-height:24px;box-sizing: border-box;padding: 0 10px;}
