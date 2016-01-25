@@ -14,7 +14,7 @@ var multipart = require('connect-multiparty');
 var template = require('art-template');
 var AV = require('leanengine');
 
-template.config('base', '');
+template.config('base', ''); 
 template.config('openTag','{%');
 template.config('closeTag','%}');
 //template.config('compress',true);
