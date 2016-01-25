@@ -284,7 +284,7 @@
             };
             $scope.ctrlenter = function(ev) {
                 if($scope.commenting == 1) return;
-                var val = ev.target.value.trim();
+                var textarea = ev.target,val= textarea.value.trim();
                 if (ev.ctrlKey == true && (ev.keyCode == 13||ev.keyCode == 10) && val.length>0){
                     $scope.commenting = 1;
                     var url = "/ajax?type=add-comment&cardId="+$scope.card.objectId+"&description="+encodeURIComponent(val)+"&hasComments="+$scope.card.hasComments;
@@ -292,7 +292,7 @@
                       if(data.data.status == 1){
                             $scope.card.hasComments = "1";
                             $scope.comments.push(data.data.result);
-                            $scope.cacheCom = "";
+                            textarea.value="";
                       }else{
                             alert("添加评论失败！");
                       }
