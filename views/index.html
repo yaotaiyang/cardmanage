@@ -69,9 +69,7 @@
                    <div class="info"><span class="time">{{comment.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span><span class="name">{{comment.createdBy.username}}</span></div>
                </li>
                 <li>
-                    <form  class="add-comment"  ng-submit="submit()">
-                        <textarea maxlength="200" ng-disabled="commenting"  ng-keypress="enter($event)" class="comment-input" ng-model="cacheComment" placeholder="ctrl+enter提交（200字内）"></textarea>
-                    </form>
+                    <textarea maxlength="200" ng-disabled="commenting"  ng-keypress="ctrlenter($event)" class="comment-input" ng-model="cacheCom" placeholder="ctrl+enter提交（200字内）"></textarea>
                 </li>
             </ul>
         </div>
@@ -222,6 +220,7 @@
             };
             $scope.$on("showDetail",function(event,data){
                 $scope.show = 1;
+                $scope.cacheComment = "";
                 $scope.companyPeople =tplData.companyPeople;
                 if(data && data.hasComments == 1){
                     //获取评论
@@ -283,9 +282,9 @@
                 openwindow.document.write("<img style='max-width:100%' src='"+this.img.url+"'/>");
                 openwindow.document.title="查看图片";
             };
-            $scope.enter = function(ev) {
+            $scope.ctrlenter = function(ev) {
                 if($scope.commenting == 1) return;
-                var val = $scope.cacheComment;
+                var val = ev.target.value.trim();
                 if (ev.ctrlKey == true && (ev.keyCode == 13||ev.keyCode == 10) && val.length>0){
                     $scope.commenting = 1;
                     var url = "/ajax?type=add-comment&cardId="+$scope.card.objectId+"&description="+encodeURIComponent(val)+"&hasComments="+$scope.card.hasComments;
@@ -293,7 +292,7 @@
                       if(data.data.status == 1){
                             $scope.card.hasComments = "1";
                             $scope.comments.push(data.data.result);
-                            $scope.cacheComment = "";
+                            $scope.cacheCom = "";
                       }else{
                             alert("添加评论失败！");
                       }
