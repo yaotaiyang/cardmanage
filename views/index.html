@@ -108,6 +108,9 @@
         });
         app.filter("filterpeople",function(){
             return function(item,ownerId){
+                if(item.deleted==1){
+                    return 0;
+                }
                 if(ownerId == "all"){
                     return 1;
                 };
