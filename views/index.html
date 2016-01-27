@@ -56,7 +56,7 @@
             <div ng-if="card.parentName" class="parentinfo">所属：{{card.parentName}}</div>
             <ul>
                 <li><label class="k"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" required rows="2" class="title"></textarea></span></li>
-                <li ng-if="(card.type!='story')"><label class="k"><em class="red">*</em>工作量：</label><span class="v"><input type="text" ng-model="card.amount" required class="amount"/>天　　　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" ng-model="card.realAmount" class="amount"/>天</span></span></li>
+                <li ng-if="(card.type!='story')"><label class="k"><em class="red">*</em>工作量：</label><span class="v"><input type="number" ng-model="card.amount" required class="amount"/>天　　　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" ng-model="card.realAmount" class="amount"/>天</span></span></li>
                 <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" required rows="3" class="descri" name="descri"></textarea></span></li>
                 <li><label class="k">优先级：</label><span class="v"><input type="number" ng-model="card.weight" class="amount"/></span></li>
                 <li><label class="k">负责人：</label><span class="v">
@@ -95,6 +95,7 @@
 </div>
 <script>
     seajs.use(["angular","angular-animate"],function(){
+        tplData.sprintId = tplData.sprintId || tplData.sprints[0].id;
          var app = angular.module('card', ['ngAnimate']);
         app.filter("ownersname",function(){
             return function(owners){
@@ -149,8 +150,8 @@
         app.controller('head', function($scope,$http) {
             $scope.scope = $scope;
             $scope.teams = tplData.teams;
-            $scope.teamId=tplData.teamId || tplData.teams[0].teamId;
-            $scope.sprintId =tplData.sprintId || tplData.sprints[0].id;
+            $scope.teamId=tplData.teamId;
+            $scope.sprintId =tplData.sprintId;
             $scope.sprints = tplData.sprints;
             $scope.companyPeople=[{"objectId":"all","username":"全部"}];//下拉选择添加全部
             $scope.ownerId="all";
@@ -178,7 +179,7 @@
         app.controller('list', function($scope,$rootScope,$http) {
             $scope.cardType = tplData.curTeam.cardType;
             $scope.filterid = "all";
-            render({sprintId:tplData.sprintId||tplData.sprints[0].id,teamId:tplData.teamId,ownerId:"all"});
+            render({sprintId:tplData.sprintId,teamId:tplData.teamId,ownerId:"all"});
             function render(obj){
                     var url = "/ajax?type=get-card-list&sprintId="+ obj.sprintId+"&teamId="+obj.teamId;
                     $http.get(url).then(function(data){
@@ -236,8 +237,14 @@
             $scope.show = 0;
             $scope.closepanel= function(){
                 $scope.show = 0;
+                for(var key in $scope.card){//数据回滚
+                    if(key.indexOf("$$")!=0){
+                        $scope.card[key]=$scope.oldData[key];
+                    }
+                }
             };
             $scope.$on("showDetail",function(event,data){
+                $scope.oldData = JSON.parse(JSON.stringify(data));
                 $scope.show = 1;
                 $scope.cacheComment = "";
                 $scope.companyPeople =tplData.companyPeople;

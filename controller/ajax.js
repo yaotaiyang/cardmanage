@@ -155,7 +155,7 @@ function init(req,res,obj){
             card.save({success:function(data){
                 obj.render(req,res,{data:data});
             },error:function(){
-                obj.render(req,res,{data:{title:"登录失败",err:{}}});
+                obj.render(req,res,{data:{title:"保存失败",err:{}}});
             }});
         });
     } else if(type=="del-card"){
