@@ -26,6 +26,10 @@ router.get('/',function(req,res){//首页
     var cur_controller = require('../controller/index.js');
     cur_controller.init(req,res,{render:render,AV:AV});
 });
+router.get('/statistics',function(req,res){//统计页面
+    var cur_controller = require('../controller/statistics.js');
+    cur_controller.init(req,res,{render:render,AV:AV});
+});
 router.get('/login', function(req, res, next) {//正常访问登录页
     render(req,res,{data:{title: '用户登录'},template:"login"});
 });
@@ -39,11 +43,6 @@ router.get('/logout', function(req, res, next) {//登出
 });
 router.get('/register', function(req, res, next) {//用户注册页面
     render(req,res,{data:{title: '用户登录'},template:"register"});
-});
-router.get('/card', function(req, res, next) {//用户注册页面
-    var cur_controller = require('../controller/card.js');
-    cur_controller.init(req,res,{render:render,AV:AV});
-    //render(req,res,{data:{title: '添加卡片'},template:"card"});
 });
 router.post('/register', function(req, res, next) {
     var cur_controller = require('../controller/register.js');

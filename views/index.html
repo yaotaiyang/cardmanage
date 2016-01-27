@@ -5,42 +5,58 @@
         <h2>卡片管理平台</h2>
         <form id="filter" class="filter">
             <label for="groupfilter">组：</label>
-            <select ng-cloak name="groupfilter" id="groupfilter" ng-change="change()" ng-model="teamId">
+            <select ng-cloak name="groupfilter" id="groupfilter" ng-model="teamId"  ng-change="change()">
                 <option ng-repeat="val in teams" value="{{val.teamId}}">{{val.teamName}}</option>
             </select>
            <label for="dateselect">区间：</label>
-            <select ng-cloak name="dateselect" id="dateselect" ng-model="sprintId" ng-change="change()">
+            <select ng-cloak name="dateselect" id="dateselect" ng-model="sprintId"  ng-change="change()">
                 <option ng-repeat="val in sprints" value="{{val.id}}">{{val.name}}</option>
             </select>
             <label for="filterpeo">责任人：</label>
-            <select ng-cloak name="dateselect" id="filterpeo" ng-model="ownerId" ng-change="change()">
+            <select ng-cloak name="dateselect" id="filterpeo" ng-model="ownerId" ng-change="change(1)">
                 <option ng-repeat="val in companyPeople" value="{{val.objectId}}">{{val.username}}</option>
             </select>
         </form>
+        <a class="statistics" href="{{statistics}}">查看统计</a>
         <span class="notice"></span>
         <span class="user" ng-cloak>欢迎：{%user.username%}</span>
     </div>
     <div id="content" ng-cloak class="content cls" ng-controller="list">
-        <div ng-repeat="val in list" class="wrap" ng-class="{true:'fold'}[val.isFold]" data-name="{{val.type}}"><h3><span class="title">{{val.type}}</span>
-            <span class="add" ng-click="addcard()" ng-if="$index==0">添加</span>
-            <span class="switch" ng-click="switch(val)"></span></h3>
-            <ul parentscope="scope" data-index="{{$index}}" data="val" class="cardlist cls" minheight dropable>
-                <li draggable ng-dblclick="cardclick(item)" data-pindex="{{$parent.$index}}" data-index="{{$index}}" class="card del_{{item.deleted}}" ng-repeat="item in val.list">
-                    <h4>{{item.title}}</h4>
-                    <ul class="ownerslist cls">
-                        <li class="name owner">责任人:</li>
-                        <li class="owner">{{item.owners | ownersname}}</li>
-                    </ul>
-                    <div class="completetime"><span class="owner">工作量:</span><span class="owner">{{item.amount}}天</span></div>
-                </li>
-            </ul>
-        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <td style="width:100px;">故事 <em ng-click="addcard({'type':'story'})">添加</em></td>
+                    <td ng-repeat="value in cardType">{{value}}</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="lineobj in cardList">
+                    <td>
+                        <div class="story-card" ng-dblclick="cardclick(lineobj.story)">
+                            {{lineobj.story.title}}
+                            <div class="story-add-card" ng-click="addcard({'parentId':lineobj.story.objectId,'parentName':lineobj.story.title})" title="添加任务">+</div>
+                        </div>
+                    </td>
+                    <td dropable dataitem="cardtype" ng-repeat="cardtype in lineobj.cards" data-parentid="{{lineobj.story.objectId}}">
+                        <div ng-if="item | filterpeople:filterid" draggable item="item" itemtype="cardtype" class="card"  ng-dblclick="cardclick(item)" ng-repeat="item in cardtype.list">
+                            <h4>{{item.title}}</h4>
+                            <ul class="ownerslist cls">
+                                <li class="name owner">责任人:</li>
+                                <li class="owner">{{item.owners | ownersname}}</li>
+                            </ul>
+                            <div class="completetime"><span class="owner">工作量:</span><span class="owner">{{item.amount}}天</span></div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <div class="carddetail" ng-cloak ng-show="show" ng-controller="cardDetail" paste>
         <form class="addcard ng-pristine ng-valid" ng-submit="submit()">
+            <div ng-if="card.parentName" class="parentinfo">所属：{{card.parentName}}</div>
             <ul>
                 <li><label class="k"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" required rows="2" class="title"></textarea></span></li>
-                <li><label class="k"><em class="red">*</em>工作量：</label><span class="v"><input type="text" ng-model="card.amount" required  rows="1" class="amount"/>天 <span class="gray" ng-if="card.createdBy">{{card.createdBy.userName}} 创建于 {{card.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span></span></li>
+                <li ng-if="(card.type!='story')"><label class="k"><em class="red">*</em>工作量：</label><span class="v"><input type="text" ng-model="card.amount" requireds class="amount"/>天　　　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" ng-model="card.realAmount" class="amount"/>天</span></span></li>
                 <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" required rows="4" class="descri" name="descri"></textarea></span></li>
                 <li><label class="k">负责人：</label><span class="v">
                     <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.username}}</em></span>
@@ -57,7 +73,7 @@
                         </span>
                     </span>
                 </li>
-                <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="提交" /></span></li>
+                <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="提交" /><span class="createdby" ng-if="card.createdBy">{{card.createdBy.userName}} 创建于 {{card.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span></span></li>
             </ul>
             <span class="close" ng-click="closepanel()">×</span>
         </form>
@@ -88,6 +104,21 @@
                 return arr_name.join(",");
             }
         });
+        app.filter("filterpeople",function(){
+            return function(item,ownerId){
+                if(ownerId == "all"){
+                    return 1;
+                };
+                var res = 0;
+                for(var i=0;i<item.owners.length;i++){
+                    if(ownerId == item.owners[i].objectId){
+                        res = 1;
+                        break;
+                    }
+                }
+                return res;
+            }
+        });
         app.filter("iscurrentUser",function(){
             return function(id){
                 if(tplData.user.id==id){
@@ -101,8 +132,8 @@
             $scope.$on("headChange",function (event, obj) {
                 $scope.$broadcast("filterChange", obj);
             });
-            $scope.$on("addCard",function(){
-                $scope.$broadcast("showDetail");
+            $scope.$on("addCard",function(event,data){
+                $scope.$broadcast("showDetail",data);
             });
             $scope.$on("addnewCard",function(event,data){
                 $scope.$broadcast("addedCard",data);
@@ -110,17 +141,19 @@
             $scope.$on("modefyCard",function(event,data){
                 $scope.$broadcast("showDetail",data);
             });
+            $scope.$on("drop",function(event,data){
+                $scope.$broadcast("dropcard",data);
+            });
         });
         app.controller('head', function($scope,$http) {
             $scope.scope = $scope;
             $scope.teams = tplData.teams;
-            $scope.teamId=tplData.teams[0].teamId;
+            $scope.teamId=tplData.teamId || tplData.teams[0].teamId;
+            $scope.sprintId =tplData.sprintId || tplData.sprints[0].id;
             $scope.sprints = tplData.sprints;
             $scope.companyPeople=[{"objectId":"all","username":"全部"}];//下拉选择添加全部
             $scope.ownerId="all";
-            $scope.sprintId = tplData.sprints[0].id;
-            tplData.sprintId = $scope.sprintId;
-            tplData.teamId = $scope.teamId;
+            $scope.statistics = "/statistics?teamId="+$scope.teamId+"&sprintId="+$scope.sprintId;
             for(var i=0;i<tplData.companyPeople.length;i++){
                 var inteam = 0;
                 for(var j=0;j<tplData.companyPeople[i].teams.length;j++){
@@ -132,12 +165,74 @@
                     $scope.companyPeople.push(tplData.companyPeople[i])
                 }
             }
-            $scope.change = function (name) {
-                $scope.$emit("headChange", {sprintId:$scope.sprintId,teamId:$scope.teamId,ownerId:$scope.ownerId});
+            $scope.change = function (isname) {
+                $scope.statistics = "/statistics?teamId="+$scope.teamId+"&sprintId="+$scope.sprintId;
+                if(isname){
+                    $scope.$emit("headChange", {sprintId:$scope.sprintId,teamId:$scope.teamId,ownerId:$scope.ownerId});
+                }else{
+                    location.href = "/?teamId="+$scope.teamId+"&sprintId="+$scope.sprintId;
+                }
             };
         });
         app.controller('list', function($scope,$rootScope,$http) {
-           render({sprintId:tplData.sprints[0].id,teamId:tplData.teams[0].teamId});
+            $scope.cardType = tplData.curTeam.cardType;
+            $scope.filterid = "all";
+            render({sprintId:tplData.sprintId,teamId:tplData.teamId,ownerId:"all"});
+            function render(obj){
+                if(($scope.allList && $scope.allList.length) && obj.sprintId==tplData.sprintId && obj.teamId ==  tplData.teamId){
+                        $scope.cardList = $scope.allList;
+                }else{
+                    var url = "/ajax?type=get-card-list&sprintId="+ obj.sprintId+"&teamId="+obj.teamId;
+                    $http.get(url).then(function(data){
+                        $scope.allList = $scope.cardList = data.data.result;
+                        tplData.cardList =$scope.allList;
+                    },function(data){});
+                }
+            }
+            $scope.cardclick=function(data){
+                $scope.$emit("modefyCard",data);
+            };
+            $scope.$on("moveCard",function(event,data){
+                $scope.$apply();
+                var url = "/ajax?type=card-move&cardId="+data.item.objectId+"&newType="+data.item.type;
+                $http.get(url).success(function(res){
+                    if(res.status != 1) {
+                        alert("修改失败！");
+                        location.reload();
+                    }
+                });
+            });
+            $scope.addcard=function(data){
+                var cur_obj = JSON.parse(JSON.stringify(data));
+                cur_obj.cardList = $scope.cardList;
+                $scope.$emit("addCard",cur_obj);
+            };
+            $scope.$on("addedCard",function(event,data){
+                if(data.type == "story"){
+                    var arr = [];
+                    tplData.curTeam.cardType.forEach(function(name){
+                        arr.push({type:name,list:[]});
+                    });
+                    $scope.cardList.push({cards:arr,story:data});
+                }else if(data.parentId){
+                    for(var i=0;i<$scope.cardList.length;i++){
+                        if(data.parentId == $scope.cardList[i].story.objectId){
+                            for(var j=0;j<$scope.cardList[i].cards.length;j++){
+                                if($scope.cardList[i].cards[j].type == data.type){
+                                    $scope.cardList[i].cards[j].list.push(data);
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+
+                }
+            });
+            $scope.$on("filterChange",function (event, obj) {
+                $scope.filterid = obj.ownerId;
+            });
+            /*
            $scope.$on("filterChange",function (event, obj) {
                render(obj);
            });
@@ -147,9 +242,7 @@
            $scope.addcard=function(){
                $scope.$emit("addCard");
            };
-            $scope.cardclick=function(data){
-                $scope.$emit("modefyCard",data);
-            };
+
             $scope.$on("addedCard",function(event,data){
                 for(var i=0;i<$scope.list.length;i++){
                     var cur_list  = $scope.list[i];
@@ -158,60 +251,7 @@
                     }
                 }
             });
-           $scope.$on("drop",function(event,obj){
-               var newType =  $scope.list[obj.pindex].type;
-               var oldList = JSON.parse(JSON.stringify($scope.list));
-               if(obj.pindex !=obj.oriPindex){
-                   var moveData = $scope.list[obj.oriPindex]["list"].splice(obj.index,1)[0];
-                   $scope.list[obj.pindex]["list"].push(moveData);
-                   var url = "/ajax?type=card-move&newType="+ newType+"&cardId="+moveData.objectId;
-                   $http.get(url).then(function(data){
-                       var data = data.data;
-                       if(data.status != 1){
-                            $scope.list = oldList;
-                       }
-                   });
-               }else{
-                   obj.element.removeClass("moving");
-               }
-           });
-           function render(obj){
-               if(($scope.allList && $scope.allList.length) && obj.sprintId==tplData.sprintId && obj.teamId ==  tplData.teamId){
-                   if(obj.ownerId == "all"){
-                       $scope.list = $scope.allList;
-                   }else{
-                       var arr=JSON.parse(JSON.stringify($scope.allList));
-                       for(var m =0;m<$scope.allList.length;m++){
-                           var cur_obj = $scope.allList[m];
-                           arr[m].list=[];
-                           for(var i=0;i<cur_obj.list.length;i++){
-                               var ino = 0;
-                               for(var j=0;j<cur_obj.list[i].owners.length;j++){
-                                   if(cur_obj.list[i].owners[j].objectId == obj.ownerId){
-                                       ino = 1;
-                                       break;
-                                   }
-                               }
-                               if(ino == 1){
-                                   arr[m].list.push(cur_obj.list[i]);
-                               }
-                           }
-                       }
-                       $scope.list = arr;
-                   }
-               }else{
-                   var url = "/ajax?type=get-card-list&sprintId="+ obj.sprintId+"&teamId="+obj.teamId;
-                   $http.get(url).then(function(data){
-                       var list = data.data.result;
-                       $scope.allList = data.data.result;
-                       $scope.list = $scope.allList;
-                       tplData.cardList = data.data.result;
-                       tplData.sprintId = obj.sprintId;
-                       tplData.teamId = obj.teamId;
-                       tplData.ownerId = obj.ownerId;
-                   },function(data){});
-               }
-           }
+          */
         });
         app.controller('cardDetail',function($scope,$rootScope,$http){
             $scope.show = 0;
@@ -230,7 +270,7 @@
                 }else{
                     $scope.comments=[];
                 }
-                if(data){
+                if(data && data.objectId){
                     //修改卡片
                     $scope.card = data;
                     $scope.submit=function(e){
@@ -245,11 +285,15 @@
                     };
                 }else{
                     //新建卡片
-                    $scope.card={images:[],owners:[]};
+                    if(data.parentId){
+                        console.log(data);
+                        $scope.card={images:[],owners:[],type:tplData.curTeam.cardType[0],parentId:data.parentId,parentName:data.parentName};
+                    }else{
+                        $scope.card={images:[],owners:[],type:data.type};
+                    }
                     $scope.submit=function(e){
                         $scope.ajaxing = 1;
                         var url = "/ajax?type=add-card&teamId="+tplData.teamId+"&sprintId="+tplData.sprintId;
-                        $scope.card.type="未开始";
                         $http.post(url,$scope.card).success(function(data){
                             if(data.status == 1) {
                                 $scope.$emit("addnewCard",data.result);
@@ -405,9 +449,12 @@
             }
         });
         app.directive('draggable', function($document,$rootScope) {
-            var wraplist = $document.find("[dropable]");
             return {
                 restrict:"EA",
+                scope:{
+                    item:'=item',
+                    itemtype:'=itemtype'
+                },
                 link:function(scope, element, attrs) {
                     var startX=0, startY=0, x = 0, y = 0;
                     var wrap = document.querySelectorAll("[dropable]");
@@ -425,7 +472,7 @@
                         y = event.screenY - startY;
                         x = event.screenX - startX;
                         element.addClass("draging").css({
-                            top: y + 'px',
+                            //top: y + 'px',
                             left:  x + 'px'
                         });
                     }
@@ -436,8 +483,8 @@
                         for(var i=0;i<wrap.length;i++){
                             var cur_wrap = wrap[i];
                             if(inSideDom(element[0],cur_wrap)){
-                                element.addClass("moving");
-                                scope.$emit("drop",{pindex:cur_wrap.getAttribute("data-index"),oriPindex:element[0].getAttribute("data-pindex"),index:element[0].getAttribute("data-index"),element:element});
+                                //element.addClass("moving");
+                                scope.$emit("drop",{cur_wrap:cur_wrap,item:scope.item,itemtype:scope.itemtype});
                                 break;
                             }
                         }
@@ -445,6 +492,41 @@
                         startX=0;startY=0; x = 0;y = 0;
                     }
                 }
+            }
+            function inSideDom(tag,dom){
+                var curRectObj = dom.getBoundingClientRect(),rectObj = tag.getBoundingClientRect();
+                var point = {
+                    y:rectObj.top + rectObj.height/2,
+                    x:rectObj.left + rectObj.width/2
+                };
+                if(point.x > curRectObj.left && point.x<curRectObj.left+curRectObj.width && point.y > curRectObj.top && point.y < curRectObj.top+curRectObj.height){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        });
+        app.directive('dropable',function(){
+            return {
+                restrict:"EA",
+                scope:{
+                    dataItem:'=dataitem'
+                },
+                link:function(scope, element, $http){
+                    scope.$on("dropcard",function(e,data){
+                        if(data.cur_wrap == element[0] && scope.dataItem != data.itemtype){
+                            for(var i=0;i<data.itemtype.list.length;i++){
+                                if(data.item == data.itemtype.list[i]){
+                                    data.itemtype.list.splice(i,1);
+                                }
+                            }
+                            data.item.type=scope.dataItem.type;
+                            scope.dataItem.list.push(data.item);
+                            scope.$emit("moveCard",{originList:data.itemtype.list,curList:scope.dataItem.list,item:data.item});
+                        }
+                    });
+                }
+
             }
         });
         app.directive('rightclick', function($parse) {
@@ -458,27 +540,6 @@
                 });
             };
         });
-        function inSideDom(tag,dom){
-            var curRectObj = dom.getBoundingClientRect(),rectObj = tag.getBoundingClientRect();
-            var point = {
-                y:rectObj.top + rectObj.height/2,
-                x:rectObj.left + rectObj.width/2
-            };
-            if(point.x > curRectObj.left && point.x<curRectObj.left+curRectObj.width && point.y > curRectObj.top && point.y < curRectObj.top+curRectObj.height){
-               return true;
-            }else{
-               return false;
-            }
-        }
-        function dispatch(el, type){
-            try{
-                var evt = document.createEvent('Event');
-                evt.initEvent(type,true,true);
-                el.dispatchEvent(evt);
-            }catch(e){
-                alert(e);
-            };
-        }
     });
 </script>
 {%include "layout/footer"%}

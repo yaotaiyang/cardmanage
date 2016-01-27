@@ -3,15 +3,47 @@
  */
 function init(req,res,obj){
     var AV= obj.AV;
-    var Card = AV.Object.extend('Card');
-    var Sprint = AV.Object.extend('Sprint');
+    var teamId = req.query["teamId"];
     var user = AV.User.current();
-    var cur_teamId= user.get("teams")[0].teamId;
-    var resobj = {title:"首页"};
+    var teams = user.get("teams");
+    var cur_teamId= teams[0].teamId;
+    if(!teamId){
+        res.redirect('/?teamId='+cur_teamId);
+        return;
+    };
+    var allow = 0;
+    for(var i=0;i<teams.length;i++){
+        if(teams[i].teamId == teamId){
+            allow = 1;
+        }
+    }
+    if(allow!=1){
+        //校验权限
+        res.redirect('/logout');
+    }
+    var sprintId = req.query["sprintId"];
+    var Card = AV.Object.extend('Card');
+    var Team = AV.Object.extend('Team');
+    var Sprint = AV.Object.extend('Sprint');
+    /*if(!sprintId){
+        var sprint_q = new AV.Query(Sprint);
+        sprint_q.equalTo("teamId", teamId);
+        sprint_q.descending("createAt");
+        sprint_q.limit(1);
+        sprint_q.find({ //获取冲刺信息
+            success: function(data) {
+                res.redirect('/?teamId='+teamId + "&sprintId="+data[0].id);
+            },
+            error: function() {
+                res.redirect('/logout');
+            }
+        })
+    }*/
+    var resobj = {title:"首页",teamId:teamId,sprintId:sprintId};
     var sprint_q = new AV.Query(Sprint);
-    sprint_q.equalTo("teamId", cur_teamId);
+    sprint_q.equalTo("teamId", teamId);
     sprint_q.descending("createAt");
-    sprint_q.find({
+    sprint_q.find({ //获取冲刺信息
         success: function(data) {
             resobj.sprints=[];
             data.forEach(function(obj){
@@ -23,17 +55,22 @@ function init(req,res,obj){
             resobj.err = error;
             obj.render(req,res,resobj);
         }
-    }).then(function(){
+    }).then(function(){ //获取
         var q_user = new AV.Query(AV.User);
         var companyId = user.get("companyId");
         q_user.equalTo("companyId", companyId);
         q_user.find({
             success: function(data) {
                 resobj.companyPeople = data;
-                obj.render(req,res,{template:"index",data:resobj});
             },error:function(){
                 obj.render(req,res,{data:{err:{}}});
             }
+        }).then(function(){
+            var team_q = new AV.Query(Team);
+            team_q.get(teamId).then(function(data){
+                resobj.curTeam=data;
+                obj.render(req,res,{template:"index",data:resobj});
+            });
         });
     });
 }
