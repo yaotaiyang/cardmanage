@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="/public/css/style.css"/>
 <div class="body cls"  ng-app="card" ng-controller="body">
     <div id="header" class="header" ng-controller="head">
-        <h2>卡片管理平台</h2>
+        <h2>敏捷管理平台</h2>
         <form id="filter" class="filter">
             <label for="groupfilter">组：</label>
             <select ng-cloak name="groupfilter" id="groupfilter" ng-model="teamId"  ng-change="change()">
@@ -30,7 +30,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="lineobj in cardList">
+                <tr ng-repeat="lineobj in cardList | orderBy:orderfunc:'reverse'">
                     <td>
                         <div class="story-card" ng-dblclick="cardclick(lineobj.story)">
                             {{lineobj.story.title}}
@@ -38,7 +38,7 @@
                         </div>
                     </td>
                     <td dropable dataitem="cardtype" ng-repeat="cardtype in lineobj.cards" data-parentid="{{lineobj.story.objectId}}">
-                        <div ng-if="item | filterpeople:filterid" draggable item="item" itemtype="cardtype" class="card"  ng-dblclick="cardclick(item)" ng-repeat="item in cardtype.list">
+                        <div ng-if="item | filterpeople:filterid" draggable item="item" itemtype="cardtype" class="card"  ng-dblclick="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
                             <h4>{{item.title}}</h4>
                             <ul class="ownerslist cls">
                                 <li class="name owner">责任人:</li>
@@ -56,8 +56,9 @@
             <div ng-if="card.parentName" class="parentinfo">所属：{{card.parentName}}</div>
             <ul>
                 <li><label class="k"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" required rows="2" class="title"></textarea></span></li>
-                <li ng-if="(card.type!='story')"><label class="k"><em class="red">*</em>工作量：</label><span class="v"><input type="text" ng-model="card.amount" requireds class="amount"/>天　　　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" ng-model="card.realAmount" class="amount"/>天</span></span></li>
-                <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" required rows="4" class="descri" name="descri"></textarea></span></li>
+                <li ng-if="(card.type!='story')"><label class="k"><em class="red">*</em>工作量：</label><span class="v"><input type="text" ng-model="card.amount" required class="amount"/>天　　　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" ng-model="card.realAmount" class="amount"/>天</span></span></li>
+                <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" required rows="3" class="descri" name="descri"></textarea></span></li>
+                <li><label class="k">优先级：</label><span class="v"><input type="text" ng-model="card.weight" class="amount"/></span></li>
                 <li><label class="k">负责人：</label><span class="v">
                     <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.username}}</em></span>
                     <select ng-change="change(cacheS)" title="选择添加用户" ng-model="cacheS" name="owners" ng-options="owner.objectId as owner.username for owner in companyPeople">
@@ -177,18 +178,13 @@
         app.controller('list', function($scope,$rootScope,$http) {
             $scope.cardType = tplData.curTeam.cardType;
             $scope.filterid = "all";
-            render({sprintId:tplData.sprintId,teamId:tplData.teamId,ownerId:"all"});
+            render({sprintId:tplData.sprintId||tplData.sprints[0].id,teamId:tplData.teamId,ownerId:"all"});
             function render(obj){
-                if(($scope.allList && $scope.allList.length) && obj.sprintId==tplData.sprintId && obj.teamId ==  tplData.teamId){
-                        $scope.cardList = $scope.allList;
-                }else{
                     var url = "/ajax?type=get-card-list&sprintId="+ obj.sprintId+"&teamId="+obj.teamId;
                     $http.get(url).then(function(data){
-                        $scope.allList = $scope.cardList = data.data.result;
-                        tplData.cardList =$scope.allList;
+                        tplData.cardList = $scope.cardList = data.data.result;
                     },function(data){});
                 }
-            }
             $scope.cardclick=function(data){
                 $scope.$emit("modefyCard",data);
             };
@@ -206,6 +202,9 @@
                 var cur_obj = JSON.parse(JSON.stringify(data));
                 cur_obj.cardList = $scope.cardList;
                 $scope.$emit("addCard",cur_obj);
+            };
+            $scope.orderfunc=function(data){
+                return data.story.weight;
             };
             $scope.$on("addedCard",function(event,data){
                 if(data.type == "story"){
@@ -232,26 +231,6 @@
             $scope.$on("filterChange",function (event, obj) {
                 $scope.filterid = obj.ownerId;
             });
-            /*
-           $scope.$on("filterChange",function (event, obj) {
-               render(obj);
-           });
-           $scope.switch=function(val){
-               val.isFold = !val.isFold;
-           };
-           $scope.addcard=function(){
-               $scope.$emit("addCard");
-           };
-
-            $scope.$on("addedCard",function(event,data){
-                for(var i=0;i<$scope.list.length;i++){
-                    var cur_list  = $scope.list[i];
-                    if(cur_list.type == data.type){
-                        cur_list.list.push(data);
-                    }
-                }
-            });
-          */
         });
         app.controller('cardDetail',function($scope,$rootScope,$http){
             $scope.show = 0;
@@ -286,7 +265,6 @@
                 }else{
                     //新建卡片
                     if(data.parentId){
-                        console.log(data);
                         $scope.card={images:[],owners:[],type:tplData.curTeam.cardType[0],parentId:data.parentId,parentName:data.parentName};
                     }else{
                         $scope.card={images:[],owners:[],type:data.type};
@@ -456,13 +434,16 @@
                     itemtype:'=itemtype'
                 },
                 link:function(scope, element, attrs) {
-                    var startX=0, startY=0, x = 0, y = 0;
+                    var startX=0, startY=0, x = 0, y = 0,minY,maxY;
                     var wrap = document.querySelectorAll("[dropable]");
                     element.css({
                         position: 'relative',
                         cursor:"default"
                     });
                     element.bind('mousedown', function(event) {
+                        var parentOffset = element.parent()[0].getBoundingClientRect(),domOffset = element[0].getBoundingClientRect();
+                        minY = parentOffset.top - domOffset.top;
+                        maxY = parentOffset.bottom - domOffset.bottom;
                         startX = event.screenX - x;
                         startY = event.screenY - y;
                         $document.bind('mousemove', mousemove);
@@ -471,8 +452,10 @@
                     function mousemove(event) {
                         y = event.screenY - startY;
                         x = event.screenX - startX;
+                        if(y<minY) y = minY;
+                        if(y>maxY) y=maxY;
                         element.addClass("draging").css({
-                            //top: y + 'px',
+                            top: y + 'px',
                             left:  x + 'px'
                         });
                     }
@@ -512,7 +495,7 @@
                 scope:{
                     dataItem:'=dataitem'
                 },
-                link:function(scope, element, $http){
+                link:function(scope, element,attrs){
                     scope.$on("dropcard",function(e,data){
                         if(data.cur_wrap == element[0] && scope.dataItem != data.itemtype){
                             for(var i=0;i<data.itemtype.list.length;i++){

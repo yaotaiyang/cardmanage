@@ -150,6 +150,7 @@ function init(req,res,obj){
             card.set("amount",req.body.amount);
             card.set("realAmount",req.body.realAmount);
             card.set("owners",req.body.owners);
+            card.set("weight",req.body.weight);
             card.set("images",req.body.images);
             card.save({success:function(data){
                 obj.render(req,res,{data:data});
