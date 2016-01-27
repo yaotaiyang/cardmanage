@@ -93,7 +93,7 @@ form .k{width:90px;text-align:right;float:left}
 form .k .red{color:#f00;font-weight: bold;vertical-align:middle;padding-right:2px;}
 form .v{text-align:left;margin-left:92px;display:block;}
 form .v *{font-size:14px;}
-form .v input[type='text'],form .v textarea{width:290px;border:1px solid #ddd;padding:4px;font-size:14px;display:block;}
+form .v input[type='text'],form .v input[type='number'],form .v textarea{width:290px;border:1px solid #ddd;padding:4px;font-size:14px;display:block;}
 form input.btn{background:#07e;width: 80px;line-height:24px;text-align: center;cursor: default;color:#fff;border:none;}
 form input.btn[disabled]{background-color:#ddd;}
 form li.longwrap{width:668px;}
@@ -109,7 +109,7 @@ form .v .uploadbtn .status{display:none;line-height:40px;}
 form .v .uploadbtn.loading .text{display:none;}
 form .v .uploadbtn.loading input{display:none;}
 form .v .uploadbtn.loading .status{display:inline-block;}
-form .v input.amount{display:inline-block;width:30px;height:20px;padding:0;margin-right:8px;}
+form .v input.amount{display:inline-block;width:50px;height:20px;padding:0;margin-right:8px;}
 .uploadbtn input{position:absolute;top:0;left:0;height:100%;width:100%;opacity:0;}
 form .imgs-wrap img,form .img-loading{display:inline-block;width:40px;height:40px;border:1px solid #ccc;margin-right:4px;}
 form .img-loading{vertical-align:top;line-height:40px;font-size:12px;text-align:center;}

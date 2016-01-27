@@ -58,7 +58,7 @@
                 <li><label class="k"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" required rows="2" class="title"></textarea></span></li>
                 <li ng-if="(card.type!='story')"><label class="k"><em class="red">*</em>工作量：</label><span class="v"><input type="text" ng-model="card.amount" required class="amount"/>天　　　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" ng-model="card.realAmount" class="amount"/>天</span></span></li>
                 <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" required rows="3" class="descri" name="descri"></textarea></span></li>
-                <li><label class="k">优先级：</label><span class="v"><input type="text" ng-model="card.weight" class="amount"/></span></li>
+                <li><label class="k">优先级：</label><span class="v"><input type="number" ng-model="card.weight" class="amount"/></span></li>
                 <li><label class="k">负责人：</label><span class="v">
                     <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.username}}</em></span>
                     <select ng-change="change(cacheS)" title="选择添加用户" ng-model="cacheS" name="owners" ng-options="owner.objectId as owner.username for owner in companyPeople">
@@ -81,13 +81,13 @@
         <div class="comment" ng-if="card.objectId">
             <h4>留言：</h4>
             <ul>
-               <li ng-repeat="comment in comments">
-                   <div class="cont">{{comment.description}}</div>
-                   <div class="info"><span class="time">{{comment.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span><span class="name">{{comment.createdBy.username}}</span></div>
-               </li>
                 <li>
                     <textarea maxlength="200" ng-disabled="commenting"  ng-keypress="ctrlenter($event)" class="comment-input" ng-model="cacheCom" placeholder="ctrl+enter提交（200字内）"></textarea>
                 </li>
+               <li ng-repeat="comment in comments | orderBy:'updatedAt':'reverse'">
+                   <div class="cont">{{comment.description}}</div>
+                   <div class="info"><span class="time">{{comment.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span><span class="name">{{comment.createdBy.username}}</span></div>
+               </li>
             </ul>
         </div>
         <div ng-if="card.createdBy.userId | iscurrentUser" class="delcard" ng-click="delcard()">删除</div>
