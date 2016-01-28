@@ -26,7 +26,7 @@
             <thead>
                 <tr>
                     <td style="width:100px;">故事 <em ng-click="addcard({'type':'story'})">添加</em></td>
-                    <td ng-repeat="value in cardType">{{value}}</td>
+                    <td ng-if="expendind | expend:$index" ng-repeat="value in cardType">{{value}} <span class="screen" ng-click="screen($index)"><i class="unfold">{{expendind != $index?'﹥':'﹤'}}  </i></span></td>
                 </tr>
             </thead>
             <tbody>
@@ -37,7 +37,7 @@
                             <div class="story-add-card" ng-click="addcard({'parentId':lineobj.story.objectId,'parentName':lineobj.story.title})" title="添加任务">+</div>
                         </div>
                     </td>
-                    <td dropable dataitem="cardtype" ng-repeat="cardtype in lineobj.cards" data-parentid="{{lineobj.story.objectId}}">
+                    <td ng-if="expendind | expend:$index" dropable dataitem="cardtype" ng-repeat="cardtype in lineobj.cards" data-parentid="{{lineobj.story.objectId}}">
                         <div ng-if="item | filterpeople:filterid" draggable item="item" itemtype="cardtype" class="card"  ng-dblclick="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
                             <h4>{{item.title}}</h4>
                             <ul class="ownerslist cls">
@@ -104,6 +104,19 @@
                     arr_name.push(owners[i].username);
                 }
                 return arr_name.join(",");
+            }
+        });
+        app.filter("expend",function(){
+            return function(expendId,itemInd){
+                if(expendId!=undefined){
+                    if(itemInd == expendId){
+                        return 1;
+                    }else{
+                        return 0;
+                    }
+                }else{
+                    return 1;
+                }
             }
         });
         app.filter("filterpeople",function(){
@@ -207,6 +220,13 @@
                 cur_obj.cardList = $scope.cardList;
                 $scope.$emit("addCard",cur_obj);
             };
+            $scope.screen=function(ind){
+                if($scope.expendind == ind){
+                    $scope.expendind =  undefined;
+                }else{
+                    $scope.expendind = ind;
+                }
+            }
             $scope.orderfunc=function(data){
                 return data.story.weight;
             };

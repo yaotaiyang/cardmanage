@@ -53,8 +53,15 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .table tr:nth-child(even){background-color:#EAF5FC}
 .content .table tr:nth-child(odd){background-color:#fcfcfc}
 .table thead td{background-color:#96D0FF;text-align:center;color: #fff;text-shadow:1px 1px 1px #333;}
+.table thead td .screen{width:24px;line-height:20px;float:right;text-shadow:none;cursor:pointer;height:20px;text-align:right;font-size:20px;}
+.table thead td .screen:hover{color:#f00;}
+.screen i{font-style:normal;}
+.screen .fold{display:none;}
+.expend .screen .fold{display:inline-block;}
+.expend .screen .unfold{display:none;}
 .table thead td em{color:#07e;font-size:11px;text-decoration:underline;margin-left:4px;text-shadow:none;cursor:pointer;}
 .table tbody td{vertical-align:top;padding:5px 0;}
+.table td.hide{display:none;}
 .table tbody td:first-child{vertical-align:middle;}
 .content .wrap{-webkit-box-flex:10000;box-flew:10000;width:25%;text-align:center;border-right:1px solid #96D0FF;background-color: #fff;-webkit-transition: width 100ms linear;}
 .content .wrap:last-child{border-right: none}
