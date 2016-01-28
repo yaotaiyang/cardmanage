@@ -147,10 +147,10 @@ function init(req,res,obj){
         card_q.get(cardId,function(card){
             card.set("title",req.body.title);
             card.set("description",req.body.description);
-            card.set("amount",req.body.amount);
-            card.set("realAmount",req.body.realAmount);
+            card.set("amount",Number(req.body.amount));
+            card.set("realAmount",Number(req.body.realAmount));
             card.set("owners",req.body.owners);
-            card.set("weight",req.body.weight);
+            card.set("weight",Number(req.body.weight));
             card.set("images",req.body.images);
             card.save({success:function(data){
                 obj.render(req,res,{data:data});

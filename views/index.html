@@ -37,14 +37,13 @@
                             <div class="story-add-card" ng-click="addcard({'parentId':lineobj.story.objectId,'parentName':lineobj.story.title})" title="添加任务">+</div>
                         </div>
                     </td>
-                    <td ng-if="expendind | expend:$index" dropable dataitem="cardtype" ng-repeat="cardtype in lineobj.cards" data-parentid="{{lineobj.story.objectId}}">
-                        <div ng-if="item | filterpeople:filterid" draggable item="item" itemtype="cardtype" class="card"  ng-dblclick="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
+                    <td masonry ng-if="expendind | expend:$index" dropable dataitem="cardtype" ng-repeat="cardtype in lineobj.cards" data-parentid="{{lineobj.story.objectId}}">
+                        <div ng-if="item | filterpeople:filterid" draggable item="item" itemtype="cardtype" class="card masonry-brick"  ng-dblclick="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
                             <h4>{{item.title}}</h4>
                             <ul class="ownerslist cls">
-                                <li class="name owner">责任人:</li>
-                                <li class="owner">{{item.owners | ownersname}}</li>
+                                <li class="name owner">责任人: {{item.owners | ownersname}}</li>
                             </ul>
-                            <div class="completetime"><span class="owner">工作量:</span><span class="owner">{{item.amount}}天</span></div>
+                            <div class="completetime"><span class="owner">工作量: {{item.amount}}天</span></div>
                         </div>
                     </td>
                 </tr>
@@ -56,7 +55,10 @@
             <div ng-if="card.parentName" class="parentinfo">所属：{{card.parentName}}</div>
             <ul>
                 <li><label class="k"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" required rows="2" class="title"></textarea></span></li>
-                <li ng-if="(card.type!='story')"><label class="k"><em class="red">*</em>工作量：</label><span class="v"><input type="number" ng-model="card.amount" required class="amount"/>天　　　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" ng-model="card.realAmount" class="amount"/>天</span></span></li>
+                <li ng-if="(card.type!='story')"><label class="k"><em class="red">*</em>工作量：</label>
+                    <span class="v"><input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.amount" required class="amount"/>天　　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.realAmount" class="amount"/>天</span>
+                        <div class="date-wrap"><input type="text" class="datetime" ng-model="card.starTtime" datetime="datetime"/> 至 <input  ng-model="card.endTime"  type="text" class="datetime" datetime="datetime"/></div>
+                    </span></li>
                 <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" required rows="3" class="descri" name="descri"></textarea></span></li>
                 <li><label class="k">优先级：</label><span class="v"><input type="number" ng-model="card.weight" class="amount"/></span></li>
                 <li><label class="k">负责人：</label><span class="v">
@@ -94,7 +96,7 @@
     </div>
 </div>
 <script>
-    seajs.use(["angular","angular-animate"],function(){
+    seajs.use(["angular","angular-animate","tools"],function(){
         tplData.sprintId = tplData.sprintId || tplData.sprints[0].id;
          var app = angular.module('card', ['ngAnimate']);
         app.filter("ownersname",function(){

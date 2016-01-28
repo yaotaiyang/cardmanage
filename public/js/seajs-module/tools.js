@@ -1,1528 +1,221 @@
 define(function () {
-//瀑布流
-
-    /***
-     * 漫画Jquery时间插件
-     * 编写时间：2012年7月14号
-     * version:manhuaDate.1.0.js
-     ***/
-    $(function () {
-        $.fn.manhuaDate = function (options) {
-            var defaults = {
-                Event: "click",		//插件绑定的响应事件
-                Left: 0,				//弹出时间停靠的左边位置
-                Top: 22,				//弹出时间停靠的上边位置
-                fuhao: "-",			//日期之间的连接符号
-                isTime: false,			//是否开启时间值默认为false
-                beginY: 2014,			//年份的开始默认为1949
-                endY: 2020				//年份的结束默认为2049
-            };
-            var options = $.extend(defaults, options);
-            var stc;
-            if ($("#calender").length <= 0) {
-                $("body").prepend("<div class='calender'><div class='calenderContent'><div class='calenderTable'><div class='getyear'><a class='preMonth' id='preMonth'>‹</a><select id='year'></select><select id='month'></select><a class='nextMonth' id='nextMonth'>›</a></div><div class='tablebg'><table id='calender' class='calendertb' cellpadding='0' cellspacing='1'><tr><th class='weekend'>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th class='weekend noborder'>六</th></tr><tr><td class='weekend2'></td><td></td><td></td><td></td><td></td><td></td><td class='weekend2 noborder'></td></tr><tr><td class='weekend2'></td><td></td><td></td><td></td><td></td><td></td><td class='weekend2 noborder'></td></tr><tr><td class='weekend2'></td><td></td><td></td><td></td><td></td><td></td><td class='weekend2 noborder'></td></tr><tr><td class='weekend2'></td><td></td><td></td><td></td><td></td><td></td><td class='weekend2 noborder'></td></tr><tr><td class='weekend2'></td><td></td><td></td><td></td><td></td><td></td><td class='weekend2'></td></tr><tr><td class='weekend2'></td><td></td><td></td><td></td><td></td><td></td><td class='weekend2'></td></tr></table></div></div></div></div>");
-            }
-            var $mhInput = $(this);
-            $mhInput.live("click", function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-            var isToday = true;//是否为今天默认为是
-            var date = new Date();//获得时间对象
-            var nowYear = date.getFullYear();//获得当前年份
-            var nowMonth = date.getMonth() + 1;//获得当前月份
-            var today = date.getDate();//获得当前天数
-            var nowWeek = new Date(nowYear, nowMonth - 1, 1).getDay();//获得当前星期
-            var nowLastday = getMonthNum(nowMonth, nowYear);//获得最后一天
-            //年、月下拉框的初始化
-            for (var i = options.beginY; i <= options.endY; i++) {
-                $("<option value='" + i + "'>" + i + "年</option>").appendTo($("#year"));
-            }
-            for (var i = 1; i <= 12; i++) {
-                $("<option value='" + i + "'>" + i + "月</option>").appendTo($("#month"));
-            }
-            ManhuaDate(nowYear, nowMonth, nowWeek, nowLastday);//初始化为当前日期
-            //上一月绑定点击事件
-            $("#preMonth").click(function () {
-                isToday = false;
-                var year = parseInt($("#year").val());
-                var month = parseInt($("#month").val());
-                month = month - 1;
-                if (month < 1) {
-                    month = 12;
-                    year = year - 1;
-                }
-                if (nowYear == year && nowMonth == month) {
-                    isToday = true;
-                }
-                var week = new Date(year, month - 1, 1).getDay();
-                var lastday = getMonthNum(month, year);
-                ManhuaDate(year, month, week, lastday);
-            });
-            //年下拉框的改变事件
-            $("#year").change(function () {
-                isToday = false;
-                var year = parseInt($(this).val());
-                var month = parseInt($("#month").val());
-                if (nowYear == year && nowMonth == month) {
-                    isToday = true;
-                }
-                var week = new Date(year, month - 1, 1).getDay();
-                var lastday = getMonthNum(month, year);
-                ManhuaDate(year, month, week, lastday);
-            });
-            //月下拉框的改变事件
-            $("#month").change(function () {
-                isToday = false;
-                var year = parseInt($("#year").val());
-                var month = parseInt($(this).val());
-                if (nowYear == year && nowMonth == month) {
-                    isToday = true;
-                }
-                var week = new Date(year, month - 1, 1).getDay();
-                var lastday = getMonthNum(month, year);
-                ManhuaDate(year, month, week, lastday);
-            });
-            //下一个月的点击事件
-            $("#nextMonth").click(function () {
-                isToday = false;
-                var year = parseInt($("#year").val());
-                var month = parseInt($("#month").val());
-
-                month = parseInt(month) + 1;
-                if (parseInt(month) > 12) {
-                    month = 1;
-                    year = parseInt(year) + 1;
-                }
-                if (nowYear == year && nowMonth == month) {
-                    isToday = true;
-                }
-                var week = new Date(year, month - 1, 1).getDay();
-                var lastday = getMonthNum(month, year);
-                ManhuaDate(year, month, week, lastday);
-            });
-
-            //初始化日历
-            function ManhuaDate(year, month, week, lastday) {
-                $("#year").val(year);
-                $("#month").val(month)
-                var table = document.getElementById("calender");
-                var n = 1;
-                for (var j = 0; j < week; j++) {
-                    table.rows[1].cells[j].innerHTML = "&nbsp;"
-                }
-                for (var j = week; j < 7; j++) {
-                    if (n == today && isToday) {
-                        table.rows[1].cells[j].className = "tdtoday";
-                    } else {
-                        table.rows[1].cells[j].className = "";
-                    }
-                    table.rows[1].cells[j].innerHTML = n;
-                    n++;
-                }
-                for (var i = 2; i < 7; i++) {
-                    for (j = 0; j < 7; j++) {
-                        if (n > lastday) {
-                            table.rows[i].cells[j].innerHTML = "&nbsp"
-                        }
-                        else {
-                            if (n == today && isToday) {
-                                table.rows[i].cells[j].className = "tdtoday";
-                            } else {
-                                table.rows[i].cells[j].className = "";
-                            }
-                            table.rows[i].cells[j].innerHTML = n;
-                            n++;
-                        }
-                    }
-                }
-            }
-
-            //获得月份的天数
-            function getMonthNum(month, year) {
-                month = month - 1;
-                var LeapYear = ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) ? true : false;
-                var monthNum;
-                switch (parseInt(month)) {
-                    case 0:
-                    case 2:
-                    case 4:
-                    case 6:
-                    case 7:
-                    case 9:
-                    case 11:
-                        monthNum = 31;
-                        break;
-                    case 3:
-                    case 5:
-                    case 8:
-                    case 10:
-                        monthNum = 30;
-                        break;
-                    case 1:
-                        monthNum = LeapYear ? 29 : 28;
-                }
-                return monthNum;
-            }
-
-            //每一列的悬挂事件改变当前样式
-            $("#calender td:not(.tdtoday)").hover(function () {
-                $(this).addClass("hover")
-            }, function () {
-                $(this).removeClass("hover");
-            });
-            //点击时间列表事件
-            $("#calender td").die().live("click", function () {
-                var dv = $(this).html();
-                if (dv != "&nbsp;") {
-                    var str = "";
-                    if (options.isTime) {
-                        var nd = new Date();
-                        str = $("#year").val() + options.fuhao + $("#month").val() + options.fuhao + dv + " " + nd.getHours() + ":" + nd.getMinutes() + ":" + nd.getSeconds();
-                    } else {
-                        str = $("#year").val() + options.fuhao + $("#month").val() + options.fuhao + dv;
-                    }
-                    $("input.dateVisited").val(str);
-                    $("input.dateVisited").removeClass('dateVisited')
-                    $(".calender").hide();
-                }
-            });
-            //文本框绑定事件
-            $mhInput.live(options.Event, function (e) {
-                $(this).addClass("dateVisited");
-                if (stc) {
-                    clearTimeout(stc);//清除定时器
-                }
-                var iof = $(this).offset();
-                $(".calender").css({"left": iof.left + options.Left, "top": iof.top + options.Top});
-                $(".calender").show();
-            });
-            //当鼠标离开控件上面的时候延迟3秒关闭
-            $(".calender").live("mouseleave", function () {
-                stc = setTimeout(function () {
-                    $(".calender").hide();
-                    clearTimeout(stc);
-                }, 1500);
-            }).live("click", function (e) {
-                e.stopPropagation();
-            });
-            //当鼠标移到控件上面的时候显示
-            $(".calender").live("mousemove", function () {
-                if (stc) {
-                    clearTimeout(stc);//清除定时器
-                }
-                $(this).show();
-            });
-            //点击年选择下拉框的时候清除定时器阻止控件层关闭
-            $("#year").die().live("click", function () {
-                if (stc) {
-                    clearTimeout(stc);//清除定时器
-                }
-            });
-            //点击月选择下拉框的时候清除定时器阻止控件层关闭
-            $("#month").die().live("click", function () {
-                if (stc) {
-                    clearTimeout(stc);//清除定时器
-                }
-            });
-            $("body").live("click", function () {
-                $(".calender").hide();
-            });
-        };
-    });
-//---------------------------------------------------------------------
-// QRCode for JavaScript
-//
-// Copyright (c) 2009 Kazuhiko Arase
-//
-// URL: http://www.d-project.com/
-//
-// Licensed under the MIT license:
-//   http://www.opensource.org/licenses/mit-license.php
-//
-// The word "QR Code" is registered trademark of
-// DENSO WAVE INCORPORATED
-//   http://www.denso-wave.com/qrcode/faqpatent-e.html
-//
-//---------------------------------------------------------------------
-
-//---------------------------------------------------------------------
-// QR8bitByte
-//---------------------------------------------------------------------
-
-    function QR8bitByte(data) {
-        this.mode = QRMode.MODE_8BIT_BYTE;
-        this.data = data;
-    }
-
-    QR8bitByte.prototype = {
-
-        getLength: function (buffer) {
-            return this.data.length;
-        },
-
-        write: function (buffer) {
-            for (var i = 0; i < this.data.length; i++) {
-                // not JIS ...
-                buffer.put(this.data.charCodeAt(i), 8);
-            }
-        }
-    };
-
-//---------------------------------------------------------------------
-// QRCode
-//---------------------------------------------------------------------
-
-    function QRCode(typeNumber, errorCorrectLevel) {
-        this.typeNumber = typeNumber;
-        this.errorCorrectLevel = errorCorrectLevel;
-        this.modules = null;
-        this.moduleCount = 0;
-        this.dataCache = null;
-        this.dataList = new Array();
-    }
-
-    QRCode.prototype = {
-
-        addData: function (data) {
-            var newData = new QR8bitByte(data);
-            this.dataList.push(newData);
-            this.dataCache = null;
-        },
-
-        isDark: function (row, col) {
-            if (row < 0 || this.moduleCount <= row || col < 0 || this.moduleCount <= col) {
-                throw new Error(row + "," + col);
-            }
-            return this.modules[row][col];
-        },
-
-        getModuleCount: function () {
-            return this.moduleCount;
-        },
-
-        make: function () {
-            // Calculate automatically typeNumber if provided is < 1
-            if (this.typeNumber < 1) {
-                var typeNumber = 1;
-                for (typeNumber = 1; typeNumber < 40; typeNumber++) {
-                    var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, this.errorCorrectLevel);
-
-                    var buffer = new QRBitBuffer();
-                    var totalDataCount = 0;
-                    for (var i = 0; i < rsBlocks.length; i++) {
-                        totalDataCount += rsBlocks[i].dataCount;
-                    }
-
-                    for (var i = 0; i < this.dataList.length; i++) {
-                        var data = this.dataList[i];
-                        buffer.put(data.mode, 4);
-                        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber));
-                        data.write(buffer);
-                    }
-                    if (buffer.getLengthInBits() <= totalDataCount * 8)
-                        break;
-                }
-                this.typeNumber = typeNumber;
-            }
-            this.makeImpl(false, this.getBestMaskPattern());
-        },
-
-        makeImpl: function (test, maskPattern) {
-
-            this.moduleCount = this.typeNumber * 4 + 17;
-            this.modules = new Array(this.moduleCount);
-
-            for (var row = 0; row < this.moduleCount; row++) {
-
-                this.modules[row] = new Array(this.moduleCount);
-
-                for (var col = 0; col < this.moduleCount; col++) {
-                    this.modules[row][col] = null;//(col + row) % 3;
-                }
-            }
-
-            this.setupPositionProbePattern(0, 0);
-            this.setupPositionProbePattern(this.moduleCount - 7, 0);
-            this.setupPositionProbePattern(0, this.moduleCount - 7);
-            this.setupPositionAdjustPattern();
-            this.setupTimingPattern();
-            this.setupTypeInfo(test, maskPattern);
-
-            if (this.typeNumber >= 7) {
-                this.setupTypeNumber(test);
-            }
-
-            if (this.dataCache == null) {
-                this.dataCache = QRCode.createData(this.typeNumber, this.errorCorrectLevel, this.dataList);
-            }
-
-            this.mapData(this.dataCache, maskPattern);
-        },
-
-        setupPositionProbePattern: function (row, col) {
-
-            for (var r = -1; r <= 7; r++) {
-
-                if (row + r <= -1 || this.moduleCount <= row + r) continue;
-
-                for (var c = -1; c <= 7; c++) {
-
-                    if (col + c <= -1 || this.moduleCount <= col + c) continue;
-
-                    if ((0 <= r && r <= 6 && (c == 0 || c == 6) )
-                        || (0 <= c && c <= 6 && (r == 0 || r == 6) )
-                        || (2 <= r && r <= 4 && 2 <= c && c <= 4)) {
-                        this.modules[row + r][col + c] = true;
-                    } else {
-                        this.modules[row + r][col + c] = false;
-                    }
-                }
-            }
-        },
-
-        getBestMaskPattern: function () {
-
-            var minLostPoint = 0;
-            var pattern = 0;
-
-            for (var i = 0; i < 8; i++) {
-
-                this.makeImpl(true, i);
-
-                var lostPoint = QRUtil.getLostPoint(this);
-
-                if (i == 0 || minLostPoint > lostPoint) {
-                    minLostPoint = lostPoint;
-                    pattern = i;
-                }
-            }
-
-            return pattern;
-        },
-
-        createMovieClip: function (target_mc, instance_name, depth) {
-
-            var qr_mc = target_mc.createEmptyMovieClip(instance_name, depth);
-            var cs = 1;
-
-            this.make();
-
-            for (var row = 0; row < this.modules.length; row++) {
-
-                var y = row * cs;
-
-                for (var col = 0; col < this.modules[row].length; col++) {
-
-                    var x = col * cs;
-                    var dark = this.modules[row][col];
-
-                    if (dark) {
-                        qr_mc.beginFill(0, 100);
-                        qr_mc.moveTo(x, y);
-                        qr_mc.lineTo(x + cs, y);
-                        qr_mc.lineTo(x + cs, y + cs);
-                        qr_mc.lineTo(x, y + cs);
-                        qr_mc.endFill();
-                    }
-                }
-            }
-
-            return qr_mc;
-        },
-
-        setupTimingPattern: function () {
-
-            for (var r = 8; r < this.moduleCount - 8; r++) {
-                if (this.modules[r][6] != null) {
-                    continue;
-                }
-                this.modules[r][6] = (r % 2 == 0);
-            }
-
-            for (var c = 8; c < this.moduleCount - 8; c++) {
-                if (this.modules[6][c] != null) {
-                    continue;
-                }
-                this.modules[6][c] = (c % 2 == 0);
-            }
-        },
-
-        setupPositionAdjustPattern: function () {
-
-            var pos = QRUtil.getPatternPosition(this.typeNumber);
-
-            for (var i = 0; i < pos.length; i++) {
-
-                for (var j = 0; j < pos.length; j++) {
-
-                    var row = pos[i];
-                    var col = pos[j];
-
-                    if (this.modules[row][col] != null) {
-                        continue;
-                    }
-
-                    for (var r = -2; r <= 2; r++) {
-
-                        for (var c = -2; c <= 2; c++) {
-
-                            if (r == -2 || r == 2 || c == -2 || c == 2
-                                || (r == 0 && c == 0)) {
-                                this.modules[row + r][col + c] = true;
-                            } else {
-                                this.modules[row + r][col + c] = false;
-                            }
-                        }
-                    }
-                }
-            }
-        },
-
-        setupTypeNumber: function (test) {
-
-            var bits = QRUtil.getBCHTypeNumber(this.typeNumber);
-
-            for (var i = 0; i < 18; i++) {
-                var mod = (!test && ( (bits >> i) & 1) == 1);
-                this.modules[Math.floor(i / 3)][i % 3 + this.moduleCount - 8 - 3] = mod;
-            }
-
-            for (var i = 0; i < 18; i++) {
-                var mod = (!test && ( (bits >> i) & 1) == 1);
-                this.modules[i % 3 + this.moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
-            }
-        },
-
-        setupTypeInfo: function (test, maskPattern) {
-
-            var data = (this.errorCorrectLevel << 3) | maskPattern;
-            var bits = QRUtil.getBCHTypeInfo(data);
-
-            // vertical
-            for (var i = 0; i < 15; i++) {
-
-                var mod = (!test && ( (bits >> i) & 1) == 1);
-
-                if (i < 6) {
-                    this.modules[i][8] = mod;
-                } else if (i < 8) {
-                    this.modules[i + 1][8] = mod;
-                } else {
-                    this.modules[this.moduleCount - 15 + i][8] = mod;
-                }
-            }
-
-            // horizontal
-            for (var i = 0; i < 15; i++) {
-
-                var mod = (!test && ( (bits >> i) & 1) == 1);
-
-                if (i < 8) {
-                    this.modules[8][this.moduleCount - i - 1] = mod;
-                } else if (i < 9) {
-                    this.modules[8][15 - i - 1 + 1] = mod;
-                } else {
-                    this.modules[8][15 - i - 1] = mod;
-                }
-            }
-
-            // fixed module
-            this.modules[this.moduleCount - 8][8] = (!test);
-
-        },
-
-        mapData: function (data, maskPattern) {
-
-            var inc = -1;
-            var row = this.moduleCount - 1;
-            var bitIndex = 7;
-            var byteIndex = 0;
-
-            for (var col = this.moduleCount - 1; col > 0; col -= 2) {
-
-                if (col == 6) col--;
-
-                while (true) {
-
-                    for (var c = 0; c < 2; c++) {
-
-                        if (this.modules[row][col - c] == null) {
-
-                            var dark = false;
-
-                            if (byteIndex < data.length) {
-                                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
-                            }
-
-                            var mask = QRUtil.getMask(maskPattern, row, col - c);
-
-                            if (mask) {
-                                dark = !dark;
-                            }
-
-                            this.modules[row][col - c] = dark;
-                            bitIndex--;
-
-                            if (bitIndex == -1) {
-                                byteIndex++;
-                                bitIndex = 7;
-                            }
-                        }
-                    }
-
-                    row += inc;
-
-                    if (row < 0 || this.moduleCount <= row) {
-                        row -= inc;
-                        inc = -inc;
-                        break;
-                    }
-                }
-            }
-
-        }
-
-    };
-
-    QRCode.PAD0 = 0xEC;
-    QRCode.PAD1 = 0x11;
-
-    QRCode.createData = function (typeNumber, errorCorrectLevel, dataList) {
-
-        var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectLevel);
-
-        var buffer = new QRBitBuffer();
-
-        for (var i = 0; i < dataList.length; i++) {
-            var data = dataList[i];
-            buffer.put(data.mode, 4);
-            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber));
-            data.write(buffer);
-        }
-
-        // calc num max data.
-        var totalDataCount = 0;
-        for (var i = 0; i < rsBlocks.length; i++) {
-            totalDataCount += rsBlocks[i].dataCount;
-        }
-
-        if (buffer.getLengthInBits() > totalDataCount * 8) {
-            throw new Error("code length overflow. ("
-            + buffer.getLengthInBits()
-            + ">"
-            + totalDataCount * 8
-            + ")");
-        }
-
-        // end code
-        if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
-            buffer.put(0, 4);
-        }
-
-        // padding
-        while (buffer.getLengthInBits() % 8 != 0) {
-            buffer.putBit(false);
-        }
-
-        // padding
-        while (true) {
-
-            if (buffer.getLengthInBits() >= totalDataCount * 8) {
-                break;
-            }
-            buffer.put(QRCode.PAD0, 8);
-
-            if (buffer.getLengthInBits() >= totalDataCount * 8) {
-                break;
-            }
-            buffer.put(QRCode.PAD1, 8);
-        }
-
-        return QRCode.createBytes(buffer, rsBlocks);
-    }
-
-    QRCode.createBytes = function (buffer, rsBlocks) {
-
-        var offset = 0;
-
-        var maxDcCount = 0;
-        var maxEcCount = 0;
-
-        var dcdata = new Array(rsBlocks.length);
-        var ecdata = new Array(rsBlocks.length);
-
-        for (var r = 0; r < rsBlocks.length; r++) {
-
-            var dcCount = rsBlocks[r].dataCount;
-            var ecCount = rsBlocks[r].totalCount - dcCount;
-
-            maxDcCount = Math.max(maxDcCount, dcCount);
-            maxEcCount = Math.max(maxEcCount, ecCount);
-
-            dcdata[r] = new Array(dcCount);
-
-            for (var i = 0; i < dcdata[r].length; i++) {
-                dcdata[r][i] = 0xff & buffer.buffer[i + offset];
-            }
-            offset += dcCount;
-
-            var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
-            var rawPoly = new QRPolynomial(dcdata[r], rsPoly.getLength() - 1);
-
-            var modPoly = rawPoly.mod(rsPoly);
-            ecdata[r] = new Array(rsPoly.getLength() - 1);
-            for (var i = 0; i < ecdata[r].length; i++) {
-                var modIndex = i + modPoly.getLength() - ecdata[r].length;
-                ecdata[r][i] = (modIndex >= 0) ? modPoly.get(modIndex) : 0;
-            }
-
-        }
-
-        var totalCodeCount = 0;
-        for (var i = 0; i < rsBlocks.length; i++) {
-            totalCodeCount += rsBlocks[i].totalCount;
-        }
-
-        var data = new Array(totalCodeCount);
-        var index = 0;
-
-        for (var i = 0; i < maxDcCount; i++) {
-            for (var r = 0; r < rsBlocks.length; r++) {
-                if (i < dcdata[r].length) {
-                    data[index++] = dcdata[r][i];
-                }
-            }
-        }
-
-        for (var i = 0; i < maxEcCount; i++) {
-            for (var r = 0; r < rsBlocks.length; r++) {
-                if (i < ecdata[r].length) {
-                    data[index++] = ecdata[r][i];
-                }
-            }
-        }
-
-        return data;
-
-    }
-
-//---------------------------------------------------------------------
-// QRMode
-//---------------------------------------------------------------------
-
-    var QRMode = {
-        MODE_NUMBER: 1 << 0,
-        MODE_ALPHA_NUM: 1 << 1,
-        MODE_8BIT_BYTE: 1 << 2,
-        MODE_KANJI: 1 << 3
-    };
-
-//---------------------------------------------------------------------
-// QRErrorCorrectLevel
-//---------------------------------------------------------------------
-
-    var QRErrorCorrectLevel = {
-        L: 1,
-        M: 0,
-        Q: 3,
-        H: 2
-    };
-
-//---------------------------------------------------------------------
-// QRMaskPattern
-//---------------------------------------------------------------------
-
-    var QRMaskPattern = {
-        PATTERN000: 0,
-        PATTERN001: 1,
-        PATTERN010: 2,
-        PATTERN011: 3,
-        PATTERN100: 4,
-        PATTERN101: 5,
-        PATTERN110: 6,
-        PATTERN111: 7
-    };
-
-//---------------------------------------------------------------------
-// QRUtil
-//---------------------------------------------------------------------
-
-    var QRUtil = {
-
-        PATTERN_POSITION_TABLE: [
-            [],
-            [6, 18],
-            [6, 22],
-            [6, 26],
-            [6, 30],
-            [6, 34],
-            [6, 22, 38],
-            [6, 24, 42],
-            [6, 26, 46],
-            [6, 28, 50],
-            [6, 30, 54],
-            [6, 32, 58],
-            [6, 34, 62],
-            [6, 26, 46, 66],
-            [6, 26, 48, 70],
-            [6, 26, 50, 74],
-            [6, 30, 54, 78],
-            [6, 30, 56, 82],
-            [6, 30, 58, 86],
-            [6, 34, 62, 90],
-            [6, 28, 50, 72, 94],
-            [6, 26, 50, 74, 98],
-            [6, 30, 54, 78, 102],
-            [6, 28, 54, 80, 106],
-            [6, 32, 58, 84, 110],
-            [6, 30, 58, 86, 114],
-            [6, 34, 62, 90, 118],
-            [6, 26, 50, 74, 98, 122],
-            [6, 30, 54, 78, 102, 126],
-            [6, 26, 52, 78, 104, 130],
-            [6, 30, 56, 82, 108, 134],
-            [6, 34, 60, 86, 112, 138],
-            [6, 30, 58, 86, 114, 142],
-            [6, 34, 62, 90, 118, 146],
-            [6, 30, 54, 78, 102, 126, 150],
-            [6, 24, 50, 76, 102, 128, 154],
-            [6, 28, 54, 80, 106, 132, 158],
-            [6, 32, 58, 84, 110, 136, 162],
-            [6, 26, 54, 82, 110, 138, 166],
-            [6, 30, 58, 86, 114, 142, 170]
-        ],
-
-        G15: (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0),
-        G18: (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0),
-        G15_MASK: (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1),
-
-        getBCHTypeInfo: function (data) {
-            var d = data << 10;
-            while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) >= 0) {
-                d ^= (QRUtil.G15 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) ) );
-            }
-            return ( (data << 10) | d) ^ QRUtil.G15_MASK;
-        },
-
-        getBCHTypeNumber: function (data) {
-            var d = data << 12;
-            while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) >= 0) {
-                d ^= (QRUtil.G18 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) ) );
-            }
-            return (data << 12) | d;
-        },
-
-        getBCHDigit: function (data) {
-
-            var digit = 0;
-
-            while (data != 0) {
-                digit++;
-                data >>>= 1;
-            }
-
-            return digit;
-        },
-
-        getPatternPosition: function (typeNumber) {
-            return QRUtil.PATTERN_POSITION_TABLE[typeNumber - 1];
-        },
-
-        getMask: function (maskPattern, i, j) {
-
-            switch (maskPattern) {
-
-                case QRMaskPattern.PATTERN000 :
-                    return (i + j) % 2 == 0;
-                case QRMaskPattern.PATTERN001 :
-                    return i % 2 == 0;
-                case QRMaskPattern.PATTERN010 :
-                    return j % 3 == 0;
-                case QRMaskPattern.PATTERN011 :
-                    return (i + j) % 3 == 0;
-                case QRMaskPattern.PATTERN100 :
-                    return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0;
-                case QRMaskPattern.PATTERN101 :
-                    return (i * j) % 2 + (i * j) % 3 == 0;
-                case QRMaskPattern.PATTERN110 :
-                    return ( (i * j) % 2 + (i * j) % 3) % 2 == 0;
-                case QRMaskPattern.PATTERN111 :
-                    return ( (i * j) % 3 + (i + j) % 2) % 2 == 0;
-
-                default :
-                    throw new Error("bad maskPattern:" + maskPattern);
-            }
-        },
-
-        getErrorCorrectPolynomial: function (errorCorrectLength) {
-
-            var a = new QRPolynomial([1], 0);
-
-            for (var i = 0; i < errorCorrectLength; i++) {
-                a = a.multiply(new QRPolynomial([1, QRMath.gexp(i)], 0));
-            }
-
-            return a;
-        },
-
-        getLengthInBits: function (mode, type) {
-
-            if (1 <= type && type < 10) {
-
-                // 1 - 9
-
-                switch (mode) {
-                    case QRMode.MODE_NUMBER    :
-                        return 10;
-                    case QRMode.MODE_ALPHA_NUM    :
-                        return 9;
-                    case QRMode.MODE_8BIT_BYTE    :
-                        return 8;
-                    case QRMode.MODE_KANJI    :
-                        return 8;
-                    default :
-                        throw new Error("mode:" + mode);
-                }
-
-            } else if (type < 27) {
-
-                // 10 - 26
-
-                switch (mode) {
-                    case QRMode.MODE_NUMBER    :
-                        return 12;
-                    case QRMode.MODE_ALPHA_NUM    :
-                        return 11;
-                    case QRMode.MODE_8BIT_BYTE    :
-                        return 16;
-                    case QRMode.MODE_KANJI    :
-                        return 10;
-                    default :
-                        throw new Error("mode:" + mode);
-                }
-
-            } else if (type < 41) {
-
-                // 27 - 40
-
-                switch (mode) {
-                    case QRMode.MODE_NUMBER    :
-                        return 14;
-                    case QRMode.MODE_ALPHA_NUM    :
-                        return 13;
-                    case QRMode.MODE_8BIT_BYTE    :
-                        return 16;
-                    case QRMode.MODE_KANJI    :
-                        return 12;
-                    default :
-                        throw new Error("mode:" + mode);
-                }
-
-            } else {
-                throw new Error("type:" + type);
-            }
-        },
-
-        getLostPoint: function (qrCode) {
-
-            var moduleCount = qrCode.getModuleCount();
-
-            var lostPoint = 0;
-
-            // LEVEL1
-
-            for (var row = 0; row < moduleCount; row++) {
-
-                for (var col = 0; col < moduleCount; col++) {
-
-                    var sameCount = 0;
-                    var dark = qrCode.isDark(row, col);
-
-                    for (var r = -1; r <= 1; r++) {
-
-                        if (row + r < 0 || moduleCount <= row + r) {
-                            continue;
-                        }
-
-                        for (var c = -1; c <= 1; c++) {
-
-                            if (col + c < 0 || moduleCount <= col + c) {
-                                continue;
-                            }
-
-                            if (r == 0 && c == 0) {
-                                continue;
-                            }
-
-                            if (dark == qrCode.isDark(row + r, col + c)) {
-                                sameCount++;
-                            }
-                        }
-                    }
-
-                    if (sameCount > 5) {
-                        lostPoint += (3 + sameCount - 5);
-                    }
-                }
-            }
-
-            // LEVEL2
-
-            for (var row = 0; row < moduleCount - 1; row++) {
-                for (var col = 0; col < moduleCount - 1; col++) {
-                    var count = 0;
-                    if (qrCode.isDark(row, col)) count++;
-                    if (qrCode.isDark(row + 1, col)) count++;
-                    if (qrCode.isDark(row, col + 1)) count++;
-                    if (qrCode.isDark(row + 1, col + 1)) count++;
-                    if (count == 0 || count == 4) {
-                        lostPoint += 3;
-                    }
-                }
-            }
-
-            // LEVEL3
-
-            for (var row = 0; row < moduleCount; row++) {
-                for (var col = 0; col < moduleCount - 6; col++) {
-                    if (qrCode.isDark(row, col)
-                        && !qrCode.isDark(row, col + 1)
-                        && qrCode.isDark(row, col + 2)
-                        && qrCode.isDark(row, col + 3)
-                        && qrCode.isDark(row, col + 4)
-                        && !qrCode.isDark(row, col + 5)
-                        && qrCode.isDark(row, col + 6)) {
-                        lostPoint += 40;
-                    }
-                }
-            }
-
-            for (var col = 0; col < moduleCount; col++) {
-                for (var row = 0; row < moduleCount - 6; row++) {
-                    if (qrCode.isDark(row, col)
-                        && !qrCode.isDark(row + 1, col)
-                        && qrCode.isDark(row + 2, col)
-                        && qrCode.isDark(row + 3, col)
-                        && qrCode.isDark(row + 4, col)
-                        && !qrCode.isDark(row + 5, col)
-                        && qrCode.isDark(row + 6, col)) {
-                        lostPoint += 40;
-                    }
-                }
-            }
-
-            // LEVEL4
-
-            var darkCount = 0;
-
-            for (var col = 0; col < moduleCount; col++) {
-                for (var row = 0; row < moduleCount; row++) {
-                    if (qrCode.isDark(row, col)) {
-                        darkCount++;
-                    }
-                }
-            }
-
-            var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
-            lostPoint += ratio * 10;
-
-            return lostPoint;
-        }
-
-    };
-
-
-//---------------------------------------------------------------------
-// QRMath
-//---------------------------------------------------------------------
-
-    var QRMath = {
-
-        glog: function (n) {
-
-            if (n < 1) {
-                throw new Error("glog(" + n + ")");
-            }
-
-            return QRMath.LOG_TABLE[n];
-        },
-
-        gexp: function (n) {
-
-            while (n < 0) {
-                n += 255;
-            }
-
-            while (n >= 256) {
-                n -= 255;
-            }
-
-            return QRMath.EXP_TABLE[n];
-        },
-
-        EXP_TABLE: new Array(256),
-
-        LOG_TABLE: new Array(256)
-
-    };
-
-    for (var i = 0; i < 8; i++) {
-        QRMath.EXP_TABLE[i] = 1 << i;
-    }
-    for (var i = 8; i < 256; i++) {
-        QRMath.EXP_TABLE[i] = QRMath.EXP_TABLE[i - 4]
-        ^ QRMath.EXP_TABLE[i - 5]
-        ^ QRMath.EXP_TABLE[i - 6]
-        ^ QRMath.EXP_TABLE[i - 8];
-    }
-    for (var i = 0; i < 255; i++) {
-        QRMath.LOG_TABLE[QRMath.EXP_TABLE[i]] = i;
-    }
-
-//---------------------------------------------------------------------
-// QRPolynomial
-//---------------------------------------------------------------------
-
-    function QRPolynomial(num, shift) {
-
-        if (num.length == undefined) {
-            throw new Error(num.length + "/" + shift);
-        }
-
-        var offset = 0;
-
-        while (offset < num.length && num[offset] == 0) {
-            offset++;
-        }
-
-        this.num = new Array(num.length - offset + shift);
-        for (var i = 0; i < num.length - offset; i++) {
-            this.num[i] = num[i + offset];
-        }
-    }
-
-    QRPolynomial.prototype = {
-
-        get: function (index) {
-            return this.num[index];
-        },
-
-        getLength: function () {
-            return this.num.length;
-        },
-
-        multiply: function (e) {
-
-            var num = new Array(this.getLength() + e.getLength() - 1);
-
-            for (var i = 0; i < this.getLength(); i++) {
-                for (var j = 0; j < e.getLength(); j++) {
-                    num[i + j] ^= QRMath.gexp(QRMath.glog(this.get(i)) + QRMath.glog(e.get(j)));
-                }
-            }
-
-            return new QRPolynomial(num, 0);
-        },
-
-        mod: function (e) {
-
-            if (this.getLength() - e.getLength() < 0) {
-                return this;
-            }
-
-            var ratio = QRMath.glog(this.get(0)) - QRMath.glog(e.get(0));
-
-            var num = new Array(this.getLength());
-
-            for (var i = 0; i < this.getLength(); i++) {
-                num[i] = this.get(i);
-            }
-
-            for (var i = 0; i < e.getLength(); i++) {
-                num[i] ^= QRMath.gexp(QRMath.glog(e.get(i)) + ratio);
-            }
-
-            // recursive call
-            return new QRPolynomial(num, 0).mod(e);
-        }
-    };
-
-//---------------------------------------------------------------------
-// QRRSBlock
-//---------------------------------------------------------------------
-
-    function QRRSBlock(totalCount, dataCount) {
-        this.totalCount = totalCount;
-        this.dataCount = dataCount;
-    }
-
-    QRRSBlock.RS_BLOCK_TABLE = [
-
-        // L
-        // M
-        // Q
-        // H
-
-        // 1
-        [1, 26, 19],
-        [1, 26, 16],
-        [1, 26, 13],
-        [1, 26, 9],
-
-        // 2
-        [1, 44, 34],
-        [1, 44, 28],
-        [1, 44, 22],
-        [1, 44, 16],
-
-        // 3
-        [1, 70, 55],
-        [1, 70, 44],
-        [2, 35, 17],
-        [2, 35, 13],
-
-        // 4
-        [1, 100, 80],
-        [2, 50, 32],
-        [2, 50, 24],
-        [4, 25, 9],
-
-        // 5
-        [1, 134, 108],
-        [2, 67, 43],
-        [2, 33, 15, 2, 34, 16],
-        [2, 33, 11, 2, 34, 12],
-
-        // 6
-        [2, 86, 68],
-        [4, 43, 27],
-        [4, 43, 19],
-        [4, 43, 15],
-
-        // 7
-        [2, 98, 78],
-        [4, 49, 31],
-        [2, 32, 14, 4, 33, 15],
-        [4, 39, 13, 1, 40, 14],
-
-        // 8
-        [2, 121, 97],
-        [2, 60, 38, 2, 61, 39],
-        [4, 40, 18, 2, 41, 19],
-        [4, 40, 14, 2, 41, 15],
-
-        // 9
-        [2, 146, 116],
-        [3, 58, 36, 2, 59, 37],
-        [4, 36, 16, 4, 37, 17],
-        [4, 36, 12, 4, 37, 13],
-
-        // 10
-        [2, 86, 68, 2, 87, 69],
-        [4, 69, 43, 1, 70, 44],
-        [6, 43, 19, 2, 44, 20],
-        [6, 43, 15, 2, 44, 16],
-
-        // 11
-        [4, 101, 81],
-        [1, 80, 50, 4, 81, 51],
-        [4, 50, 22, 4, 51, 23],
-        [3, 36, 12, 8, 37, 13],
-
-        // 12
-        [2, 116, 92, 2, 117, 93],
-        [6, 58, 36, 2, 59, 37],
-        [4, 46, 20, 6, 47, 21],
-        [7, 42, 14, 4, 43, 15],
-
-        // 13
-        [4, 133, 107],
-        [8, 59, 37, 1, 60, 38],
-        [8, 44, 20, 4, 45, 21],
-        [12, 33, 11, 4, 34, 12],
-
-        // 14
-        [3, 145, 115, 1, 146, 116],
-        [4, 64, 40, 5, 65, 41],
-        [11, 36, 16, 5, 37, 17],
-        [11, 36, 12, 5, 37, 13],
-
-        // 15
-        [5, 109, 87, 1, 110, 88],
-        [5, 65, 41, 5, 66, 42],
-        [5, 54, 24, 7, 55, 25],
-        [11, 36, 12],
-
-        // 16
-        [5, 122, 98, 1, 123, 99],
-        [7, 73, 45, 3, 74, 46],
-        [15, 43, 19, 2, 44, 20],
-        [3, 45, 15, 13, 46, 16],
-
-        // 17
-        [1, 135, 107, 5, 136, 108],
-        [10, 74, 46, 1, 75, 47],
-        [1, 50, 22, 15, 51, 23],
-        [2, 42, 14, 17, 43, 15],
-
-        // 18
-        [5, 150, 120, 1, 151, 121],
-        [9, 69, 43, 4, 70, 44],
-        [17, 50, 22, 1, 51, 23],
-        [2, 42, 14, 19, 43, 15],
-
-        // 19
-        [3, 141, 113, 4, 142, 114],
-        [3, 70, 44, 11, 71, 45],
-        [17, 47, 21, 4, 48, 22],
-        [9, 39, 13, 16, 40, 14],
-
-        // 20
-        [3, 135, 107, 5, 136, 108],
-        [3, 67, 41, 13, 68, 42],
-        [15, 54, 24, 5, 55, 25],
-        [15, 43, 15, 10, 44, 16],
-
-        // 21
-        [4, 144, 116, 4, 145, 117],
-        [17, 68, 42],
-        [17, 50, 22, 6, 51, 23],
-        [19, 46, 16, 6, 47, 17],
-
-        // 22
-        [2, 139, 111, 7, 140, 112],
-        [17, 74, 46],
-        [7, 54, 24, 16, 55, 25],
-        [34, 37, 13],
-
-        // 23
-        [4, 151, 121, 5, 152, 122],
-        [4, 75, 47, 14, 76, 48],
-        [11, 54, 24, 14, 55, 25],
-        [16, 45, 15, 14, 46, 16],
-
-        // 24
-        [6, 147, 117, 4, 148, 118],
-        [6, 73, 45, 14, 74, 46],
-        [11, 54, 24, 16, 55, 25],
-        [30, 46, 16, 2, 47, 17],
-
-        // 25
-        [8, 132, 106, 4, 133, 107],
-        [8, 75, 47, 13, 76, 48],
-        [7, 54, 24, 22, 55, 25],
-        [22, 45, 15, 13, 46, 16],
-
-        // 26
-        [10, 142, 114, 2, 143, 115],
-        [19, 74, 46, 4, 75, 47],
-        [28, 50, 22, 6, 51, 23],
-        [33, 46, 16, 4, 47, 17],
-
-        // 27
-        [8, 152, 122, 4, 153, 123],
-        [22, 73, 45, 3, 74, 46],
-        [8, 53, 23, 26, 54, 24],
-        [12, 45, 15, 28, 46, 16],
-
-        // 28
-        [3, 147, 117, 10, 148, 118],
-        [3, 73, 45, 23, 74, 46],
-        [4, 54, 24, 31, 55, 25],
-        [11, 45, 15, 31, 46, 16],
-
-        // 29
-        [7, 146, 116, 7, 147, 117],
-        [21, 73, 45, 7, 74, 46],
-        [1, 53, 23, 37, 54, 24],
-        [19, 45, 15, 26, 46, 16],
-
-        // 30
-        [5, 145, 115, 10, 146, 116],
-        [19, 75, 47, 10, 76, 48],
-        [15, 54, 24, 25, 55, 25],
-        [23, 45, 15, 25, 46, 16],
-
-        // 31
-        [13, 145, 115, 3, 146, 116],
-        [2, 74, 46, 29, 75, 47],
-        [42, 54, 24, 1, 55, 25],
-        [23, 45, 15, 28, 46, 16],
-
-        // 32
-        [17, 145, 115],
-        [10, 74, 46, 23, 75, 47],
-        [10, 54, 24, 35, 55, 25],
-        [19, 45, 15, 35, 46, 16],
-
-        // 33
-        [17, 145, 115, 1, 146, 116],
-        [14, 74, 46, 21, 75, 47],
-        [29, 54, 24, 19, 55, 25],
-        [11, 45, 15, 46, 46, 16],
-
-        // 34
-        [13, 145, 115, 6, 146, 116],
-        [14, 74, 46, 23, 75, 47],
-        [44, 54, 24, 7, 55, 25],
-        [59, 46, 16, 1, 47, 17],
-
-        // 35
-        [12, 151, 121, 7, 152, 122],
-        [12, 75, 47, 26, 76, 48],
-        [39, 54, 24, 14, 55, 25],
-        [22, 45, 15, 41, 46, 16],
-
-        // 36
-        [6, 151, 121, 14, 152, 122],
-        [6, 75, 47, 34, 76, 48],
-        [46, 54, 24, 10, 55, 25],
-        [2, 45, 15, 64, 46, 16],
-
-        // 37
-        [17, 152, 122, 4, 153, 123],
-        [29, 74, 46, 14, 75, 47],
-        [49, 54, 24, 10, 55, 25],
-        [24, 45, 15, 46, 46, 16],
-
-        // 38
-        [4, 152, 122, 18, 153, 123],
-        [13, 74, 46, 32, 75, 47],
-        [48, 54, 24, 14, 55, 25],
-        [42, 45, 15, 32, 46, 16],
-
-        // 39
-        [20, 147, 117, 4, 148, 118],
-        [40, 75, 47, 7, 76, 48],
-        [43, 54, 24, 22, 55, 25],
-        [10, 45, 15, 67, 46, 16],
-
-        // 40
-        [19, 148, 118, 6, 149, 119],
-        [18, 75, 47, 31, 76, 48],
-        [34, 54, 24, 34, 55, 25],
-        [20, 45, 15, 61, 46, 16]
-    ];
-
-    QRRSBlock.getRSBlocks = function (typeNumber, errorCorrectLevel) {
-
-        var rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
-
-        if (rsBlock == undefined) {
-            throw new Error("bad rs block @ typeNumber:" + typeNumber + "/errorCorrectLevel:" + errorCorrectLevel);
-        }
-
-        var length = rsBlock.length / 3;
-
-        var list = new Array();
-
-        for (var i = 0; i < length; i++) {
-
-            var count = rsBlock[i * 3 + 0];
-            var totalCount = rsBlock[i * 3 + 1];
-            var dataCount = rsBlock[i * 3 + 2];
-
-            for (var j = 0; j < count; j++) {
-                list.push(new QRRSBlock(totalCount, dataCount));
-            }
-        }
-
-        return list;
-    }
-
-    QRRSBlock.getRsBlockTable = function (typeNumber, errorCorrectLevel) {
-
-        switch (errorCorrectLevel) {
-            case QRErrorCorrectLevel.L :
-                return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
-            case QRErrorCorrectLevel.M :
-                return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
-            case QRErrorCorrectLevel.Q :
-                return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
-            case QRErrorCorrectLevel.H :
-                return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
-            default :
-                return undefined;
-        }
-    }
-
-//---------------------------------------------------------------------
-// QRBitBuffer
-//---------------------------------------------------------------------
-
-    function QRBitBuffer() {
-        this.buffer = new Array();
-        this.length = 0;
-    }
-
-    QRBitBuffer.prototype = {
-
-        get: function (index) {
-            var bufIndex = Math.floor(index / 8);
-            return ( (this.buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
-        },
-
-        put: function (num, length) {
-            for (var i = 0; i < length; i++) {
-                this.putBit(( (num >>> (length - i - 1) ) & 1) == 1);
-            }
-        },
-
-        getLengthInBits: function () {
-            return this.length;
-        },
-
-        putBit: function (bit) {
-
-            var bufIndex = Math.floor(this.length / 8);
-            if (this.buffer.length <= bufIndex) {
-                this.buffer.push(0);
-            }
-
-            if (bit) {
-                this.buffer[bufIndex] |= (0x80 >>> (this.length % 8) );
-            }
-
-            this.length++;
-        }
-    };
-
-    $.qrcodeImg = function (text) {
-        options = {
-            render: "canvas",
-            width: 256,
-            height: 256,
-            typeNumber: -1,
-            correctLevel: QRErrorCorrectLevel.H,
-            background: "#ffffff",
-            foreground: "#000000",
-            text: text
-        };
-//绘制二维码方法
-        var createCanvas = function () {
-            var qrcode = new QRCode(options.typeNumber, options.correctLevel);
-            qrcode.addData(options.text);
-            qrcode.make();
-            var canvas = document.createElement('canvas');
-            canvas.width = options.width;
-            canvas.height = options.height;
-            var ctx = canvas.getContext('2d');
-            var tileW = options.width / qrcode.getModuleCount();
-            var tileH = options.height / qrcode.getModuleCount();
-            for (var row = 0; row < qrcode.getModuleCount(); row++) {
-                for (var col = 0; col < qrcode.getModuleCount(); col++) {
-                    ctx.fillStyle = qrcode.isDark(row, col) ? options.foreground : options.background;
-                    var w = (Math.ceil((col + 1) * tileW) - Math.floor(col * tileW));
-                    var h = (Math.ceil((row + 1) * tileW) - Math.floor(row * tileW));
-                    ctx.fillRect(Math.round(col * tileW), Math.round(row * tileH), w, h);
-                }
-            }
-            return canvas;
-        }
-        var ca = createCanvas();
-        return ca.toDataURL();
-    }
+	var Zepto=function(){function L(t){return null==t?String(t):j[T.call(t)]||"object"}function Z(t){return"function"==L(t)}function $(t){return null!=t&&t==t.window}function _(t){return null!=t&&t.nodeType==t.DOCUMENT_NODE}function D(t){return"object"==L(t)}function R(t){return D(t)&&!$(t)&&Object.getPrototypeOf(t)==Object.prototype}function M(t){return"number"==typeof t.length}function k(t){return s.call(t,function(t){return null!=t})}function z(t){return t.length>0?n.fn.concat.apply([],t):t}function F(t){return t.replace(/::/g,"/").replace(/([A-Z]+)([A-Z][a-z])/g,"$1_$2").replace(/([a-z\d])([A-Z])/g,"$1_$2").replace(/_/g,"-").toLowerCase()}function q(t){return t in f?f[t]:f[t]=new RegExp("(^|\\s)"+t+"(\\s|$)")}function H(t,e){return"number"!=typeof e||c[F(t)]?e:e+"px"}function I(t){var e,n;return u[t]||(e=a.createElement(t),a.body.appendChild(e),n=getComputedStyle(e,"").getPropertyValue("display"),e.parentNode.removeChild(e),"none"==n&&(n="block"),u[t]=n),u[t]}function V(t){return"children"in t?o.call(t.children):n.map(t.childNodes,function(t){return 1==t.nodeType?t:void 0})}function U(n,i,r){for(e in i)r&&(R(i[e])||A(i[e]))?(R(i[e])&&!R(n[e])&&(n[e]={}),A(i[e])&&!A(n[e])&&(n[e]=[]),U(n[e],i[e],r)):i[e]!==t&&(n[e]=i[e])}function B(t,e){return null==e?n(t):n(t).filter(e)}function J(t,e,n,i){return Z(e)?e.call(t,n,i):e}function X(t,e,n){null==n?t.removeAttribute(e):t.setAttribute(e,n)}function W(e,n){var i=e.className,r=i&&i.baseVal!==t;return n===t?r?i.baseVal:i:void(r?i.baseVal=n:e.className=n)}function Y(t){var e;try{return t?"true"==t||("false"==t?!1:"null"==t?null:/^0/.test(t)||isNaN(e=Number(t))?/^[\[\{]/.test(t)?n.parseJSON(t):t:e):t}catch(i){return t}}function G(t,e){e(t);for(var n in t.childNodes)G(t.childNodes[n],e)}var t,e,n,i,C,N,r=[],o=r.slice,s=r.filter,a=window.document,u={},f={},c={"column-count":1,columns:1,"font-weight":1,"line-height":1,opacity:1,"z-index":1,zoom:1},l=/^\s*<(\w+|!)[^>]*>/,h=/^<(\w+)\s*\/?>(?:<\/\1>|)$/,p=/<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w:]+)[^>]*)\/>/gi,d=/^(?:body|html)$/i,m=/([A-Z])/g,g=["val","css","html","text","data","width","height","offset"],v=["after","prepend","before","append"],y=a.createElement("table"),x=a.createElement("tr"),b={tr:a.createElement("tbody"),tbody:y,thead:y,tfoot:y,td:x,th:x,"*":a.createElement("div")},w=/complete|loaded|interactive/,E=/^[\w-]*$/,j={},T=j.toString,S={},O=a.createElement("div"),P={tabindex:"tabIndex",readonly:"readOnly","for":"htmlFor","class":"className",maxlength:"maxLength",cellspacing:"cellSpacing",cellpadding:"cellPadding",rowspan:"rowSpan",colspan:"colSpan",usemap:"useMap",frameborder:"frameBorder",contenteditable:"contentEditable"},A=Array.isArray||function(t){return t instanceof Array};return S.matches=function(t,e){if(!e||!t||1!==t.nodeType)return!1;var n=t.webkitMatchesSelector||t.mozMatchesSelector||t.oMatchesSelector||t.matchesSelector;if(n)return n.call(t,e);var i,r=t.parentNode,o=!r;return o&&(r=O).appendChild(t),i=~S.qsa(r,e).indexOf(t),o&&O.removeChild(t),i},C=function(t){return t.replace(/-+(.)?/g,function(t,e){return e?e.toUpperCase():""})},N=function(t){return s.call(t,function(e,n){return t.indexOf(e)==n})},S.fragment=function(e,i,r){var s,u,f;return h.test(e)&&(s=n(a.createElement(RegExp.$1))),s||(e.replace&&(e=e.replace(p,"<$1></$2>")),i===t&&(i=l.test(e)&&RegExp.$1),i in b||(i="*"),f=b[i],f.innerHTML=""+e,s=n.each(o.call(f.childNodes),function(){f.removeChild(this)})),R(r)&&(u=n(s),n.each(r,function(t,e){g.indexOf(t)>-1?u[t](e):u.attr(t,e)})),s},S.Z=function(t,e){return t=t||[],t.__proto__=n.fn,t.selector=e||"",t},S.isZ=function(t){return t instanceof S.Z},S.init=function(e,i){var r;if(!e)return S.Z();if("string"==typeof e)if(e=e.trim(),"<"==e[0]&&l.test(e))r=S.fragment(e,RegExp.$1,i),e=null;else{if(i!==t)return n(i).find(e);r=S.qsa(a,e)}else{if(Z(e))return n(a).ready(e);if(S.isZ(e))return e;if(A(e))r=k(e);else if(D(e))r=[e],e=null;else if(l.test(e))r=S.fragment(e.trim(),RegExp.$1,i),e=null;else{if(i!==t)return n(i).find(e);r=S.qsa(a,e)}}return S.Z(r,e)},n=function(t,e){return S.init(t,e)},n.extend=function(t){var e,n=o.call(arguments,1);return"boolean"==typeof t&&(e=t,t=n.shift()),n.forEach(function(n){U(t,n,e)}),t},S.qsa=function(t,e){var n,i="#"==e[0],r=!i&&"."==e[0],s=i||r?e.slice(1):e,a=E.test(s);return _(t)&&a&&i?(n=t.getElementById(s))?[n]:[]:1!==t.nodeType&&9!==t.nodeType?[]:o.call(a&&!i?r?t.getElementsByClassName(s):t.getElementsByTagName(e):t.querySelectorAll(e))},n.contains=function(t,e){return t!==e&&t.contains(e)},n.type=L,n.isFunction=Z,n.isWindow=$,n.isArray=A,n.isPlainObject=R,n.isEmptyObject=function(t){var e;for(e in t)return!1;return!0},n.inArray=function(t,e,n){return r.indexOf.call(e,t,n)},n.camelCase=C,n.trim=function(t){return null==t?"":String.prototype.trim.call(t)},n.uuid=0,n.support={},n.expr={},n.map=function(t,e){var n,r,o,i=[];if(M(t))for(r=0;r<t.length;r++)n=e(t[r],r),null!=n&&i.push(n);else for(o in t)n=e(t[o],o),null!=n&&i.push(n);return z(i)},n.each=function(t,e){var n,i;if(M(t)){for(n=0;n<t.length;n++)if(e.call(t[n],n,t[n])===!1)return t}else for(i in t)if(e.call(t[i],i,t[i])===!1)return t;return t},n.grep=function(t,e){return s.call(t,e)},window.JSON&&(n.parseJSON=JSON.parse),n.each("Boolean Number String Function Array Date RegExp Object Error".split(" "),function(t,e){j["[object "+e+"]"]=e.toLowerCase()}),n.fn={forEach:r.forEach,reduce:r.reduce,push:r.push,sort:r.sort,indexOf:r.indexOf,concat:r.concat,map:function(t){return n(n.map(this,function(e,n){return t.call(e,n,e)}))},slice:function(){return n(o.apply(this,arguments))},ready:function(t){return w.test(a.readyState)&&a.body?t(n):a.addEventListener("DOMContentLoaded",function(){t(n)},!1),this},get:function(e){return e===t?o.call(this):this[e>=0?e:e+this.length]},toArray:function(){return this.get()},size:function(){return this.length},remove:function(){return this.each(function(){null!=this.parentNode&&this.parentNode.removeChild(this)})},each:function(t){return r.every.call(this,function(e,n){return t.call(e,n,e)!==!1}),this},filter:function(t){return Z(t)?this.not(this.not(t)):n(s.call(this,function(e){return S.matches(e,t)}))},add:function(t,e){return n(N(this.concat(n(t,e))))},is:function(t){return this.length>0&&S.matches(this[0],t)},not:function(e){var i=[];if(Z(e)&&e.call!==t)this.each(function(t){e.call(this,t)||i.push(this)});else{var r="string"==typeof e?this.filter(e):M(e)&&Z(e.item)?o.call(e):n(e);this.forEach(function(t){r.indexOf(t)<0&&i.push(t)})}return n(i)},has:function(t){return this.filter(function(){return D(t)?n.contains(this,t):n(this).find(t).size()})},eq:function(t){return-1===t?this.slice(t):this.slice(t,+t+1)},first:function(){var t=this[0];return t&&!D(t)?t:n(t)},last:function(){var t=this[this.length-1];return t&&!D(t)?t:n(t)},find:function(t){var e,i=this;return e="object"==typeof t?n(t).filter(function(){var t=this;return r.some.call(i,function(e){return n.contains(e,t)})}):1==this.length?n(S.qsa(this[0],t)):this.map(function(){return S.qsa(this,t)})},closest:function(t,e){var i=this[0],r=!1;for("object"==typeof t&&(r=n(t));i&&!(r?r.indexOf(i)>=0:S.matches(i,t));)i=i!==e&&!_(i)&&i.parentNode;return n(i)},parents:function(t){for(var e=[],i=this;i.length>0;)i=n.map(i,function(t){return(t=t.parentNode)&&!_(t)&&e.indexOf(t)<0?(e.push(t),t):void 0});return B(e,t)},parent:function(t){return B(N(this.pluck("parentNode")),t)},children:function(t){return B(this.map(function(){return V(this)}),t)},contents:function(){return this.map(function(){return o.call(this.childNodes)})},siblings:function(t){return B(this.map(function(t,e){return s.call(V(e.parentNode),function(t){return t!==e})}),t)},empty:function(){return this.each(function(){this.innerHTML=""})},pluck:function(t){return n.map(this,function(e){return e[t]})},show:function(){return this.each(function(){"none"==this.style.display&&(this.style.display=""),"none"==getComputedStyle(this,"").getPropertyValue("display")&&(this.style.display=I(this.nodeName))})},replaceWith:function(t){return this.before(t).remove()},wrap:function(t){var e=Z(t);if(this[0]&&!e)var i=n(t).get(0),r=i.parentNode||this.length>1;return this.each(function(o){n(this).wrapAll(e?t.call(this,o):r?i.cloneNode(!0):i)})},wrapAll:function(t){if(this[0]){n(this[0]).before(t=n(t));for(var e;(e=t.children()).length;)t=e.first();n(t).append(this)}return this},wrapInner:function(t){var e=Z(t);return this.each(function(i){var r=n(this),o=r.contents(),s=e?t.call(this,i):t;o.length?o.wrapAll(s):r.append(s)})},unwrap:function(){return this.parent().each(function(){n(this).replaceWith(n(this).children())}),this},clone:function(){return this.map(function(){return this.cloneNode(!0)})},hide:function(){return this.css("display","none")},toggle:function(e){return this.each(function(){var i=n(this);(e===t?"none"==i.css("display"):e)?i.show():i.hide()})},prev:function(t){return n(this.pluck("previousElementSibling")).filter(t||"*")},next:function(t){return n(this.pluck("nextElementSibling")).filter(t||"*")},html:function(t){return 0===arguments.length?this.length>0?this[0].innerHTML:null:this.each(function(e){var i=this.innerHTML;n(this).empty().append(J(this,t,e,i))})},text:function(e){return 0===arguments.length?this.length>0?this[0].textContent:null:this.each(function(){this.textContent=e===t?"":""+e})},attr:function(n,i){var r;return"string"==typeof n&&i===t?0==this.length||1!==this[0].nodeType?t:"value"==n&&"INPUT"==this[0].nodeName?this.val():!(r=this[0].getAttribute(n))&&n in this[0]?this[0][n]:r:this.each(function(t){if(1===this.nodeType)if(D(n))for(e in n)X(this,e,n[e]);else X(this,n,J(this,i,t,this.getAttribute(n)))})},removeAttr:function(t){return this.each(function(){1===this.nodeType&&X(this,t)})},prop:function(e,n){return e=P[e]||e,n===t?this[0]&&this[0][e]:this.each(function(t){this[e]=J(this,n,t,this[e])})},data:function(e,n){var i=this.attr("data-"+e.replace(m,"-$1").toLowerCase(),n);return null!==i?Y(i):t},val:function(t){return 0===arguments.length?this[0]&&(this[0].multiple?n(this[0]).find("option").filter(function(){return this.selected}).pluck("value"):this[0].value):this.each(function(e){this.value=J(this,t,e,this.value)})},offset:function(t){if(t)return this.each(function(e){var i=n(this),r=J(this,t,e,i.offset()),o=i.offsetParent().offset(),s={top:r.top-o.top,left:r.left-o.left};"static"==i.css("position")&&(s.position="relative"),i.css(s)});if(0==this.length)return null;var e=this[0].getBoundingClientRect();return{left:e.left+window.pageXOffset,top:e.top+window.pageYOffset,width:Math.round(e.width),height:Math.round(e.height)}},css:function(t,i){if(arguments.length<2){var r=this[0],o=getComputedStyle(r,"");if(!r)return;if("string"==typeof t)return r.style[C(t)]||o.getPropertyValue(t);if(A(t)){var s={};return n.each(A(t)?t:[t],function(t,e){s[e]=r.style[C(e)]||o.getPropertyValue(e)}),s}}var a="";if("string"==L(t))i||0===i?a=F(t)+":"+H(t,i):this.each(function(){this.style.removeProperty(F(t))});else for(e in t)t[e]||0===t[e]?a+=F(e)+":"+H(e,t[e])+";":this.each(function(){this.style.removeProperty(F(e))});return this.each(function(){this.style.cssText+=";"+a})},index:function(t){return t?this.indexOf(n(t)[0]):this.parent().children().indexOf(this[0])},hasClass:function(t){return t?r.some.call(this,function(t){return this.test(W(t))},q(t)):!1},addClass:function(t){return t?this.each(function(e){i=[];var r=W(this),o=J(this,t,e,r);o.split(/\s+/g).forEach(function(t){n(this).hasClass(t)||i.push(t)},this),i.length&&W(this,r+(r?" ":"")+i.join(" "))}):this},removeClass:function(e){return this.each(function(n){return e===t?W(this,""):(i=W(this),J(this,e,n,i).split(/\s+/g).forEach(function(t){i=i.replace(q(t)," ")}),void W(this,i.trim()))})},toggleClass:function(e,i){return e?this.each(function(r){var o=n(this),s=J(this,e,r,W(this));s.split(/\s+/g).forEach(function(e){(i===t?!o.hasClass(e):i)?o.addClass(e):o.removeClass(e)})}):this},scrollTop:function(e){if(this.length){var n="scrollTop"in this[0];return e===t?n?this[0].scrollTop:this[0].pageYOffset:this.each(n?function(){this.scrollTop=e}:function(){this.scrollTo(this.scrollX,e)})}},scrollLeft:function(e){if(this.length){var n="scrollLeft"in this[0];return e===t?n?this[0].scrollLeft:this[0].pageXOffset:this.each(n?function(){this.scrollLeft=e}:function(){this.scrollTo(e,this.scrollY)})}},position:function(){if(this.length){var t=this[0],e=this.offsetParent(),i=this.offset(),r=d.test(e[0].nodeName)?{top:0,left:0}:e.offset();return i.top-=parseFloat(n(t).css("margin-top"))||0,i.left-=parseFloat(n(t).css("margin-left"))||0,r.top+=parseFloat(n(e[0]).css("border-top-width"))||0,r.left+=parseFloat(n(e[0]).css("border-left-width"))||0,{top:i.top-r.top,left:i.left-r.left}}},offsetParent:function(){return this.map(function(){for(var t=this.offsetParent||a.body;t&&!d.test(t.nodeName)&&"static"==n(t).css("position");)t=t.offsetParent;return t})}},n.fn.detach=n.fn.remove,["width","height"].forEach(function(e){var i=e.replace(/./,function(t){return t[0].toUpperCase()});n.fn[e]=function(r){var o,s=this[0];return r===t?$(s)?s["inner"+i]:_(s)?s.documentElement["scroll"+i]:(o=this.offset())&&o[e]:this.each(function(t){s=n(this),s.css(e,J(this,r,t,s[e]()))})}}),v.forEach(function(t,e){var i=e%2;n.fn[t]=function(){var t,o,r=n.map(arguments,function(e){return t=L(e),"object"==t||"array"==t||null==e?e:S.fragment(e)}),s=this.length>1;return r.length<1?this:this.each(function(t,a){o=i?a:a.parentNode,a=0==e?a.nextSibling:1==e?a.firstChild:2==e?a:null,r.forEach(function(t){if(s)t=t.cloneNode(!0);else if(!o)return n(t).remove();G(o.insertBefore(t,a),function(t){null==t.nodeName||"SCRIPT"!==t.nodeName.toUpperCase()||t.type&&"text/javascript"!==t.type||t.src||window.eval.call(window,t.innerHTML)})})})},n.fn[i?t+"To":"insert"+(e?"Before":"After")]=function(e){return n(e)[t](this),this}}),S.Z.prototype=n.fn,S.uniq=N,S.deserializeValue=Y,n.zepto=S,n}();window.Zepto=Zepto,void 0===window.$&&(window.$=Zepto),function(t){function l(t){return t._zid||(t._zid=e++)}function h(t,e,n,i){if(e=p(e),e.ns)var r=d(e.ns);return(s[l(t)]||[]).filter(function(t){return!(!t||e.e&&t.e!=e.e||e.ns&&!r.test(t.ns)||n&&l(t.fn)!==l(n)||i&&t.sel!=i)})}function p(t){var e=(""+t).split(".");return{e:e[0],ns:e.slice(1).sort().join(" ")}}function d(t){return new RegExp("(?:^| )"+t.replace(" "," .* ?")+"(?: |$)")}function m(t,e){return t.del&&!u&&t.e in f||!!e}function g(t){return c[t]||u&&f[t]||t}function v(e,i,r,o,a,u,f){var h=l(e),d=s[h]||(s[h]=[]);i.split(/\s/).forEach(function(i){if("ready"==i)return t(document).ready(r);var s=p(i);s.fn=r,s.sel=a,s.e in c&&(r=function(e){var n=e.relatedTarget;return!n||n!==this&&!t.contains(this,n)?s.fn.apply(this,arguments):void 0}),s.del=u;var l=u||r;s.proxy=function(t){if(t=j(t),!t.isImmediatePropagationStopped()){t.data=o;var i=l.apply(e,t._args==n?[t]:[t].concat(t._args));return i===!1&&(t.preventDefault(),t.stopPropagation()),i}},s.i=d.length,d.push(s),"addEventListener"in e&&e.addEventListener(g(s.e),s.proxy,m(s,f))})}function y(t,e,n,i,r){var o=l(t);(e||"").split(/\s/).forEach(function(e){h(t,e,n,i).forEach(function(e){delete s[o][e.i],"removeEventListener"in t&&t.removeEventListener(g(e.e),e.proxy,m(e,r))})})}function j(e,i){return(i||!e.isDefaultPrevented)&&(i||(i=e),t.each(E,function(t,n){var r=i[t];e[t]=function(){return this[n]=x,r&&r.apply(i,arguments)},e[n]=b}),(i.defaultPrevented!==n?i.defaultPrevented:"returnValue"in i?i.returnValue===!1:i.getPreventDefault&&i.getPreventDefault())&&(e.isDefaultPrevented=x)),e}function T(t){var e,i={originalEvent:t};for(e in t)w.test(e)||t[e]===n||(i[e]=t[e]);return j(i,t)}var n,e=1,i=Array.prototype.slice,r=t.isFunction,o=function(t){return"string"==typeof t},s={},a={},u="onfocusin"in window,f={focus:"focusin",blur:"focusout"},c={mouseenter:"mouseover",mouseleave:"mouseout"};a.click=a.mousedown=a.mouseup=a.mousemove="MouseEvents",t.event={add:v,remove:y},t.proxy=function(e,n){if(r(e)){var i=function(){return e.apply(n,arguments)};return i._zid=l(e),i}if(o(n))return t.proxy(e[n],e);throw new TypeError("expected function")},t.fn.bind=function(t,e,n){return this.on(t,e,n)},t.fn.unbind=function(t,e){return this.off(t,e)},t.fn.one=function(t,e,n,i){return this.on(t,e,n,i,1)};var x=function(){return!0},b=function(){return!1},w=/^([A-Z]|returnValue$|layer[XY]$)/,E={preventDefault:"isDefaultPrevented",stopImmediatePropagation:"isImmediatePropagationStopped",stopPropagation:"isPropagationStopped"};t.fn.delegate=function(t,e,n){return this.on(e,t,n)},t.fn.undelegate=function(t,e,n){return this.off(e,t,n)},t.fn.live=function(e,n){return t(document.body).delegate(this.selector,e,n),this},t.fn.die=function(e,n){return t(document.body).undelegate(this.selector,e,n),this},t.fn.on=function(e,s,a,u,f){var c,l,h=this;return e&&!o(e)?(t.each(e,function(t,e){h.on(t,s,a,e,f)}),h):(o(s)||r(u)||u===!1||(u=a,a=s,s=n),(r(a)||a===!1)&&(u=a,a=n),u===!1&&(u=b),h.each(function(n,r){f&&(c=function(t){return y(r,t.type,u),u.apply(this,arguments)}),s&&(l=function(e){var n,o=t(e.target).closest(s,r).get(0);return o&&o!==r?(n=t.extend(T(e),{currentTarget:o,liveFired:r}),(c||u).apply(o,[n].concat(i.call(arguments,1)))):void 0}),v(r,e,u,a,s,l||c)}))},t.fn.off=function(e,i,s){var a=this;return e&&!o(e)?(t.each(e,function(t,e){a.off(t,i,e)}),a):(o(i)||r(s)||s===!1||(s=i,i=n),s===!1&&(s=b),a.each(function(){y(this,e,s,i)}))},t.fn.trigger=function(e,n){return e=o(e)||t.isPlainObject(e)?t.Event(e):j(e),e._args=n,this.each(function(){"dispatchEvent"in this?this.dispatchEvent(e):t(this).triggerHandler(e,n)})},t.fn.triggerHandler=function(e,n){var i,r;return this.each(function(s,a){i=T(o(e)?t.Event(e):e),i._args=n,i.target=a,t.each(h(a,e.type||e),function(t,e){return r=e.proxy(i),i.isImmediatePropagationStopped()?!1:void 0})}),r},"focusin focusout load resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select keydown keypress keyup error".split(" ").forEach(function(e){t.fn[e]=function(t){return t?this.bind(e,t):this.trigger(e)}}),["focus","blur"].forEach(function(e){t.fn[e]=function(t){return t?this.bind(e,t):this.each(function(){try{this[e]()}catch(t){}}),this}}),t.Event=function(t,e){o(t)||(e=t,t=e.type);var n=document.createEvent(a[t]||"Events"),i=!0;if(e)for(var r in e)"bubbles"==r?i=!!e[r]:n[r]=e[r];return n.initEvent(t,i,!0),j(n)}}(Zepto),function(t){function l(e,n,i){var r=t.Event(n);return t(e).trigger(r,i),!r.isDefaultPrevented()}function h(t,e,i,r){return t.global?l(e||n,i,r):void 0}function p(e){e.global&&0===t.active++&&h(e,null,"ajaxStart")}function d(e){e.global&&!--t.active&&h(e,null,"ajaxStop")}function m(t,e){var n=e.context;return e.beforeSend.call(n,t,e)===!1||h(e,n,"ajaxBeforeSend",[t,e])===!1?!1:void h(e,n,"ajaxSend",[t,e])}function g(t,e,n,i){var r=n.context,o="success";n.success.call(r,t,o,e),i&&i.resolveWith(r,[t,o,e]),h(n,r,"ajaxSuccess",[e,n,t]),y(o,e,n)}function v(t,e,n,i,r){var o=i.context;i.error.call(o,n,e,t),r&&r.rejectWith(o,[n,e,t]),h(i,o,"ajaxError",[n,i,t||e]),y(e,n,i)}function y(t,e,n){var i=n.context;n.complete.call(i,e,t),h(n,i,"ajaxComplete",[e,n]),d(n)}function x(){}function b(t){return t&&(t=t.split(";",2)[0]),t&&(t==f?"html":t==u?"json":s.test(t)?"script":a.test(t)&&"xml")||"text"}function w(t,e){return""==e?t:(t+"&"+e).replace(/[&?]{1,2}/,"?")}function E(e){e.processData&&e.data&&"string"!=t.type(e.data)&&(e.data=t.param(e.data,e.traditional)),!e.data||e.type&&"GET"!=e.type.toUpperCase()||(e.url=w(e.url,e.data),e.data=void 0)}function j(e,n,i,r){return t.isFunction(n)&&(r=i,i=n,n=void 0),t.isFunction(i)||(r=i,i=void 0),{url:e,data:n,success:i,dataType:r}}function S(e,n,i,r){var o,s=t.isArray(n),a=t.isPlainObject(n);t.each(n,function(n,u){o=t.type(u),r&&(n=i?r:r+"["+(a||"object"==o||"array"==o?n:"")+"]"),!r&&s?e.add(u.name,u.value):"array"==o||!i&&"object"==o?S(e,u,i,n):e.add(n,u)})}var i,r,e=0,n=window.document,o=/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,s=/^(?:text|application)\/javascript/i,a=/^(?:text|application)\/xml/i,u="application/json",f="text/html",c=/^\s*$/;t.active=0,t.ajaxJSONP=function(i,r){if(!("type"in i))return t.ajax(i);var f,h,o=i.jsonpCallback,s=(t.isFunction(o)?o():o)||"jsonp"+ ++e,a=n.createElement("script"),u=window[s],c=function(e){t(a).triggerHandler("error",e||"abort")},l={abort:c};return r&&r.promise(l),t(a).on("load error",function(e,n){clearTimeout(h),t(a).off().remove(),"error"!=e.type&&f?g(f[0],l,i,r):v(null,n||"error",l,i,r),window[s]=u,f&&t.isFunction(u)&&u(f[0]),u=f=void 0}),m(l,i)===!1?(c("abort"),l):(window[s]=function(){f=arguments},a.src=i.url.replace(/\?(.+)=\?/,"?$1="+s),n.head.appendChild(a),i.timeout>0&&(h=setTimeout(function(){c("timeout")},i.timeout)),l)},t.ajaxSettings={type:"GET",beforeSend:x,success:x,error:x,complete:x,context:null,global:!0,xhr:function(){return new window.XMLHttpRequest},accepts:{script:"text/javascript, application/javascript, application/x-javascript",json:u,xml:"application/xml, text/xml",html:f,text:"text/plain"},crossDomain:!1,timeout:0,processData:!0,cache:!0},t.ajax=function(e){var n=t.extend({},e||{}),o=t.Deferred&&t.Deferred();for(i in t.ajaxSettings)void 0===n[i]&&(n[i]=t.ajaxSettings[i]);p(n),n.crossDomain||(n.crossDomain=/^([\w-]+:)?\/\/([^\/]+)/.test(n.url)&&RegExp.$2!=window.location.host),n.url||(n.url=window.location.toString()),E(n),n.cache===!1&&(n.url=w(n.url,"_="+Date.now()));var s=n.dataType,a=/\?.+=\?/.test(n.url);if("jsonp"==s||a)return a||(n.url=w(n.url,n.jsonp?n.jsonp+"=?":n.jsonp===!1?"":"callback=?")),t.ajaxJSONP(n,o);var j,u=n.accepts[s],f={},l=function(t,e){f[t.toLowerCase()]=[t,e]},h=/^([\w-]+:)\/\//.test(n.url)?RegExp.$1:window.location.protocol,d=n.xhr(),y=d.setRequestHeader;if(o&&o.promise(d),n.crossDomain||l("X-Requested-With","XMLHttpRequest"),l("Accept",u||"*/*"),(u=n.mimeType||u)&&(u.indexOf(",")>-1&&(u=u.split(",",2)[0]),d.overrideMimeType&&d.overrideMimeType(u)),(n.contentType||n.contentType!==!1&&n.data&&"GET"!=n.type.toUpperCase())&&l("Content-Type",n.contentType||"application/x-www-form-urlencoded"),n.headers)for(r in n.headers)l(r,n.headers[r]);if(d.setRequestHeader=l,d.onreadystatechange=function(){if(4==d.readyState){d.onreadystatechange=x,clearTimeout(j);var e,i=!1;if(d.status>=200&&d.status<300||304==d.status||0==d.status&&"file:"==h){s=s||b(n.mimeType||d.getResponseHeader("content-type")),e=d.responseText;try{"script"==s?(1,eval)(e):"xml"==s?e=d.responseXML:"json"==s&&(e=c.test(e)?null:t.parseJSON(e))}catch(r){i=r}i?v(i,"parsererror",d,n,o):g(e,d,n,o)}else v(d.statusText||null,d.status?"error":"abort",d,n,o)}},m(d,n)===!1)return d.abort(),v(null,"abort",d,n,o),d;if(n.xhrFields)for(r in n.xhrFields)d[r]=n.xhrFields[r];var T="async"in n?n.async:!0;d.open(n.type,n.url,T,n.username,n.password);for(r in f)y.apply(d,f[r]);return n.timeout>0&&(j=setTimeout(function(){d.onreadystatechange=x,d.abort(),v(null,"timeout",d,n,o)},n.timeout)),d.send(n.data?n.data:null),d},t.get=function(){return t.ajax(j.apply(null,arguments))},t.post=function(){var e=j.apply(null,arguments);return e.type="POST",t.ajax(e)},t.getJSON=function(){var e=j.apply(null,arguments);return e.dataType="json",t.ajax(e)},t.fn.load=function(e,n,i){if(!this.length)return this;var a,r=this,s=e.split(/\s/),u=j(e,n,i),f=u.success;return s.length>1&&(u.url=s[0],a=s[1]),u.success=function(e){r.html(a?t("<div>").html(e.replace(o,"")).find(a):e),f&&f.apply(r,arguments)},t.ajax(u),this};var T=encodeURIComponent;t.param=function(t,e){var n=[];return n.add=function(t,e){this.push(T(t)+"="+T(e))},S(n,t,e),n.join("&").replace(/%20/g,"+")}}(Zepto),function(t){t.fn.serializeArray=function(){var n,e=[];return t([].slice.call(this.get(0).elements)).each(function(){n=t(this);var i=n.attr("type");"fieldset"!=this.nodeName.toLowerCase()&&!this.disabled&&"submit"!=i&&"reset"!=i&&"button"!=i&&("radio"!=i&&"checkbox"!=i||this.checked)&&e.push({name:n.attr("name"),value:n.val()})}),e},t.fn.serialize=function(){var t=[];return this.serializeArray().forEach(function(e){t.push(encodeURIComponent(e.name)+"="+encodeURIComponent(e.value))}),t.join("&")},t.fn.submit=function(e){if(e)this.bind("submit",e);else if(this.length){var n=t.Event("submit");this.eq(0).trigger(n),n.isDefaultPrevented()||this.get(0).submit()}return this}}(Zepto),function(t){"__proto__"in{}||t.extend(t.zepto,{Z:function(e,n){return e=e||[],t.extend(e,t.fn),e.selector=n||"",e.__Z=!0,e},isZ:function(e){return"array"===t.type(e)&&"__Z"in e}});try{getComputedStyle(void 0)}catch(e){var n=getComputedStyle;window.getComputedStyle=function(t){try{return n(t)}catch(e){return null}}}}(Zepto);
+	$(function() {
+		var defaults = {
+			Event : "click",		//插件绑定的响应事件
+			Left : 0,				//弹出时间停靠的左边位置
+			Top : 22,				//弹出时间停靠的上边位置
+			fuhao : "-",			//日期之间的连接符号
+			isTime : false,			//是否开启时间值默认为false
+			beginY : 2014,			//年份的开始默认为1949
+			endY : 2020				//年份的结束默认为2049
+		};
+		var options = $.extend(defaults,options);
+		var stc;
+		if($("#calender").length<=0){
+			$("body").prepend("<div class='calender'><div class='calenderContent'><div class='calenderTable'><div class='getyear'><a class='preMonth' id='preMonth'>‹</a><select id='year'></select><select id='month'></select><a class='nextMonth' id='nextMonth'>›</a></div><div class='tablebg'><table id='calender' class='calendertb' cellpadding='0' cellspacing='1'><tr><th class='weekend'>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th class='weekend noborder'>六</th></tr><tr><td class='weekend2'></td><td></td><td></td><td></td><td></td><td></td><td class='weekend2 noborder'></td></tr><tr><td class='weekend2'></td><td></td><td></td><td></td><td></td><td></td><td class='weekend2 noborder'></td></tr><tr><td class='weekend2'></td><td></td><td></td><td></td><td></td><td></td><td class='weekend2 noborder'></td></tr><tr><td class='weekend2'></td><td></td><td></td><td></td><td></td><td></td><td class='weekend2 noborder'></td></tr><tr><td class='weekend2'></td><td></td><td></td><td></td><td></td><td></td><td class='weekend2'></td></tr><tr><td class='weekend2'></td><td></td><td></td><td></td><td></td><td></td><td class='weekend2'></td></tr></table></div></div></div></div>");
+		}
+		var isToday = true;//是否为今天默认为是
+		var date = new Date();//获得时间对象
+		var nowYear = date.getFullYear();//获得当前年份
+		var nowMonth = date.getMonth() + 1;//获得当前月份
+		var today = date.getDate();//获得当前天数
+		var nowWeek = new Date(nowYear, nowMonth - 1, 1).getDay();//获得当前星期
+		var nowLastday = getMonthNum(nowMonth, nowYear);//获得最后一天
+		//年、月下拉框的初始化
+		for(var i=options.beginY; i<=options.endY; i++){
+			$("<option value='"+i+"'>"+i+"年</option>").appendTo($("#year"));
+		}
+		for(var i=1; i<=12; i++){
+			$("<option value='"+i+"'>"+i+"月</option>").appendTo($("#month"));
+		}
+		ManhuaDate(nowYear, nowMonth, nowWeek, nowLastday);//初始化为当前日期
+		//上一月绑定点击事件
+		$("#preMonth").click(function() {
+			isToday = false;
+			var year = parseInt($("#year").val());
+			var month = parseInt($("#month").val());
+			month = month - 1;
+			if (month < 1) {
+				month = 12;
+				year = year - 1;
+			}
+			if(nowYear==year && nowMonth==month){
+				isToday = true;
+			}
+			var week = new Date(year, month - 1, 1).getDay();
+			var lastday = getMonthNum(month, year);
+			ManhuaDate(year, month, week, lastday);
+		});
+		//年下拉框的改变事件
+		$("#year").change(function() {
+			isToday = false;
+			var year = parseInt($(this).val());
+			var month = parseInt($("#month").val());
+			if(nowYear==year && nowMonth==month){
+				isToday = true;
+			}
+			var week = new Date(year, month - 1, 1).getDay();
+			var lastday = getMonthNum(month, year);
+			ManhuaDate(year, month, week, lastday);
+		});
+		//月下拉框的改变事件
+		$("#month").change(function() {
+			isToday = false;
+			var year = parseInt($("#year").val());
+			var month = parseInt($(this).val());
+			if(nowYear==year && nowMonth==month){
+				isToday = true;
+			}
+			var week = new Date(year, month - 1, 1).getDay();
+			var lastday = getMonthNum(month, year);
+			ManhuaDate(year, month, week, lastday);
+		});
+		//下一个月的点击事件
+		$("#nextMonth").click(function() {
+			isToday = false;
+			var year = parseInt($("#year").val());
+			var month = parseInt($("#month").val());
+
+			month = parseInt(month) + 1;
+			if (parseInt(month) > 12) {
+				month = 1;
+				year = parseInt(year) + 1;
+			}
+			if(nowYear==year && nowMonth==month){
+				isToday = true;
+			}
+			var week = new Date(year, month - 1, 1).getDay();
+			var lastday = getMonthNum(month, year);
+			ManhuaDate(year, month, week, lastday);
+		});
+
+		//初始化日历
+		function ManhuaDate(year, month, week, lastday) {
+			$("#year").val(year);
+			$("#month").val(month)
+			var table = document.getElementById("calender");
+			var n = 1;
+			for (var j = 0; j < week; j++) {
+				table.rows[1].cells[j].innerHTML = "&nbsp;"
+			}
+			for (var j = week; j < 7; j++) {
+				if (n == today && isToday) {
+					table.rows[1].cells[j].className="tdtoday";
+				}else {
+					table.rows[1].cells[j].className="";
+				}
+				table.rows[1].cells[j].innerHTML = n;
+				n++;
+			}
+			for (var i = 2; i < 7; i++) {
+				for (j = 0; j < 7; j++) {
+					if (n > lastday) {
+						table.rows[i].cells[j].innerHTML = "&nbsp"
+					}
+					else {
+						if (n == today && isToday) {
+							table.rows[i].cells[j].className="tdtoday";
+						}else {
+							table.rows[i].cells[j].className="";
+						}
+						table.rows[i].cells[j].innerHTML = n;
+						n++;
+					}
+				}
+			}
+		}
+		//获得月份的天数
+		function getMonthNum(month, year) {
+			month = month - 1;
+			var LeapYear = ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) ? true: false;
+			var monthNum;
+			switch (parseInt(month)) {
+				case 0:
+				case 2:
+				case 4:
+				case 6:
+				case 7:
+				case 9:
+				case 11:
+					monthNum = 31;
+					break;
+				case 3:
+				case 5:
+				case 8:
+				case 10:
+					monthNum = 30;
+					break;
+				case 1:
+					monthNum = LeapYear ? 29: 28;
+			}
+			return monthNum;
+		}
+		//每一列的悬挂事件改变当前样式
+		$("#calender td:not(.tdtoday)").on("mouseover",function() {
+			$(this).addClass("hover")
+		}).on("mouseout",function() {
+			$(this).removeClass("hover");
+		});
+		//点击时间列表事件
+		$("#calender td").die().live("click",function() {
+			var dv = $(this).html();
+			if (dv != "&nbsp;"){
+				var str = "";
+				if (options.isTime){
+					var nd = new Date();
+					str = $("#year").val() + options.fuhao + $("#month").val() + options.fuhao + dv + " "+ nd.getHours()+":"+nd.getMinutes()+":"+nd.getSeconds();
+				}else{
+					str = $("#year").val() + options.fuhao + $("#month").val() + options.fuhao + dv;
+				}
+				$("input.dateVisited").val(str).trigger("input");
+				$("input.dateVisited").removeClass('dateVisited');
+				$(".calender").hide();
+			}
+		});
+		//文本框绑定事件
+		$(document).on(options.Event,"[datetime]",function(){
+			$(this).addClass("dateVisited");
+			if(stc){
+				clearTimeout(stc);//清除定时器
+			}
+			var iof = $(this).offset();
+			$(".calender").css({ "left" : iof.left+options.Left,"top" : iof.top+options.Top });
+			$(".calender").show();
+		});
+		/*$mhInput.live(options.Event,function(e){
+
+		});*/
+		//当鼠标离开控件上面的时候延迟3秒关闭
+		$(".calender").live("mouseleave",function(){
+			stc = setTimeout(function (){
+				$(".calender").hide();
+				clearTimeout(stc);
+			},1500);
+		}).live("click",function(e){
+			e.stopPropagation();
+		});
+		//当鼠标移到控件上面的时候显示
+		$(".calender").live("mousemove",function(){
+			if(stc){
+				clearTimeout(stc);//清除定时器
+			}
+			$(this).show();
+		});
+		//点击年选择下拉框的时候清除定时器阻止控件层关闭
+		$("#year").die().live("click",function(){
+			if(stc){
+				clearTimeout(stc);//清除定时器
+			}
+		});
+		//点击月选择下拉框的时候清除定时器阻止控件层关闭
+		$("#month").die().live("click",function(){
+			if(stc){
+				clearTimeout(stc);//清除定时器
+			}
+		});
+		$("body").live("click",function(){
+			$(".calender").hide();
+		});
+	});
 });
-
-
