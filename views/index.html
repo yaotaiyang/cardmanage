@@ -25,7 +25,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <td style="width:100px;">故事 <em ng-click="addcard({'type':'story'})">添加</em></td>
+                    <td style="width:140px;">故事 <em ng-click="addcard({'type':'story'})">添加</em></td>
                     <td ng-if="expendind | expend:$index" ng-repeat="value in cardType">{{value}} <span class="screen" ng-click="screen($index)"><i class="unfold">{{expendind != $index?'﹥':'﹤'}}  </i></span></td>
                 </tr>
             </thead>
@@ -464,8 +464,7 @@
                     itemtype:'=itemtype'
                 },
                 link:function(scope, element, attrs) {
-                    var startX=0, startY=0, x = 0, y = 0,minY,maxY;
-                    var wrap = document.querySelectorAll("[dropable]");
+                    var startX=0, startY=0, x = 0, y = 0,minY,maxY,wrap;
                     element.css({
                         position: 'relative',
                         cursor:"default"
@@ -476,6 +475,7 @@
                         maxY = parentOffset.bottom - domOffset.bottom;
                         startX = event.screenX - x;
                         startY = event.screenY - y;
+                        wrap = document.querySelectorAll("[dropable]");
                         $document.bind('mousemove', mousemove);
                         $document.bind('mouseup', mouseup);
                     });
