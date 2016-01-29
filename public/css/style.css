@@ -113,6 +113,7 @@ form .v *{font-size:14px;}
 form .v [type='text'],form .v [type='number'],form .v textarea{width:400px;border:1px solid #ddd;padding:4px;font-size:14px;display:block;}
 
 form input.btn{background:#07e;width: 80px;line-height:24px;text-align: center;cursor: default;color:#fff;border:none;}
+form input.btn:focus{background-color:#96D0FF}
 form input.btn[disabled]{background-color:#ddd;}
 form li.longwrap{width:668px;}
 form li.longwrap .v textarea{width:575px}
