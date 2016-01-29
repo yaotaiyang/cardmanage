@@ -127,7 +127,25 @@ function init(req,res,obj){
             if(card.get("createdBy").userId == cur_user.id){
                 card.set("deleted","1");
                 card.save({success:function(data){
-                    obj.render(req,res,{data:data});
+                    if(card.get("type")=="story"){
+                        var card_lq = new AV.Query(Card);
+                        card_lq.equalTo("parentId",cardId);//删除子卡片
+                        card_lq.find().then(function(list){
+                            if(list.length>0){
+                                AV.Object.destroyAll(list).then(function(){
+                                    obj.render(req,res,{data:data});
+                                },function(){
+                                    obj.render(req,res,{data:{title:"删除失败",err:{}}});
+                                });
+                            }else{
+                                obj.render(req,res,{data:data});
+                            }
+                        },function(){
+                            obj.render(req,res,{data:{title:"删除失败",err:{}}});
+                        });
+                    }else{
+                        obj.render(req,res,{data:data});
+                    }
                 },error:function(){
                     obj.render(req,res,{data:{title:"删除失败",err:{}}});
                 }});

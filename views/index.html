@@ -30,7 +30,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="lineobj in cardList | orderBy:orderfunc:'reverse'">
+                <tr ng-if="lineobj | showline" ng-repeat="lineobj in cardList | orderBy:orderfunc:'reverse'">
                     <td>
                         <div class="story-card" ng-dblclick="cardclick(lineobj.story)">
                             {{lineobj.story.title}}
@@ -131,6 +131,15 @@
                     }else{
                         return 0;
                     }
+                }else{
+                    return 1;
+                }
+            }
+        });
+        app.filter("showline",function(){
+            return function(obj){
+                if(obj.story.deleted == 1){
+                    return 0;
                 }else{
                     return 1;
                 }
