@@ -43,7 +43,8 @@
                             <ul class="ownerslist cls">
                                 <li class="name owner">责任人: {{item.owners | ownersname}}</li>
                             </ul>
-                            <div class="completetime"><span class="owner">工作量: {{item.amount}}天</span></div>
+                            <div class="completetime"><span class="owner">时间: {{item.amount}}天
+                                <span class="date-range" ng-if="(item.startTime&&item.endTime)">{{item.startTime | ftime }}~{{item.endTime | ftime}}</span></span></div>
                         </div>
                     </td>
                 </tr>
@@ -58,7 +59,7 @@
                 <li><label class="k"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" required rows="2" class="title"></textarea></span></li>
                 <li ng-if="(card.type!='story')"><label class="k"><em class="red">*</em>工作量：</label>
                     <span class="v"><input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.amount" required class="amount"/>天　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.realAmount" class="amount"/>天</span>
-                        　　　　从 <input  tabindex="-1" readonly type="text" class="datetime" ng-model="card.startTime" datetime="datetime"/> 至 <input  tabindex="-1" readonly  ng-model="card.endTime" type="text" class="datetime" datetime="datetime"/>
+                        　　　　从 <input  tabindex="-1" readonly type="text" class="datetime" ng-model="card.startTime" value="{{card.startTime | date:'yyyy-MM-dd'}}" datetime="datetime"/> 至 <input  tabindex="-1" readonly  ng-model="card.endTime" type="text" class="datetime" datetime="datetime" value="{{card.endTime | date:'yyyy-MM-dd'}}"/>
                     </span></li>
                 <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" required rows="3" class="descri" name="descri"></textarea></span></li>
                 <li><label class="k">优先级：</label>
@@ -114,6 +115,12 @@
                     arr_name.push(owners[i].username);
                 }
                 return arr_name.join(",");
+            }
+        });
+        app.filter("ftime",function(){
+            return function(str){
+                var t = new Date(str.replace("-","/"));
+                return (t.getMonth()+1) +"."+ t.getDate();
             }
         });
         app.filter("expend",function(){

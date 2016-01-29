@@ -78,9 +78,8 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .cardlist{text-align:left;font-size:12px;background-color:#fff;padding-bottom:10px;background-color:#fdfdfd;}
 .content .card{position:relative;-webkit-user-select:none;float:left;width:138px;margin:4px 0 4px 8px;padding-bottom:2px;cursor:default;background-color:#96D0FF;box-sizing:border-box;-webkit-box-sizing:border-box;-webkit-user-select:none;}
 .content .card[classify='bug']{background-color:#ffebb6;}
+.content .card[classify='插入项']{background-color:#ffa3a3;}
 .content .card.cardstatus1{background-color: #b6fcd7;}
-.content .card.cardstatus2{background-color: #ffebb6;}
-.content .card.cardstatus3{background-color: #ffa3a3;}
 .content .fold .card{width:84px;}
 .content .card.del_1{display:none;}
 .content .fold .card h4{white-space:nowrap;width:100%;overflow:hidden;text-overflow:ellipsis;display:block;box-sizing:border-box;}
@@ -91,9 +90,6 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .card.bug:after,.content .card.highlightcard:after{content:"";font-size:10px;position: absolute;top: 2px;right: 2px;border-width:6px 6px;border-color:#ff0 #ff0 transparent transparent;border-style: solid;height: 0;width: 0;}
 .content .card.highlightcard:after{border-color:#48D31C #48D31C transparent transparent;}
 .content .card h4{padding:4px; height:40px;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp:2;-webkit-box-orient: vertical;}
-.content .card.cardstatus1{background-color: #b6fcd7;}
-.content .card.cardstatus2{background-color: #ffebb6;}
-.content .card.cardstatus3{background-color: #ffa3a3;}
 .content .card .completetime{margin:0 2px;background-color:#fff;}
 .content .card.highlightcard{animation: hlcard 2s;-webkit-animation:hlcard 2s;}
 .content .story-card{background-color:#96D0FF;word-break:break-all;padding:4px;margin:6px 8px;line-height:1.3em;-webkit-user-select:none;cursor:default;position:relative;border:1px solid #fff;outline:2px solid #96D0FF}
@@ -103,6 +99,7 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .ownerslist{margin:0 2px;background-color:#fff;font-size:0;}
 .content .owner{display:block;padding:0 2px;font-size:12px;width:100%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
 .content em.red{padding:0 1px;margin:0 -1px;background-color:#fffc00;font-weight:inherit}
+.content .date-range{color:#aaa;font-size:11px;}
 form ul{padding-right:260px;position:relative;width:410px;}
 form ul .qrcode{position:absolute;right:0;top:0;width:256px;height:256px;background:url(../images/code.png) no-repeat;background-size:100% 100%;}
 form ul .qrcode .k{width:100%;padding-bottom:4px;}

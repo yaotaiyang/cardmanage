@@ -51,7 +51,6 @@ function init(req,res,obj){
                                     cardHash[obj.id].cards.push({"type":name,list:[]});
                                 });
                             }
-                            //console.log(cardHash[obj.id]);
                             cardHash[obj.id].story = obj;
                         }
                     });
@@ -60,6 +59,9 @@ function init(req,res,obj){
                     }
                     obj.render(req, res, {data: resarr});
                     return;
+                },
+                error:function(){
+                    obj.render(req,res,{data:{title:"获取数据失败",err:{}}});
                 }
             });
         });
@@ -88,6 +90,9 @@ function init(req,res,obj){
         card.save({
             success:function(data){
                 obj.render(req,res,{data:data});
+            },
+            error:function(){
+                obj.render(req,res,{data:{title:"添加失败",err:{}}});
             }
         });
     }else if(type=="updata-card"){
