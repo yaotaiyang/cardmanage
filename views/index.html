@@ -25,7 +25,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <td style="width:140px;">故事 <em ng-click="addcard({'type':'story'})">添加</em></td>
+                    <td style="width:140px;">故事 <em title="新建故事" ng-click="addcard({'type':'story'})">添加</em></td>
                     <td ng-if="expendind | expend:$index" ng-repeat="value in cardType">{{value}} <span class="screen" ng-click="screen($index)"><i class="unfold">{{expendind != $index?'﹥':'﹤'}}  </i></span></td>
                 </tr>
             </thead>
@@ -38,7 +38,7 @@
                         </div>
                     </td>
                     <td masonry ng-if="expendind | expend:$index" dropable dataitem="cardtype" ng-repeat="cardtype in lineobj.cards" data-parentid="{{lineobj.story.objectId}}">
-                        <div ng-if="item | filterpeople:filterid" draggable item="item" itemtype="cardtype" class="card masonry-brick"  ng-dblclick="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
+                        <div classify="{{item.cardClass}}" ng-if="item | filterpeople:filterid" draggable item="item" itemtype="cardtype" class="card masonry-brick"  ng-dblclick="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
                             <h4>{{item.title}}</h4>
                             <ul class="ownerslist cls">
                                 <li class="name owner">责任人: {{item.owners | ownersname}}</li>
@@ -280,6 +280,7 @@
             $scope.$on("showDetail",function(event,data){
                 $scope.oldData = JSON.parse(JSON.stringify(data));
                 $scope.show = 1;
+                $scope.ajaxing = 0;
                 $scope.cacheComment = "";
                 $scope.companyPeople =tplData.companyPeople;
                 if(data && data.hasComments == 1){

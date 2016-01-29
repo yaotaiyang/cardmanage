@@ -77,9 +77,10 @@ function init(req,res,obj){
         card.set("type",req.body.type);
         card.set("description",req.body.description);
         card.set("parentId",req.body.parentId);
-        card.set("amount",req.body.amount);
+        card.set("amount",Number(req.body.amount));
         card.set("startTime",req.body.startTime);
         card.set("endTime",req.body.endTime);
+        card.set("weight",Number(req.body.weight));
         card.set("owners",req.body.owners);
         card.set("cardClass",req.body.cardClass);
         card.set("images",req.body.images);

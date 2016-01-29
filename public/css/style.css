@@ -77,6 +77,10 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .wrap.fold{width:100px;-webkit-box-flex:0.00001;box-flex:0.00001;}
 .content .cardlist{text-align:left;font-size:12px;background-color:#fff;padding-bottom:10px;background-color:#fdfdfd;}
 .content .card{position:relative;-webkit-user-select:none;float:left;width:138px;margin:4px 0 4px 8px;padding-bottom:2px;cursor:default;background-color:#96D0FF;box-sizing:border-box;-webkit-box-sizing:border-box;-webkit-user-select:none;}
+.content .card[classify='bug']{background-color:#ffebb6;}
+.content .card.cardstatus1{background-color: #b6fcd7;}
+.content .card.cardstatus2{background-color: #ffebb6;}
+.content .card.cardstatus3{background-color: #ffa3a3;}
 .content .fold .card{width:84px;}
 .content .card.del_1{display:none;}
 .content .fold .card h4{white-space:nowrap;width:100%;overflow:hidden;text-overflow:ellipsis;display:block;box-sizing:border-box;}
@@ -148,19 +152,19 @@ form .v .createdby{color:#ccc;font-size:12px;position:absolute;left:92px;top:-16
 .rightmenu{position:fixed;top:0;left:0;z-index:105;width:100px;border:1px solid #ccc;background-color:#fff;border-radius:5px;}
 .rightmenu li{padding:2px 5px;cursor:default;text-align:center;}
 .rightmenu li:hover{color:#f00;}
-.calender{top:0;left:0;background:#fff;position:absolute;display:none;z-index:999;font-size:13px;border:1px solid #96D0FF;width:210px;sssssssssssss}
+.calender{top:0;left:0;background:#fff;position:absolute;display:none;z-index:999;font-size:13px;border:1px solid #96D0FF;width:210px;}
 .calender select{border:1px solid #e1e1e1;margin:0 5px;}
 .calendertb{width:100%;}
 .calender td,.calender th{width:28px;height:24px;text-align:center;vertical-align:middle;}
-.calendertb td{background-color:#fafafa;cursor:pointer;font-size:14px;font-weight:bold;}
-.calendertb td.hover,.calendertb td.weekendhover{background:#efefef;}
+.calendertb td{background-color:#EAF5FC;cursor:pointer;font-size:14px;font-weight:bold;}
+.calendertb td.hover,.calendertb td.weekendhover{background:#C9E8FF;}
 .calendertb th{background-color:#96D0FF;color:#fff;}
 .calender .tdtoday{ background:#96D0FF;color:#fff;font-weight:bold;}
 .calender .getyear{height:25px;line-height:25px;width:100%;text-align:center;}
 .calender .preMonth, .calender .nextMonth{font-weight:bold;cursor:pointer;color:#96D0FF;font-size:18px;}
 .calender .preMonth{padding:0 5px;}
 .calender .nextMonth{padding:0 5px;}
-.carddetail{position:fixed;top:0;right:0;background-color:#f0f0f0;bottom:0;width:580px;border-left:1px solid #ddd;overflow:auto;}
+.carddetail{position:fixed;top:0;right:0;background-color:#f6f6f6;bottom:0;width:580px;border-left:1px solid #ddd;overflow:auto;}
 .carddetail span.close{position:absolute;right:0;top:0;font-size:24px;cursor:pointer;text-align:center;width:32px;}
 .carddetail span.close:hover{color:#f00;}
 .carddetail .addcard{background-color:#fff;padding:20px 0 10px;}
