@@ -52,18 +52,26 @@
     </div>
     <div class="carddetail" ng-cloak ng-show="show" ng-controller="cardDetail" paste>
         <form class="addcard ng-pristine ng-valid" ng-submit="submit()">
+            <div class="show-title cls" ng-if="showTitle">{{showTitle}}</div>
             <div ng-if="card.parentName" class="parentinfo">所属：{{card.parentName}}</div>
             <ul>
                 <li><label class="k"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" required rows="2" class="title"></textarea></span></li>
                 <li ng-if="(card.type!='story')"><label class="k"><em class="red">*</em>工作量：</label>
-                    <span class="v"><input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.amount" required class="amount"/>天　　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.realAmount" class="amount"/>天</span>
-                        <div class="date-wrap"><input type="text" class="datetime" ng-model="card.starTtime" datetime="datetime"/> 至 <input  ng-model="card.endTime"  type="text" class="datetime" datetime="datetime"/></div>
+                    <span class="v"><input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.amount" required class="amount"/>天　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.realAmount" class="amount"/>天</span>
+                        　　　　从 <input  tabindex="-1" readonly type="text" class="datetime" ng-model="card.startTime" datetime="datetime"/> 至 <input  tabindex="-1" readonly  ng-model="card.endTime" type="text" class="datetime" datetime="datetime"/>
                     </span></li>
                 <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" required rows="3" class="descri" name="descri"></textarea></span></li>
-                <li><label class="k">优先级：</label><span class="v"><input type="number" ng-model="card.weight" class="amount"/></span></li>
+                <li><label class="k">优先级：</label>
+                    <span class="v"><input type="number" ng-model="card.weight" class="amount"/>
+                        <span ng-if="(card.type!='story')">　种类
+                    <select title="选择添加用户" ng-model="card.cardClass" name="owners" class="card-class">
+                        <option  ng-repeat="cardClass in cardClassList" value="{{cardClass}}">{{cardClass}}</option>
+                    </select></span>
+                    </span>
+                </li>
                 <li><label class="k">负责人：</label><span class="v">
                     <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.username}}</em></span>
-                    <select ng-change="change(cacheS)" title="选择添加用户" ng-model="cacheS" name="owners" ng-options="owner.objectId as owner.username for owner in companyPeople">
+                    <select class="owner-select" ng-change="change(cacheS)" title="选择添加用户" ng-model="cacheS" name="owners" ng-options="owner.objectId as owner.username for owner in companyPeople">
                     </select></span>
                 </li>
                 <li class="imgs"><label class="k">图片：</label>
@@ -260,6 +268,7 @@
         });
         app.controller('cardDetail',function($scope,$rootScope,$http){
             $scope.show = 0;
+            $scope.cardClassList = tplData.curTeam.cardClass;
             $scope.closepanel= function(){
                 $scope.show = 0;
                 for(var key in $scope.card){//数据回滚
@@ -284,6 +293,7 @@
                 if(data && data.objectId){
                     //修改卡片
                     $scope.card = data;
+                    $scope.showTitle="";
                     $scope.submit=function(e){
                         $scope.ajaxing = 1;
                         var url = "/ajax?type=updata-card&teamId="+tplData.teamId+"&sprintId="+tplData.sprintId+"&cardId="+$scope.card.objectId;
@@ -297,9 +307,11 @@
                 }else{
                     //新建卡片
                     if(data.parentId){
-                        $scope.card={images:[],owners:[],type:tplData.curTeam.cardType[0],parentId:data.parentId,parentName:data.parentName};
+                        $scope.showTitle="新建任务";
+                        $scope.card={images:[],weight:1,cardClass:"任务",owners:[],type:tplData.curTeam.cardType[0],parentId:data.parentId,parentName:data.parentName};
                     }else{
-                        $scope.card={images:[],owners:[],type:data.type};
+                        $scope.showTitle="新建故事";
+                        $scope.card={images:[],owners:[],type:data.type,weight:1};
                     }
                     $scope.submit=function(e){
                         $scope.ajaxing = 1;

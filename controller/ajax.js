@@ -58,63 +58,11 @@ function init(req,res,obj){
                     for(var key in cardHash){
                         resarr.push(cardHash[key]);
                     }
-                        /* resarr.forEach(function(lineobj){
-                             var arrChild = lineobj["story"].get("relativeCards");
-                             lineobj.cards = [];
-                             cardType.forEach(function(name){
-                                 lineobj.cards.push({"type":name,list:[]});
-                             });
-                             arrChild.forEach(function(obj){
-                                 if(cardHash[obj.cardId]){
-                                     for(var i=0;i<lineobj.cards.length;i++){
-                                         if(lineobj.cards[i].type == cardHash[obj.cardId].get("type")){
-                                             lineobj.cards[i].list.push(cardHash[obj.cardId]);
-                                             break;
-                                         }
-                                     }
-                                 }
-                             });
-                         });*/
                     obj.render(req, res, {data: resarr});
                     return;
                 }
             });
         });
-        /*card_q.find({
-            success:function(data){
-                var cardHash = {};
-                var resarr = [];
-                data.forEach(function(obj){
-                    if(obj.type == "story"){
-                        resarr.push({})
-                    }else{
-                        cardHash[obj.objectId]=obj;
-                    }
-                });
-                obj.render(req,res,{data:data});
-                return;
-                *//*var Team = AV.Object.extend('Team');
-                var team_q = new AV.Query(Team);
-                team_q.get(teamId,function(team_obj){
-                    var cur_arr =[];
-                    team_obj.get("cardType").forEach(function(name){
-                        var cur_obj = {type:name,list:[]};
-                        var ispush = 0;
-                        data.forEach(function(card){
-                            if(card.get("type") == name){
-                                ispush =1;
-                                cur_obj.list.push(card);
-                            }
-                        });
-                        cur_arr.push(cur_obj);
-                    });
-
-                });*//*
-            },
-            error:function(user, err){
-                obj.render(req,res,{data:{title:"登录失败",err:err}});
-            }
-        });*/
     }else if(type=="add-card"){
         var teamId = req.query["teamId"];
         var sprintId = req.query["sprintId"];
@@ -130,7 +78,10 @@ function init(req,res,obj){
         card.set("description",req.body.description);
         card.set("parentId",req.body.parentId);
         card.set("amount",req.body.amount);
+        card.set("startTime",req.body.startTime);
+        card.set("endTime",req.body.endTime);
         card.set("owners",req.body.owners);
+        card.set("cardClass",req.body.cardClass);
         card.set("images",req.body.images);
         card.set("type",req.body.type);
         card.save({
@@ -148,8 +99,11 @@ function init(req,res,obj){
             card.set("title",req.body.title);
             card.set("description",req.body.description);
             card.set("amount",Number(req.body.amount));
+            card.set("startTime",req.body.startTime);
+            card.set("endTime",req.body.endTime);
             card.set("realAmount",Number(req.body.realAmount));
             card.set("owners",req.body.owners);
+            card.set("cardClass",req.body.cardClass);
             card.set("weight",Number(req.body.weight));
             card.set("images",req.body.images);
             card.save({success:function(data){

@@ -180,8 +180,20 @@ define(function () {
 				clearTimeout(stc);//清除定时器
 			}
 			var iof = $(this).offset();
-			$(".calender").css({ "left" : iof.left+options.Left,"top" : iof.top+options.Top });
+			if(iof.left+210<$(window).width()){
+				$(".calender").css({ "left" : iof.left+options.Left,"right":"auto","top" : iof.top+options.Top });
+			}else{
+				$(".calender").css({left:"auto","right" : 0,"top" : iof.top+options.Top });
+			}
+
 			$(".calender").show();
+		});
+		$(document).on("click",function(e){
+			var car = $(e.target).closest(".calender");
+			var input = $(e.target).closest("[datetime]");
+			if(!car.size() && !input.size()){
+				$(".calender").hide();
+			}
 		});
 		/*$mhInput.live(options.Event,function(e){
 

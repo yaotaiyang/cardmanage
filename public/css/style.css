@@ -69,6 +69,7 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .expend .screen .fold{display:inline-block;}
 .expend .screen .unfold{display:none;}
 .table thead td em{color:#07e;font-size:11px;text-decoration:underline;margin-left:4px;text-shadow:none;cursor:pointer;}
+.table thead td em:hover{color:#f00;}
 .table tbody td{vertical-align:top;padding:5px 0;}
 .table td.hide{display:none;}
 .content .wrap{-webkit-box-flex:10000;box-flew:10000;width:25%;text-align:center;border-right:1px solid #96D0FF;background-color: #fff;-webkit-transition: width 100ms linear;}
@@ -91,24 +92,24 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .card.cardstatus3{background-color: #ffa3a3;}
 .content .card .completetime{margin:0 2px;background-color:#fff;}
 .content .card.highlightcard{animation: hlcard 2s;-webkit-animation:hlcard 2s;}
-.content .story-card{background-color:#96D0FF;word-break:break-all;padding:4px;margin:10px;line-height:1.3em;-webkit-user-select:none;cursor:default;position:relative}
+.content .story-card{background-color:#96D0FF;word-break:break-all;padding:4px;margin:10px;line-height:1.3em;-webkit-user-select:none;cursor:default;position:relative;border:1px solid #fff;outline:2px solid #96D0FF}
 .content .story-card .story-add-card{position:absolute;width:24px;height:24px;bottom:-2px;right:-4px;color:#07e;font-weight:bold;cursor:pointer;line-height:24px;text-align:center;font-size:20px;}
 .content .story-card .story-add-card:hover{color:#f00;}
 .content .description{padding:3px;word-break: break-all;word-wrap: break-word;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 4;-webkit-box-orient: vertical;margin:0 2px;background-color:#fff;}
 .content .ownerslist{margin:0 2px;background-color:#fff;font-size:0;}
-.content .owner{display:inline-block;padding:0 2px;font-size:12px;width:100%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
+.content .owner{display:block;padding:0 2px;font-size:12px;width:100%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
 .content em.red{padding:0 1px;margin:0 -1px;background-color:#fffc00;font-weight:inherit}
 form ul{padding-right:260px;position:relative;width:410px;}
 form ul .qrcode{position:absolute;right:0;top:0;width:256px;height:256px;background:url(../images/code.png) no-repeat;background-size:100% 100%;}
 form ul .qrcode .k{width:100%;padding-bottom:4px;}
 form ul .qrcode img{width:256px;height:256px;display:block;}
 form h4{background-color:#96D0FF;line-height:40px;text-align:center;font-size:1.2em;margin-bottom:10px;color: #fff;text-shadow:1px 1px 1px #333;}
-form li{padding:5px 0}
+form li{padding:8px 0}
 form .k{width:90px;text-align:right;float:left}
 form .k .red{color:#f00;font-weight: bold;vertical-align:middle;padding-right:2px;}
 form .v{text-align:left;margin-left:92px;display:block;}
 form .v *{font-size:14px;}
-form .v [type='text'],form .v [type='number'],form .v textarea{width:290px;border:1px solid #ddd;padding:4px;font-size:14px;display:block;}
+form .v [type='text'],form .v [type='number'],form .v textarea{width:400px;border:1px solid #ddd;padding:4px;font-size:14px;display:block;}
 
 form input.btn{background:#07e;width: 80px;line-height:24px;text-align: center;cursor: default;color:#fff;border:none;}
 form input.btn[disabled]{background-color:#ddd;}
@@ -116,7 +117,7 @@ form li.longwrap{width:668px;}
 form li.longwrap .v textarea{width:575px}
 form input[type='radio']{vertical-align:-2px;margin-left:10px;margin-right:3px;}
 form input[type='radio']:first-child{margin-left:0px;}
-form .v input[datetime]{border:1px solid #ddd;display:inline-block;width:78px;height:20px;padding:0;text-align:center;font-size:12px;}
+form .v input[datetime]{border:1px solid #ddd;display:inline-block;width:72px;height:20px;padding:0;text-align:center;font-size:12px;}
 form .date-wrap{padding:8px 0 0;}
 form textarea{line-height:1.5em;font-size:13px;}
 form .v .uploadbtn{position:relative;display:inline-block;height:40px;width:40px;overflow:hidden;background-color:#E9E9E9;text-align: center;color:#999;border:1px solid #ccc;}
@@ -127,7 +128,7 @@ form .v .uploadbtn .status{display:none;line-height:40px;}
 form .v .uploadbtn.loading .text{display:none;}
 form .v .uploadbtn.loading input{display:none;}
 form .v .uploadbtn.loading .status{display:inline-block;}
-form .v input.amount{display:inline-block;width:50px;height:20px;padding:0;margin-right:8px;font-size:12px;padding:0 4px;}
+form .v input.amount{display:inline-block;width:20px;height:20px;padding:0;margin-right:8px;font-size:12px;padding:0 4px;}
 .uploadbtn input{position:absolute;top:0;left:0;height:100%;width:100%;opacity:0;}
 form .imgs-wrap img,form .img-loading{display:inline-block;width:40px;height:40px;border:1px solid #ccc;margin-right:4px;}
 form .img-loading{vertical-align:top;line-height:40px;font-size:12px;text-align:center;}
@@ -147,7 +148,7 @@ form .v .createdby{color:#ccc;font-size:12px;position:absolute;left:92px;top:-16
 .rightmenu{position:fixed;top:0;left:0;z-index:105;width:100px;border:1px solid #ccc;background-color:#fff;border-radius:5px;}
 .rightmenu li{padding:2px 5px;cursor:default;text-align:center;}
 .rightmenu li:hover{color:#f00;}
-.calender{top:0;left:0;background:#fff;position:absolute;display:none;z-index:999;font-size:13px;border:1px solid #96D0FF;}
+.calender{top:0;left:0;background:#fff;position:absolute;display:none;z-index:999;font-size:13px;border:1px solid #96D0FF;width:210px;sssssssssssss}
 .calender select{border:1px solid #e1e1e1;margin:0 5px;}
 .calendertb{width:100%;}
 .calender td,.calender th{width:28px;height:24px;text-align:center;vertical-align:middle;}
@@ -159,18 +160,19 @@ form .v .createdby{color:#ccc;font-size:12px;position:absolute;left:92px;top:-16
 .calender .preMonth, .calender .nextMonth{font-weight:bold;cursor:pointer;color:#96D0FF;font-size:18px;}
 .calender .preMonth{padding:0 5px;}
 .calender .nextMonth{padding:0 5px;}
-.carddetail{position:fixed;top:0;right:0;background-color:#f0f0f0;bottom:0;width:460px;border-left:1px solid #ddd;overflow:auto;}
+.carddetail{position:fixed;top:0;right:0;background-color:#f0f0f0;bottom:0;width:580px;border-left:1px solid #ddd;overflow:auto;}
 .carddetail span.close{position:absolute;right:0;top:0;font-size:24px;cursor:pointer;text-align:center;width:32px;}
 .carddetail span.close:hover{color:#f00;}
 .carddetail .addcard{background-color:#fff;padding:20px 0 10px;}
-.carddetail .addcard .parentinfo{position:absolute;top:4px;left:92px;font-size:12px;color:#ccc;right: 50px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.carddetail .addcard .parentinfo{margin-left:92px;font-size:12px;color:#ccc;margin-right: 50px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 .carddetail .addcard ul{padding-right:0;width:auto;}
+.carddetail .addcard .show-title{margin:-10px 50px 0 92px;font-size:16px;}
 .carddetail.ng-animate{-webkit-transition:-webkit-transform 300ms ease-in-out;display: block!important;}
 .carddetail.ng-hide{-webkit-transform:translateX(100%)}
 .carddetail.ng-hide-remove-active{-webkit-transform: translateX(0px);}
 .carddetail .comment{padding:4px;}
 .carddetail .comment h4{font-size:12px;color:#666;padding-left:8px;line-height:2em;}
-.carddetail .comment .info{text-align:right;font-size:12px;color:#666;}
+.carddetail .comment .info{text-align:right;font-size:12px;color:#ccc;}
 .carddetail .comment .name{margin-left:8px;}
 .carddetail .comment li{margin:4px;padding:8px;background-color:#fff;-webkit-transition:opacity 50ms ease-in-out;}
 .carddetail .comment li.ng-enter{opacity:0;}
@@ -180,4 +182,4 @@ form .v .createdby{color:#ccc;font-size:12px;position:absolute;left:92px;top:-16
 .carddetail .delcard:hover{text-decoration:underline;}
 .peo-wrap{cursor:default;-webkit-user-select:none;}
 .peo-wrap em{display:inline-block;height:20px;line-height:20px;vertical-align:top;margin-right:10px;padding:0 4px;border:1px solid #ccc;}
-form .v select{opacity:0.5;}
+form .v .owner-select{opacity:0.5;}
