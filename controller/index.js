@@ -25,20 +25,6 @@ function init(req,res,obj){
     var Card = AV.Object.extend('Card');
     var Team = AV.Object.extend('Team');
     var Sprint = AV.Object.extend('Sprint');
-    /*if(!sprintId){
-        var sprint_q = new AV.Query(Sprint);
-        sprint_q.equalTo("teamId", teamId);
-        sprint_q.descending("createAt");
-        sprint_q.limit(1);
-        sprint_q.find({ //获取冲刺信息
-            success: function(data) {
-                res.redirect('/?teamId='+teamId + "&sprintId="+data[0].id);
-            },
-            error: function() {
-                res.redirect('/logout');
-            }
-        })
-    }*/
     var resobj = {title:"首页",teamId:teamId,sprintId:sprintId};
     var sprint_q = new AV.Query(Sprint);
     sprint_q.equalTo("teamId", teamId);
@@ -48,6 +34,9 @@ function init(req,res,obj){
             resobj.sprints=[];
             data.forEach(function(obj){
                 resobj.sprints.push({name:obj.get("name"),id:obj.id});
+                if(obj.id == sprintId){
+                    resobj.curSprint = obj;
+                }
             });
             resobj.teams = user.get("teams");
         },
