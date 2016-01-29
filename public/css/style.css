@@ -92,7 +92,7 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .card.cardstatus3{background-color: #ffa3a3;}
 .content .card .completetime{margin:0 2px;background-color:#fff;}
 .content .card.highlightcard{animation: hlcard 2s;-webkit-animation:hlcard 2s;}
-.content .story-card{background-color:#96D0FF;word-break:break-all;padding:4px;margin:10px;line-height:1.3em;-webkit-user-select:none;cursor:default;position:relative;border:1px solid #fff;outline:2px solid #96D0FF}
+.content .story-card{background-color:#96D0FF;word-break:break-all;padding:4px;margin:6px 8px;line-height:1.3em;-webkit-user-select:none;cursor:default;position:relative;border:1px solid #fff;outline:2px solid #96D0FF}
 .content .story-card .story-add-card{position:absolute;width:24px;height:24px;bottom:-2px;right:-4px;color:#07e;font-weight:bold;cursor:pointer;line-height:24px;text-align:center;font-size:20px;}
 .content .story-card .story-add-card:hover{color:#f00;}
 .content .description{padding:3px;word-break: break-all;word-wrap: break-word;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 4;-webkit-box-orient: vertical;margin:0 2px;background-color:#fff;}
