@@ -164,4 +164,34 @@ define(function(){
             });
         };
     });
+    app.directive('graphicpie',function(){
+        return {
+            restrict:"EA",
+            scope:{
+                option:'=option'
+            },
+            link:function(scope, element,attrs){
+                var myChart = echarts.init(element[0]);
+                var option = {
+                     title : {},
+                     tooltip : {
+                     trigger: 'item',
+                     formatter: "{a} <br/>{b} : {c} ({d}%)"
+                     },
+                     series : [
+                     ]
+                };
+                // 指定图表的配置项和数据
+                var cur_data = angular.extend(option,scope.option);
+                myChart.setOption(cur_data);
+                scope.$on("refreshData",function(){
+                    setTimeout(function(){
+                        var cur_data = angular.extend(option,scope.option);
+                        myChart.setOption(cur_data);
+                    },20);
+                });
+            }
+
+        };
+    });
 });

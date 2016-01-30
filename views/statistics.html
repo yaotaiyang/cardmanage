@@ -1,3 +1,138 @@
 {%include "layout/header"%}
-        开发中…
+<link rel="stylesheet" href="/public/css/style.css"/>
+<style>
+    .header{border-bottom:2px solid #96D0FF}
+    .border{border:1px solid #ddd;}
+    .content .total{margin: 10px 10px 0; background-color: #fcfcfc; padding: 10px;}
+    .content em.number{font-size:150%;color:#96D0FF;font-weight:bold;padding:0 4px;}
+    .graphic-item{width:400px;height:300px;border:1px solid #ddd;margin:10px 0 0 10px;float:left;}
+</style>
+<div class="body cls"  ng-app="statistics" ng-controller="body">
+    <div id="header" class="header ng-scope" ng-controller="head">
+        <h2>{%curTeam.get('name')%}-{%curSprint.get('name')%}</h2>
+        <span>统计报告</span>
+        <span class="user" ng-cloak>欢迎：{%user.username%}</span>
+    </div>
+    <div class="content" ng-controller="content" ng-cloak>
+        <div class="total border">
+            本冲刺共有<em class="number">{{cardList.length}}</em>个故事，
+            总任务量计划<em class="number">{{amount}}</em>天，
+            实际量<em class="number">{{realAmount}}</em>天
+        </div>
+        <div class="graphic-item" graphicpie option="option_class"></div>
+        <div class="graphic-item" graphicpie option="option_people"></div>
+    </div>
+</div>
+<script>
+    seajs.use(["angular","echarts","directive"],function(){
+        tplData.sprintId = tplData.sprintId || tplData.sprints[0].id;
+        var app = angular.module('statistics', ['ngDirective']);
+        app.controller("body",function($scope,$rootScope,$http){
+
+        });
+        app.controller("head",function($scope,$rootScope,$http){});
+        app.controller("content",function($scope,$rootScope,$http){
+            var url = "/ajax?type=get-card-list&sprintId="+ tplData.sprintId+"&teamId="+tplData.teamId;
+            $http.get(url).then(function(data){
+                tplData.cardList = $scope.cardList = data.data.result;
+                tplData.cards = [];
+                tplData.cardList.forEach(function(obj){
+                    obj.cards.forEach(function(cards){
+                        cards.list.forEach(function(card){
+                            tplData.cards.push(card);
+                        });
+                    });
+                });
+                $scope.cards = tplData.cards;
+                $scope.amount = $scope.realAmount = 0;
+                var cardClass={};
+                $scope.cards.forEach(function(card){
+                    if(cardClass[card.cardClass]){
+                        cardClass[card.cardClass] += 1;
+                    }else{
+                        cardClass[card.cardClass] = 1;
+                    }
+                    $scope.amount += Number(card.amount);
+                    $scope.realAmount += Number(card.realAmount);
+                });
+                if(isNaN($scope.amount)){
+                    $scope.amount = "--"
+                }
+                if(isNaN($scope.realAmount)){
+                    $scope.realAmount = "--"
+                }
+
+                //创建种类展示
+                var arr = [];
+                for(var key in cardClass){
+                    arr.push({name:key,value:cardClass[key]});
+                }
+                $scope.option_class ={
+                    title:{
+                        text:"任务种类分布(个)",
+                        x:'left',
+                        textStyle:{
+                            fontSize:14
+                        }
+                    },
+                    series:[
+                        {
+                            name:"任务种类(个)",
+                            type:"pie",
+                            radius : '60%',
+                            data:arr,
+                            label:{
+                                normal:{
+                                    formatter: '{b} '+'({c}个)'
+                                }
+                            }
+                        }
+                    ]
+                };
+
+                //任务量排行
+                 var peo_d = {};
+                $scope.cards.forEach(function(card){
+                    if(card.owners.length>0){
+                        card.owners.forEach(function(owner){
+                            if(peo_d[owner.username]){
+                                peo_d[owner.username]+= Number(card.amount);
+                            }else{
+                                peo_d[owner.username]=Number(card.amount);
+                            }
+                        });
+                    }
+                });
+                var arr = [];
+                for(var key in peo_d){
+                    arr.push({name:key,value:peo_d[key]});
+                }
+                $scope.option_people ={
+                    title:{
+                        text:"个人任务量(天)",
+                        x:'left',
+                        textStyle:{
+                            fontSize:14
+                        }
+                    },
+                    series:[
+                        {
+                            name:"个人任务量(天)",
+                            type:"pie",
+                            data:arr,
+                            radius : '60%',
+                            label:{
+                                normal:{
+                                    formatter: '{b} '+'({c}天)'
+                                }
+                            }
+                        }
+                    ]
+                };
+
+                $scope.$broadcast("refreshData");
+            },function(data){});
+        });
+    });
+</script>
 {%include "layout/footer"%}

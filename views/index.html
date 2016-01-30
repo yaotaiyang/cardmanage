@@ -64,7 +64,7 @@
                 <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" required rows="3" class="descri" name="descri"></textarea></span></li>
                 <li><label class="k">优先级：</label>
                     <span class="v"><input type="number" ng-model="card.weight" class="amount"/>
-                        <span ng-if="(card.type!='story')">　种类
+                        <span ng-if="(card.type!='story')">　种类:
                     <select title="选择添加用户" ng-model="card.cardClass" name="owners" class="card-class">
                         <option  ng-repeat="cardClass in cardClassList" value="{{cardClass}}">{{cardClass}}</option>
                     </select></span>
@@ -223,7 +223,7 @@
             $scope.filterid = "all";
             render({sprintId:tplData.sprintId,teamId:tplData.teamId,ownerId:"all"});
             function render(obj){
-                    var url = "/ajax?type=get-card-list&sprintId="+ obj.sprintId+"&teamId="+obj.teamId;
+                var url = "/ajax?type=get-card-list&sprintId="+ obj.sprintId+"&teamId="+obj.teamId;
                     $http.get(url).then(function(data){
                         tplData.cardList = $scope.cardList = data.data.result;
                     },function(data){});
