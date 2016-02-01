@@ -194,4 +194,44 @@ define(function(){
 
         };
     });
+    app.directive('graphicbar',function(){
+        return {
+            restrict:"EA",
+            scope:{
+                option:'=option'
+            },
+            link:function(scope, element,attrs){
+                var myChart = echarts.init(element[0]);
+                var option = {
+                    tooltip : {
+                        trigger: 'axis',
+                        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        }
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        top:50,
+                        containLabel: true
+                    },
+                    yAxis : [
+                        {
+                            type : 'value'
+                        }
+                    ]
+                };
+                // 指定图表的配置项和数据
+                scope.$on("refreshData",function(){
+                    setTimeout(function(){
+                        var cur_data = angular.extend(option,scope.option);
+                        console.log(cur_data);
+                        myChart.setOption(cur_data);
+                    },20);
+                });
+            }
+
+        };
+    });
 });

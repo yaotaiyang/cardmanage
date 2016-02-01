@@ -21,6 +21,7 @@
         </div>
         <div class="graphic-item" graphicpie option="option_class"></div>
         <div class="graphic-item" graphicpie option="option_people"></div>
+        <div class="graphic-item" graphicbar option="option_people_class"></div>
     </div>
 </div>
 <script>
@@ -112,6 +113,7 @@
                         text:"个人任务量(天)",
                         x:'left',
                         textStyle:{
+
                             fontSize:14
                         }
                     },
@@ -130,6 +132,67 @@
                     ]
                 };
 
+                //个人任务种类分布
+                var peo_card = {},arr_peo=[];
+                $scope.cards.forEach(function(card){
+                    if(card.owners.length>0){
+                        card.owners.forEach(function(owner){
+                            if(!peo_card[owner.username]){
+                                peo_card[owner.username]={
+                                    list:[]
+                                };
+                                arr_peo.push(owner.username);
+                            }
+                            peo_card[owner.username].list.push(card);
+                        });
+                    }
+                });
+                var series = [];
+                tplData.curTeam.cardClass.forEach(function(name){
+                    var cur_obj = {
+                        name:name,
+                        type:"bar",
+                        data:[]
+                    };
+                    arr_peo.forEach(function(peo_name){
+                        var cur_val  = 0;
+                        peo_card[peo_name].list.forEach(function(card){
+                            if(card.cardClass == name){
+                                cur_val += Number(card.amount);
+                            }
+                        });
+                        cur_obj.data.push(cur_val);
+                    });
+
+                    series.push(cur_obj);
+                });
+                var option = {
+                    title:{
+                        text:"个人任分类展示(天)",
+                        x:'left',
+                        textStyle:{
+                            fontSize:14
+                        }
+                    },
+                    tooltip : {
+                        trigger: 'axis',
+                        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        }
+                    },
+                    legend: {
+                        data:tplData.curTeam.cardClass,
+                        top:26
+                    },
+                    xAxis : [
+                        {
+                            type : 'category',
+                            data : arr_peo
+                        }
+                    ],
+                    series : series
+                };
+                $scope.option_people_class = option;
                 $scope.$broadcast("refreshData");
             },function(data){});
         });

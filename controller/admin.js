@@ -21,7 +21,23 @@ function init(req,res,obj){
             res.redirect('/');
         }
     }).then(function(){
-            obj.render(req,res,{template:"admin",data:renderObj});
+        var teams = [];
+        user.get("teams").forEach(function(team){
+            teams.push(team.teamId);
+        });
+        var Sprint = AV.Object.extend('Sprint');
+        var sprint_q = new AV.Query(Sprint);
+        sprint_q.containedIn('teamId',teams);
+        sprint_q.descending("createAt");
+        sprint_q.find({ //获取冲刺信息
+            success:function(data){
+                renderObj.sprints=data;
+                obj.render(req,res,{template:"admin",data:renderObj});
+            },
+            error:function(){
+                obj.render(req,res,{data:{title:"获取数据失败",err:{}}});
+            }
+         });
     });
 }
 exports.init=init;

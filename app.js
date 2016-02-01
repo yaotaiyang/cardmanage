@@ -19,7 +19,7 @@ template.config('openTag','{%');
 template.config('closeTag','%}');
 //template.config('compress',true);
 template.config('extname', '.html');
-app.engine('.html', template.__express);
+app.engine('.html', template.__express); 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
 // 加载 cookieSession 以支持 AV.User  的会话状态

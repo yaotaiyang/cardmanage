@@ -1,3 +1,54 @@
 {%include "layout/header"%}
-用户管理
+<link rel="stylesheet" href="/public/css/style.css"/>
+<style>
+    .header{border-bottom:2px solid #96D0FF}
+    .team-list{border:1px solid #ddd;margin:10px;}
+    .team-list h3{background-color:#f2f2f2;line-height:32px;padding:0 10px;}
+    .team-list .item{display:inline-block;border:1px solid #ddd;background-color:#fff;padding:4px;margin:4px;}
+    .team-list .item-wrap{padding:10px}
+</style>
+<div class="body cls"  ng-app="admin" ng-controller="body">
+    <div id="header" class="header ng-scope">
+        <h2>{%company.get('name')%}</h2>
+        <span>后台管理系统</span>
+        <span class="user" ng-cloak>欢迎：{%user.username%}</span>
+    </div>
+    <div class="content" ng-controller="content" ng-cloak>
+        <div class="team-list" ng-repeat="team in teams">
+            <h3>{{team.teamName}}</h3>
+            <div class="item-wrap">
+                <h4>冲刺调整</h4>
+                <ul class="sprint-list">
+                    <li class="sprints item" ng-repeat="sprint in team.sprints">
+                        <label>
+                            <input type="checkbox"/>
+                            <span>{{sprint.name}}</span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<script>
+    seajs.use(["angular","directive"],function(){
+        var app = angular.module('admin', ['ngDirective']);
+        app.controller("body",function($scope,$rootScope,$http){
+
+        });
+        app.controller("content",function($scope,$rootScope,$http){
+            $scope.teams = tplData.user.teams;
+            $scope.teams.forEach(function(team){
+                tplData.sprints.forEach(function(sprint){
+                    if(sprint.teamId == team.teamId){
+                        team.sprints = team.sprints || [];
+                        team.sprints.push(sprint);
+                    }
+                });
+            });
+        });
+    });
+</script>
 {%include "layout/footer"%}
