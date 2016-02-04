@@ -4,14 +4,18 @@
     .header{border-bottom:2px solid #96D0FF}
     .team-list{border:1px solid #ddd;margin:10px;}
     .team-list h3{background-color:#f2f2f2;line-height:32px;padding:0 10px;}
-    .team-list .item{display:inline-block;border:1px solid #ddd;background-color:#fff;padding:4px;margin:4px;}
+    .team-list .item{display:inline-block;border:1px solid #ddd;background-color:#fff;margin:4px;}
     .team-list .item-wrap{padding:10px}
+    .team-list .option{padding:5px;}
+    .team-list .add-sprint{cursor:pointer;padding:4px 8px;}
+    .team-list .add-sprint:hover{color:#f00;}
+    .team-list .people{padding:4px 8px;}
 </style>
 <div class="body cls"  ng-app="admin" ng-controller="body">
     <div id="header" class="header ng-scope">
         <h2>{%company.get('name')%}</h2>
         <span>后台管理系统</span>
-        <span class="user" ng-cloak>欢迎：{%user.username%}</span>
+        <span class="user" ng-cloak>欢迎：{%user.displayName%}</span>
     </div>
     <div class="content" ng-controller="content" ng-cloak>
         <div class="team-list" ng-repeat="team in teams">
@@ -19,36 +23,138 @@
             <div class="item-wrap">
                 <h4>冲刺调整</h4>
                 <ul class="sprint-list">
-                    <li class="sprints item" ng-repeat="sprint in team.sprints">
-                        <label>
-                            <input type="checkbox"/>
-                            <span>{{sprint.name}}</span>
-                        </label>
+                    <li ng-dblclick="modify('sprint',sprint)" class="sprints item" ng-repeat="sprint in team.sprints">
+                        <h3>{{sprint.name}}</h3>
+                        <div class="option">
+                            <label>
+                                <input type="checkbox"/>
+                                设默认
+                            </label>
+                            <label>
+                                <input type="checkbox"/>
+                                显示到下拉框
+                            </label>
+                        </div>
                     </li>
+                    <li class="item add-sprint" ng-click="modify('addsprint',team.sprints)">+</li>
                 </ul>
             </div>
-
-
+            <div class="item-wrap">
+                <h4>人员调整</h4>
+                <ul class="sprint-list">
+                    <li ng-dblclick="modify('user',people)" class="people item" ng-repeat="people in team.peoples">
+                        <span>{{people.displayName}}</span>
+                    </li>
+                    <li class="item add-sprint" ng-click="modify('adduser',team.peoples)">+</li>
+                </ul>
+            </div>
         </div>
+    </div>
+    <div class="carddetail" ng-cloak ng-show="show" ng-controller="modify">
+        <form class="addcard ng-pristine ng-valid" ng-submit="submit(actiontype)">
+            <div class="show-title cls">{{title}}</div>
+                <ul ng-if="actiontype=='adduser'">
+                    <li><label class="k"><em class="red">*</em>登录名：</label><span class="v"><input type="text" ng-model="data.username" required rows="1" class="title"  placeholder="登录使用后续不能修改"/></span></li>
+                    <li><label class="k"><em class="red">*</em>显示名称：</label><span class="v"><input type="text" ng-model="data.displayName" required rows="1" class="title"  placeholder="系统中显示名称"/></span></li>
+                    <li><label class="k"><em class="red">*</em>登录密码：</label><span class="v"><input type="text" ng-model="data.password" required rows="1" class="title" placeholder="登录密码" /></span></li>
+                    <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="提交" /></span></li>
+                </ul>
+                <ul ng-if="actiontype=='user'">
+                    <li><label class="k"><em class="red">*</em>登录名：</label><span class="v">{{data.username}}</span></li>
+                    <li><label class="k"><em class="red">*</em>显示名称：</label><span class="v"><input type="text" ng-model="data.displayName" required rows="1" class="title" placeholder="系统中显示名称" /></span></li>
+                    <li><label class="k"><em class="red">*</em>密码：</label><span class="v"><input type="text" ng-model="data.password" required rows="1" class="title" placeholder="密码" /></span></li>
+                    <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="提交" /></span></li>
+                </ul>
+                <ul ng-if="actiontype=='addsprint'||actiontype=='sprint'">
+                    <li><label class="k"><em class="red">*</em>计划名称：</label><span class="v"><input type="text" ng-model="data.name" required rows="1" class="title"/></span></li>
+                    <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="提交" /></span></li>
+                </ul>
+            <span class="close" ng-click="closepanel()">×</span>
+        </form>
     </div>
 </div>
 <script>
-    seajs.use(["angular","directive"],function(){
-        var app = angular.module('admin', ['ngDirective']);
+    seajs.use(["angular","angular-animate","directive"],function(){
+        var app = angular.module('admin', ['ngAnimate','ngDirective']);
         app.controller("body",function($scope,$rootScope,$http){
-
+            $scope.$on("modify",function(event,type,data){
+                $scope.$broadcast("showmodify",type,data);
+            });
         });
         app.controller("content",function($scope,$rootScope,$http){
             $scope.teams = tplData.user.teams;
-            $scope.teams.forEach(function(team){
-                tplData.sprints.forEach(function(sprint){
-                    if(sprint.teamId == team.teamId){
-                        team.sprints = team.sprints || [];
-                        team.sprints.push(sprint);
-                    }
-                });
+            $scope.modify = function(type,data){
+                $scope.$emit("modify",type,data);
+            };
+            var cur_team;
+            tplData.user.teams.forEach(function(team){
+                if(team.teamId == tplData.params.teamId){
+                    cur_team = team;
+                }
             });
+            tplData.curTeam = cur_team;
+            tplData.sprints.forEach(function(sprint){
+                if(sprint.teamId == cur_team.teamId){
+                    cur_team.sprints = cur_team.sprints || [];
+                    cur_team.sprints.push(sprint);
+                }
+            });
+            getdata($http,cur_team);
         });
+        app.controller("modify",function($scope,$rootScope,$http){
+            $scope.show = 0;
+            $scope.$on("showmodify",function(event,type,data){
+                $scope.actiontype = type;
+                var objtitle  = {
+                    adduser:"添加用户",
+                    addsprint:"添加计划",
+                    sprint:"修改计划",
+                    user:"修改用户"
+                };
+                var renderdata = data;
+                if(type == "addsprint"){
+                    renderdata = {}
+                }else if(type == "adduser"){
+                    renderdata = {}
+                }
+                $scope.title = objtitle[type];
+                $scope.data = renderdata;
+                $scope.show = 1;
+            });
+            $scope.submit=function(type){
+                $scope.ajaxing = 1;
+                if(type == "adduser"){
+                    var url = "/ajax?type=add-user&teamId="+tplData.params.teamId;
+                    $http.post(url,$scope.data).success(function(data){
+                        if(data.status == 1) {
+                            $scope.ajaxing = 0;
+                            tplData.curTeam.peoples.push(data.result);
+                        }else{
+                            alert(data.result.err.message);
+                            $scope.ajaxing = 0;
+                        }
+                    }).error(function(){
+                        alert("添加失败");
+                        $scope.ajaxing = 0;
+                    });
+                    console.log($scope.data);
+                }else if(type == "user"){
+                    console.log($scope.data);
+                }else if(type == "sprint"){
+                    console.log($scope.data);
+                }else if(type == "addsprint"){
+                    console.log($scope.data);
+                }
+            }
+            $scope.closepanel=function(){
+                $scope.show = 0;
+            };
+        });
+        function getdata($http,team){
+            $http.get("/ajax?type=get-people&teamId="+team.teamId).success(function(data){
+                team.peoples = data.result;
+            });
+        }
     });
 </script>
 {%include "layout/footer"%}

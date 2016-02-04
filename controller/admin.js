@@ -8,6 +8,23 @@ function init(req,res,obj){
     if(user.get("role") != "admin"){
         res.redirect('/');
     }
+    var teamId = req.query["teamId"];
+    var teams = user.get("teams");
+    var cur_teamId= teams[0].teamId;
+    if(!teamId){
+        res.redirect('admin/?teamId='+cur_teamId);
+        return;
+    };
+    var allow = 0;
+    for(var i=0;i<teams.length;i++){
+        if(teams[i].teamId == teamId){
+            allow = 1;
+        }
+    }
+    if(allow!=1){
+        //校验权限
+        res.redirect('/logout');
+    }
     var renderObj = {
         title:"后台管理",
         user:AV.User.current()

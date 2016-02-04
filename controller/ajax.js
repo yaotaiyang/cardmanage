@@ -226,8 +226,33 @@ function init(req,res,obj){
                 obj.render(req,res,{data:data});
             }
         },function(){ obj.render(req,res,{data:{title:"保存评论失败",err:{}}})});
-    }
-    else{
+    } else if(type=="add-user"){
+        var username = req.body.username,password=req.body.password,displayName=req.body.displayName;
+        if(!(username&&password&&displayName)){
+            obj.render(req,res,{data:{title:"参数不正确",err:{}}});
+            return;
+        };
+        var teamId = req.query["teamId"];
+        var cur_user = AV.User.current();
+        var companyId = AV.User.current().get("companyId");
+        var teams = [];
+        cur_user.get("teams").forEach(function(team){
+            if(team["teamId"]==teamId){
+                teams.push(team);
+            }
+        });
+        var user = new AV.User();
+        user.set('username', username);
+        user.set('password', password);
+        user.set('companyId', companyId);
+        user.set('teams',teams);
+        user.set('displayName',displayName);
+        user.save().then(function(user){
+            obj.render(req,res,{data:user});
+        },function(error){
+            obj.render(req,res,{data:{title:"登录失败",err:error}});
+        });
+    }else{
         obj.render(req,res,{data:{title:"登录失败",err:{}}});
     }
 }
