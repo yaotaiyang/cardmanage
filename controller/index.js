@@ -37,7 +37,6 @@ function init(req,res,obj){
     var sprint_q = new AV.Query(Sprint);
     sprint_q.equalTo("teamId", teamId);
     sprint_q.notEqualTo("deleted", "1");
-    sprint_q.addDescending("createAt");
     sprint_q.addDescending("isDefault");
     sprint_q.find({ //获取冲刺信息
         success: function(data) {

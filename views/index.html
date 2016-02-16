@@ -18,8 +18,10 @@
             </select>
         </form>
         <a class="statistics" href="{{statistics}}">查看统计</a>
-        <span class="notice"></span>
-        <span class="user" ng-cloak>欢迎：{%user.displayName%}</span>
+        {%if user.role=='admin'%}&nbsp;&nbsp;
+        <a href="/admin">管理后台</a>
+        {%/if%}
+        <span class="user" ng-cloak>欢迎：{%user.displayName%} &nbsp;<a href="/logout">退出</a></span>
     </div>
     <div id="content" ng-cloak class="content cls" ng-controller="list">
         <table class="table">

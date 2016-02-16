@@ -45,7 +45,9 @@ function init(req,res,obj){
         var Sprint = AV.Object.extend('Sprint');
         var sprint_q = new AV.Query(Sprint);
         sprint_q.containedIn('teamId',teams);
-        sprint_q.descending("createAt");
+        sprint_q.addDescending("createdAt");
+      /*  sprint_q.addDescending("isDefault");
+        sprint_q.descending("createAt");*/
         sprint_q.find({ //获取冲刺信息
             success:function(data){
                 renderObj.sprints=data;

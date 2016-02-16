@@ -254,6 +254,10 @@ function init(req,res,obj){
             obj.render(req,res,{data:{title:"登录失败",err:error}});
         });
     }else if(type=="update-user"){
+        var cur_user = AV.User.current();
+        if(cur_user.get("companyId")!=req.body.companyId){
+            obj.render(req,res,{data:{title:"无权修改",err:{message:"无权修改"}}});
+        }
         AV.Cloud.useMasterKey();
         var username = req.body.username,password=req.body.password,displayName=req.body.displayName,email = req.body.email;
         var companyId = req.body.companyId,id = req.body.objectId;
