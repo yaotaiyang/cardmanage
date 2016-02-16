@@ -11,7 +11,7 @@
     <div id="header" class="header ng-scope" ng-controller="head">
         <h2>{%curTeam.get('name')%}-{%curSprint.get('name')%}</h2>
         <span>统计报告</span>
-        <span class="user" ng-cloak>欢迎：{%user.username%}</span>
+        <span class="user" ng-cloak>欢迎：{%user.displayName%}</span>
     </div>
     <div class="content" ng-controller="content" ng-cloak>
         <div class="total border">
@@ -96,10 +96,10 @@
                 $scope.cards.forEach(function(card){
                     if(card.owners.length>0){
                         card.owners.forEach(function(owner){
-                            if(peo_d[owner.username]){
-                                peo_d[owner.username]+= Number(card.amount);
+                            if(peo_d[owner.displayName]){
+                                peo_d[owner.displayName]+= Number(card.amount);
                             }else{
-                                peo_d[owner.username]=Number(card.amount);
+                                peo_d[owner.displayName]=Number(card.amount);
                             }
                         });
                     }
@@ -137,13 +137,13 @@
                 $scope.cards.forEach(function(card){
                     if(card.owners.length>0){
                         card.owners.forEach(function(owner){
-                            if(!peo_card[owner.username]){
-                                peo_card[owner.username]={
+                            if(!peo_card[owner.displayName]){
+                                peo_card[owner.displayName]={
                                     list:[]
                                 };
-                                arr_peo.push(owner.username);
+                                arr_peo.push(owner.displayName);
                             }
-                            peo_card[owner.username].list.push(card);
+                            peo_card[owner.displayName].list.push(card);
                         });
                     }
                 });

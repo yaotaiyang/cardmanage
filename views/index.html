@@ -14,12 +14,12 @@
             </select>
             <label for="filterpeo">责任人：</label>
             <select ng-cloak name="dateselect" id="filterpeo" ng-model="ownerId" ng-change="change(1)">
-                <option ng-repeat="val in companyPeople" value="{{val.objectId}}">{{val.username}}</option>
+                <option ng-repeat="val in companyPeople" value="{{val.objectId}}">{{val.displayName}}</option>
             </select>
         </form>
         <a class="statistics" href="{{statistics}}">查看统计</a>
         <span class="notice"></span>
-        <span class="user" ng-cloak>欢迎：{%user.username%}</span>
+        <span class="user" ng-cloak>欢迎：{%user.displayName%}</span>
     </div>
     <div id="content" ng-cloak class="content cls" ng-controller="list">
         <table class="table">
@@ -71,8 +71,8 @@
                     </span>
                 </li>
                 <li><label class="k">负责人：</label><span class="v">
-                    <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.username}}</em></span>
-                    <select class="owner-select" ng-change="change(cacheS)" title="选择添加用户" ng-model="cacheS" name="owners" ng-options="owner.objectId as owner.username for owner in companyPeople">
+                    <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.displayName}}</em></span>
+                    <select class="owner-select" ng-change="change(cacheS)" title="选择添加用户" ng-model="cacheS" name="owners" ng-options="owner.objectId as owner.displayName for owner in companyPeople">
                     </select></span>
                 </li>
                 <li class="imgs"><label class="k">图片：</label>
@@ -97,7 +97,7 @@
                 </li>
                <li ng-repeat="comment in comments | orderBy:'updatedAt':'reverse'">
                    <div class="cont">{{comment.description}}</div>
-                   <div class="info"><span class="time">{{comment.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span><span class="name">{{comment.createdBy.username}}</span></div>
+                   <div class="info"><span class="time">{{comment.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span><span class="name">{{comment.createdBy.displayName}}</span></div>
                </li>
             </ul>
         </div>
@@ -112,7 +112,7 @@
             return function(owners){
                 var arr_name = [];
                 for(var i=0;i<owners.length;i++){
-                    arr_name.push(owners[i].username);
+                    arr_name.push(owners[i].displayName);
                 }
                 return arr_name.join(",");
             }
@@ -195,7 +195,7 @@
             $scope.teamId=tplData.teamId;
             $scope.sprintId =tplData.sprintId;
             $scope.sprints = tplData.sprints;
-            $scope.companyPeople=[{"objectId":"all","username":"全部"}];//下拉选择添加全部
+            $scope.companyPeople=[{"objectId":"all","displayName":"全部"}];//下拉选择添加全部
             $scope.ownerId="all";
             $scope.statistics = "/statistics?teamId="+$scope.teamId+"&sprintId="+$scope.sprintId;
             for(var i=0;i<tplData.companyPeople.length;i++){
@@ -313,7 +313,7 @@
                     $scope.showTitle="";
                     $scope.submit=function(e){
                         $scope.ajaxing = 1;
-                        var url = "/ajax?type=updata-card&teamId="+tplData.teamId+"&sprintId="+tplData.sprintId+"&cardId="+$scope.card.objectId;
+                        var url = "/ajax?type=update-card&teamId="+tplData.teamId+"&sprintId="+tplData.sprintId+"&cardId="+$scope.card.objectId;
                         $http.post(url,$scope.card).success(function(data){
                             if(data.status == 1) {
                                 $scope.show = 0;

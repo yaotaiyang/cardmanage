@@ -95,7 +95,7 @@ function init(req,res,obj){
                 obj.render(req,res,{data:{title:"添加失败",err:{}}});
             }
         });
-    }else if(type=="updata-card"){
+    }else if(type=="update-card"){
         var teamId = req.query["teamId"];
         var sprintId = req.query["sprintId"];
         var cardId = req.query["cardId"];
@@ -227,7 +227,7 @@ function init(req,res,obj){
             }
         },function(){ obj.render(req,res,{data:{title:"保存评论失败",err:{}}})});
     } else if(type=="add-user"){
-        var username = req.body.username,password=req.body.password,displayName=req.body.displayName;
+        var username = req.body.username,password=req.body.password,displayName=req.body.displayName,email= req.body.email;
         if(!(username&&password&&displayName)){
             obj.render(req,res,{data:{title:"参数不正确",err:{}}});
             return;
@@ -246,14 +246,77 @@ function init(req,res,obj){
         user.set('password', password);
         user.set('companyId', companyId);
         user.set('teams',teams);
+        user.set("email",email);
         user.set('displayName',displayName);
         user.save().then(function(user){
             obj.render(req,res,{data:user});
         },function(error){
             obj.render(req,res,{data:{title:"登录失败",err:error}});
         });
+    }else if(type=="update-user"){
+        AV.Cloud.useMasterKey();
+        var username = req.body.username,password=req.body.password,displayName=req.body.displayName,email = req.body.email;
+        var companyId = req.body.companyId,id = req.body.objectId;
+        if(!(username&&displayName)){
+            obj.render(req,res,{data:{title:"参数不正确",err:{}}});
+            return;
+        };
+        var user_q = new AV.Query(AV.User);
+        user_q.get(id).then(function(user){
+            user.set("username",username);
+            user.set("displayName",displayName);
+            user.set("email",email);
+            if(password!=undefined && password.length){
+                user.set("password",password);
+            }
+            user.save().then(function(user_r){
+                obj.render(req,res,{data:user_r});
+            },function(error){
+                obj.render(req,res,{data:{title:"修改失败",err:error}});
+            });
+        },function(error){
+            obj.render(req,res,{data:{title:"修改失败",err:error}});
+        });
+    }else if(type=="add-sprint"){
+        var name = req.body.name,teamId = req.body.teamId;
+        var cur_user = AV.User.current();
+        var companyId = cur_user.get("companyId");
+        if(!(name&&teamId)){
+            obj.render(req,res,{data:{title:"参数不正确",err:{message:"参数不正确"}}});
+            return;
+        };
+        var Sprint = AV.Object.extend('Sprint');
+        var sprint = new Sprint();
+        sprint.set("companyId",companyId);
+        sprint.set("teamId",teamId);
+        sprint.set("name",name);
+        sprint.save().then(function(cur_sprint){
+            obj.render(req,res,{data:cur_sprint});
+        },function(error){
+            obj.render(req,res,{data:{title:"修改失败",err:error}});
+        });
+    }else if(type=="update-sprint"){
+        var name = req.body.name,id=req.body.objectId,deleted = req.body.deleted,isDefault = req.body.isDefault;
+        if(!(name)){
+            obj.render(req,res,{data:{title:"参数不正确",err:{message:"参数不正确"}}});
+            return;
+        };
+        var Sprint = AV.Object.extend('Sprint');
+        var sprint_q = new AV.Query(Sprint);
+        sprint_q.get(id,function(cur_sprint){
+            cur_sprint.set("name",name);
+            cur_sprint.set("deleted",deleted);
+            cur_sprint.set("isDefault",isDefault);
+            cur_sprint.save().then(function(new_sprint){
+                obj.render(req,res,{data:new_sprint});
+            },function(error){
+                obj.render(req,res,{data:{title:"修改失败",err:error}});
+            });
+        },function(error){
+            obj.render(req,res,{data:{title:"修改失败",err:error}});
+        });
     }else{
-        obj.render(req,res,{data:{title:"登录失败",err:{}}});
+        obj.render(req,res,{data:{title:"登录失败",err:{message:"该接口不存在"}}});
     }
 }
 exports.init=init;

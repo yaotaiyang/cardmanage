@@ -23,15 +23,15 @@
             <div class="item-wrap">
                 <h4>冲刺调整</h4>
                 <ul class="sprint-list">
-                    <li ng-dblclick="modify('sprint',sprint)" class="sprints item" ng-repeat="sprint in team.sprints">
+                    <li ng-dblclick="modify('sprint',sprint)" class="sprints item" ng-repeat="sprint in sprints">
                         <h3>{{sprint.name}}</h3>
                         <div class="option">
                             <label>
-                                <input type="checkbox"/>
+                                <input type="checkbox" ng-true-value="'1'" ng-false-value="'0'" ng-checked="sprint.isDefault==1" ng-model="sprint.isDefault" ng-change="updatesprint(sprint)"/>
                                 设默认
                             </label>
                             <label>
-                                <input type="checkbox"/>
+                                <input type="checkbox" ng-true-value="'0'" ng-false-value="'1'" ng-checked="sprint.deleted!=1" ng-model="sprint.deleted" ng-change="updatesprint(sprint)"/>
                                 显示到下拉框
                             </label>
                         </div>
@@ -56,13 +56,15 @@
                 <ul ng-if="actiontype=='adduser'">
                     <li><label class="k"><em class="red">*</em>登录名：</label><span class="v"><input type="text" ng-model="data.username" required rows="1" class="title"  placeholder="登录使用后续不能修改"/></span></li>
                     <li><label class="k"><em class="red">*</em>显示名称：</label><span class="v"><input type="text" ng-model="data.displayName" required rows="1" class="title"  placeholder="系统中显示名称"/></span></li>
+                    <li><label class="k"><em class="red">*</em>邮箱：</label><span class="v"><input type="text" ng-model="data.email" required rows="1" class="title"  placeholder="邮箱名"/></span></li>
                     <li><label class="k"><em class="red">*</em>登录密码：</label><span class="v"><input type="text" ng-model="data.password" required rows="1" class="title" placeholder="登录密码" /></span></li>
                     <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="提交" /></span></li>
                 </ul>
                 <ul ng-if="actiontype=='user'">
-                    <li><label class="k"><em class="red">*</em>登录名：</label><span class="v">{{data.username}}</span></li>
+                    <li><label class="k"><em class="red">*</em>登录名：</label><span class="v"><input type="text" ng-model="data.username" required rows="1" class="title" placeholder="登录名" /></span></li>
                     <li><label class="k"><em class="red">*</em>显示名称：</label><span class="v"><input type="text" ng-model="data.displayName" required rows="1" class="title" placeholder="系统中显示名称" /></span></li>
-                    <li><label class="k"><em class="red">*</em>密码：</label><span class="v"><input type="text" ng-model="data.password" required rows="1" class="title" placeholder="密码" /></span></li>
+                    <li><label class="k"><em class="red">*</em>邮箱：</label><span class="v"><input type="text" ng-model="data.email" required rows="1" class="title"  placeholder="邮箱名"/></span></li>
+                    <li><label class="k">密码：</label><span class="v"><input type="text" ng-model="data.password" rows="1" class="title" placeholder="为空表示不更改" /></span></li>
                     <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="提交" /></span></li>
                 </ul>
                 <ul ng-if="actiontype=='addsprint'||actiontype=='sprint'">
@@ -86,6 +88,17 @@
             $scope.modify = function(type,data){
                 $scope.$emit("modify",type,data);
             };
+            $scope.updatesprint = function(sprint){
+                var url = "/ajax?type=update-sprint";
+                $http.post(url,sprint).success(function(data){
+                    if(data.status == 1) {
+                    }else{
+                        alert(data.result.err.message);
+                    }
+                }).error(function(){
+                    alert("添加失败");
+                });
+            };
             var cur_team;
             tplData.user.teams.forEach(function(team){
                 if(team.teamId == tplData.params.teamId){
@@ -93,12 +106,7 @@
                 }
             });
             tplData.curTeam = cur_team;
-            tplData.sprints.forEach(function(sprint){
-                if(sprint.teamId == cur_team.teamId){
-                    cur_team.sprints = cur_team.sprints || [];
-                    cur_team.sprints.push(sprint);
-                }
-            });
+            $scope.sprints = tplData.sprints;
             getdata($http,cur_team);
         });
         app.controller("modify",function($scope,$rootScope,$http){
@@ -139,11 +147,49 @@
                     });
                     console.log($scope.data);
                 }else if(type == "user"){
-                    console.log($scope.data);
+                    var url = "/ajax?type=update-user";
+                    $http.post(url,$scope.data).success(function(data){
+                        if(data.status == 1) {
+                            $scope.ajaxing = 0;
+                            $scope.show = 0;
+                        }else{
+                            alert(data.result.err.message);
+                            $scope.ajaxing = 0;
+                        }
+                    }).error(function(){
+                        alert("添加失败");
+                        $scope.ajaxing = 0;
+                    });
                 }else if(type == "sprint"){
-                    console.log($scope.data);
+                    var url = "/ajax?type=update-sprint";
+                    $http.post(url,$scope.data).success(function(data){
+                        if(data.status == 1) {
+                            $scope.ajaxing = 0;
+                            $scope.show = 0;
+                        }else{
+                            alert(data.result.err.message);
+                            $scope.ajaxing = 0;
+                        }
+                    }).error(function(){
+                        alert("添加失败");
+                        $scope.ajaxing = 0;
+                    });
                 }else if(type == "addsprint"){
-                    console.log($scope.data);
+                    $scope.data.teamId = tplData.params.teamId;
+                    var url = "/ajax?type=add-sprint";
+                    $http.post(url,$scope.data).success(function(data){
+                        if(data.status == 1) {
+                            tplData.sprints.push(data.result);
+                            $scope.ajaxing = 0;
+                            $scope.show = 0;
+                        }else{
+                            alert(data.result.err.message);
+                            $scope.ajaxing = 0;
+                        }
+                    }).error(function(){
+                        alert("添加失败");
+                        $scope.ajaxing = 0;
+                    });
                 }
             }
             $scope.closepanel=function(){

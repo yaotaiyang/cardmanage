@@ -5,6 +5,7 @@ function init(req,res,obj){
     var AV= obj.AV;
     var username = req.body.username;
     var password = req.body.password;
+    console.log(username,password);
     AV.User.logIn(username, password, {
         success: function(user) {
             res.redirect('/');

@@ -2,6 +2,8 @@
  * Created by yaoxy on 2015/10/30.
  */
 function init(req,res,obj){
+
+
     var AV= obj.AV;
     var teamId = req.query["teamId"];
     var user = AV.User.current();
@@ -21,6 +23,12 @@ function init(req,res,obj){
         //校验权限
         res.redirect('/logout');
     }
+
+    var roleACL = new AV.ACL();
+    var role = new AV.Role('Administrator', roleACL);
+    role.getUsers().add(user);
+    role.save();
+
     var sprintId = req.query["sprintId"];
     var Card = AV.Object.extend('Card');
     var Team = AV.Object.extend('Team');
@@ -28,7 +36,9 @@ function init(req,res,obj){
     var resobj = {title:"首页",teamId:teamId,sprintId:sprintId};
     var sprint_q = new AV.Query(Sprint);
     sprint_q.equalTo("teamId", teamId);
-    sprint_q.descending("createAt");
+    sprint_q.notEqualTo("deleted", "1");
+    sprint_q.addDescending("createAt");
+    sprint_q.addDescending("isDefault");
     sprint_q.find({ //获取冲刺信息
         success: function(data) {
             resobj.sprints=[];
