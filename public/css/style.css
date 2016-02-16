@@ -76,7 +76,7 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .wrap:last-child{border-right: none}
 .content .wrap.fold{width:100px;-webkit-box-flex:0.00001;box-flex:0.00001;}
 .content .cardlist{text-align:left;font-size:12px;background-color:#fff;padding-bottom:10px;background-color:#fdfdfd;}
-.content .card{position:relative;-webkit-user-select:none;float:left;width:138px;margin:4px 0 4px 8px;padding-bottom:2px;cursor:default;background-color:#96D0FF;box-sizing:border-box;-webkit-box-sizing:border-box;-webkit-user-select:none;}
+.content .card{position:relative;-webkit-user-select:none;float:left;width:138px;margin:4px 0 4px 8px;padding-bottom:2px;cursor:default;background-color:#A2FFCE;box-sizing:border-box;-webkit-box-sizing:border-box;-webkit-user-select:none;}
 .content .card[classify='bug']{background-color:#ffebb6;}
 .content .card[classify='插入项']{background-color:#ffa3a3;}
 .content .card.cardstatus1{background-color: #b6fcd7;}
