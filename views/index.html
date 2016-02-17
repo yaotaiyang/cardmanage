@@ -53,7 +53,7 @@
             </tbody>
         </table>
     </div>
-    <div class="carddetail" ng-cloak ng-show="show" ng-controller="cardDetail" paste>
+    <div class="carddetail scroll-wrap" ng-cloak ng-show="show" ng-controller="cardDetail" paste>
         <form class="addcard ng-pristine ng-valid" ng-submit="submit()">
             <div class="show-title cls" ng-if="showTitle">{{showTitle}}</div>
             <div ng-if="card.parentName" class="parentinfo">所属：{{card.parentName}}</div>
@@ -69,7 +69,16 @@
                         <span ng-if="(card.type!='story')">　种类:
                     <select title="选择添加用户" ng-model="card.cardClass" name="owners" class="card-class">
                         <option  ng-repeat="cardClass in cardClassList" value="{{cardClass}}">{{cardClass}}</option>
-                    </select></span>
+                    </select>
+                        　　所属故事 : <select style="max-width:140px;" title="选择该任务到其他故事" ng-model="card.parentId" name="owners" class="card-class" ng-change="movetostory('{{card.parentId}}',card)">
+                                <option  ng-repeat="story in storyList" value="{{story.objectId}}">{{story.title}}</option>
+                            </select>
+                        </span>
+                        <span ng-if="(card.type=='0')">
+                        　　所属冲刺 : <select style="max-width:140px;" title="选择该故事到其他冲刺" ng-model="card.sprintId" name="owners" class="card-class" ng-change="movetosprint('{{card.sprintId}}',card)">
+                                <option  ng-repeat="sprint in sprintList" value="{{sprint.id}}">{{sprint.name}}</option>
+                            </select>
+                        </span>
                     </span>
                 </li>
                 <li><label class="k">负责人：</label><span class="v">
@@ -87,21 +96,20 @@
                         </span>
                     </span>
                 </li>
-                <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="提交" /><span class="createdby" ng-if="card.createdBy">{{card.createdBy.userName}} 创建于 {{card.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span></span></li>
+                <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="保 存" /><span class="createdby" ng-if="card.createdBy">{{card.createdBy.userName}} 创建于 {{card.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span></span></li>
             </ul>
             <span class="close" ng-click="closepanel()">×</span>
         </form>
         <div class="comment" ng-if="card.objectId">
-            <h4>留言：</h4>
             <ul>
-                <li>
-                    <textarea maxlength="200" ng-disabled="commenting"  ng-keypress="ctrlenter($event)" class="comment-input" ng-model="cacheCom" placeholder="ctrl+enter提交（200字内）"></textarea>
-                </li>
                <li ng-repeat="comment in comments | orderBy:'updatedAt':'reverse'">
                    <div class="cont">{{comment.description}}</div>
                    <div class="info"><span class="time">{{comment.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span><span class="name">{{comment.createdBy.displayName}}</span></div>
                </li>
             </ul>
+        </div>
+        <div class="comment-input-wrap">
+            <textarea maxlength="200" ng-disabled="commenting"  ng-keypress="ctrlenter($event)" class="comment-input" ng-model="cacheCom" placeholder="ctrl+enter提交（200字内）"></textarea>
         </div>
         <div ng-if="card.createdBy.userId | iscurrentUser" class="delcard" ng-click="delcard()">删除</div>
     </div>
@@ -287,16 +295,29 @@
         app.controller('cardDetail',function($scope,$rootScope,$http){
             $scope.show = 0;
             $scope.cardClassList = tplData.curTeam.cardClass;
+            $scope.storyList = [];
+            $scope.sprintList = tplData.sprints;
             $scope.closepanel= function(){
                 $scope.show = 0;
-                for(var key in $scope.card){//数据回滚
-                    if(key.indexOf("$$")!=0){
+                if($scope.card.sprintId != $scope.oldData.sprintId || $scope.card.parentId != $scope.oldData.parentId){
+                    //页面数据回滚
+                    tplData.cardList.forEach(function(arr,ind){
+                        tplData.cardList[ind] =  $scope.oldCardList[ind];
+                    });
+                }else{
+                    for(var key in $scope.card){//数据回滚
                         $scope.card[key]=$scope.oldData[key];
                     }
                 }
             };
             $scope.$on("showDetail",function(event,data){
+                if($scope.storyList.length == 0){
+                    tplData.cardList.forEach(function(item){
+                        $scope.storyList.push(item.story);
+                    });
+                }
                 $scope.oldData = JSON.parse(JSON.stringify(data));
+                $scope.oldCardList = JSON.parse(JSON.stringify(tplData.cardList));
                 $scope.show = 1;
                 $scope.ajaxing = 0;
                 $scope.cacheComment = "";
@@ -364,6 +385,40 @@
                     }
                 }
                 delete $scope.cacheS;
+            };
+            $scope.movetostory = function(parentId,card){
+                tplData.cardList.forEach(function(item){
+                    if(item.story.objectId == parentId){
+                        item.cards.forEach(function(cardlist){
+                            cardlist.list.forEach(function(cur_card,ind){
+                                if(cur_card.objectId == card.objectId){
+                                    cardlist.list.splice(ind,1);
+                                }
+                            })
+                        });
+                    }
+                    if(item.story.objectId == card.parentId){
+                        item.cards.forEach(function(cardlist){
+                            if(cardlist.type == card.type){
+                                cardlist.list.push(card);
+                            }
+                        });
+                    }
+                });
+            };
+            $scope.movetosprint = function(sprintId,card){
+                if(card.sprintId != tplData.sprintId){
+                    tplData.cardList.forEach(function(item,ind){
+                        if(card.objectId == item.story.objectId){
+                            tplData.cardList.splice(ind,1);
+                        }
+                    });
+                }else{
+                    //数据还原
+                    $scope.oldCardList.forEach(function(arr,ind){
+                        tplData.cardList[ind] =  $scope.oldCardList[ind];
+                    });
+                }
             };
             $scope.showimg=function(){
                 var openwindow=window.open("","","location=no,fullscreen=yes");

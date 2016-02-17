@@ -109,6 +109,8 @@ function init(req,res,obj){
             card.set("endTime",req.body.endTime);
             card.set("realAmount",Number(req.body.realAmount));
             card.set("owners",req.body.owners);
+            card.set("parentId",req.body.parentId);
+            //card.set("sprintId",req.body.sprintId);
             card.set("cardClass",req.body.cardClass);
             card.set("weight",Number(req.body.weight));
             card.set("images",req.body.images);
