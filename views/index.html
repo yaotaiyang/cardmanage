@@ -66,7 +66,7 @@
                 <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" required rows="3" class="descri" name="descri"></textarea></span></li>
                 <li><label class="k">优先级：</label>
                     <span class="v"><input type="number" ng-model="card.weight" class="amount"/>
-                        <span ng-if="(card.type!='story')">　种类:
+                        <span ng-if="(card.type!='story'&&card.objectId)">　种类:
                     <select title="选择添加用户" ng-model="card.cardClass" name="owners" class="card-class">
                         <option  ng-repeat="cardClass in cardClassList" value="{{cardClass}}">{{cardClass}}</option>
                     </select>
@@ -74,7 +74,7 @@
                                 <option  ng-repeat="story in storyList" value="{{story.objectId}}">{{story.title}}</option>
                             </select>
                         </span>
-                        <span ng-if="(card.type=='story')">
+                        <span ng-if="(card.type=='story'&&card.objectId)">
                         　　所属冲刺 : <select style="max-width:140px;" title="选择该故事到其他冲刺" ng-model="card.sprintId" name="owners" class="card-class" ng-change="movetosprint('{{card.sprintId}}',card)">
                                 <option  ng-repeat="sprint in sprintList" value="{{sprint.id}}">{{sprint.name}}</option>
                             </select>
