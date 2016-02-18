@@ -110,15 +110,37 @@ function init(req,res,obj){
             card.set("realAmount",Number(req.body.realAmount));
             card.set("owners",req.body.owners);
             card.set("parentId",req.body.parentId);
-            //card.set("sprintId",req.body.sprintId);
             card.set("cardClass",req.body.cardClass);
             card.set("weight",Number(req.body.weight));
             card.set("images",req.body.images);
-            card.save({success:function(data){
-                obj.render(req,res,{data:data});
-            },error:function(){
-                obj.render(req,res,{data:{title:"保存失败",err:{}}});
-            }});
+            if(req.body.sprintId == card.get("sprintId")){
+                card.save({success:function(data){
+                    obj.render(req,res,{data:data});
+                },error:function(error){
+                    obj.render(req,res,{data:{title:"保存失败",err:error}});
+                }});
+            }else{
+                //修改了冲刺，关联的card都要修改
+                var sql  = "select * from Card where parentId='"+cardId+"' or objectId = '"+cardId+"'";
+                AV.Query.doCloudQuery(sql).then(function(listdata) {
+                    var results = listdata.results;
+                    results.forEach(function(cur_card){
+                        cur_card.set("sprintId",req.body.sprintId);
+                    });
+                    AV.Object.saveAll(results, {
+                        success: function(data) {
+                            obj.render(req,res,{data:data});
+                        },
+                        error: function(error) {
+                            obj.render(req,res,{data:{title:"修改失败",err:error}});
+                        }
+                    });
+                }, function(error) {
+                    //查询失败，查看 error
+                    obj.render(req,res,{data:{title:"修改失败",err:error}});
+                });
+            }
+
         });
     } else if(type=="del-card"){
         var cardId = req.query["cardId"];

@@ -74,7 +74,7 @@
                                 <option  ng-repeat="story in storyList" value="{{story.objectId}}">{{story.title}}</option>
                             </select>
                         </span>
-                        <span ng-if="(card.type=='0')">
+                        <span ng-if="(card.type=='story')">
                         　　所属冲刺 : <select style="max-width:140px;" title="选择该故事到其他冲刺" ng-model="card.sprintId" name="owners" class="card-class" ng-change="movetosprint('{{card.sprintId}}',card)">
                                 <option  ng-repeat="sprint in sprintList" value="{{sprint.id}}">{{sprint.name}}</option>
                             </select>
@@ -301,7 +301,7 @@
                 $scope.show = 0;
                 if($scope.card.sprintId != $scope.oldData.sprintId || $scope.card.parentId != $scope.oldData.parentId){
                     //页面数据回滚
-                    tplData.cardList.forEach(function(arr,ind){
+                    $scope.oldCardList.forEach(function(arr,ind){
                         tplData.cardList[ind] =  $scope.oldCardList[ind];
                     });
                 }else{
