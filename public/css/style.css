@@ -28,7 +28,7 @@ input::-webkit-inner-spin-button{
 .scroll-wrap::-webkit-scrollbar-track-piece{background-color: #ccc;-webkit-border-radius: 5px; }
 .scroll-wrap::-webkit-scrollbar-thumb:vertical{height: 5px;background-color: #999;-webkit-border-radius: 5px; }
 .scroll-wrap::-webkit-scrollbar-thumb:horizontal{width: 5px;background-color: #ccc;-webkit-border-radius: 5px; }
-
+.gray{color:#aaa}
 article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary {display:block;}
 @keyframes hlcard {30%  {background-color:#07e;}}
 @-webkit-keyframes hlcard{30%  {background-color: #07e;}}
