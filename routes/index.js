@@ -11,13 +11,9 @@ var multipartMiddleware = multipart();
 var router = express.Router();
 var AV = require('leanengine');
 
-var APP_ID = 'h229mcsmVjAhq3Ju7jccfqjy'; // your app id
-var APP_KEY = 'U8iBLQrsjrE7A32kgjeN2YJm'; // your app key
-var MASTER_KEY =  'IslyhutDnP72E60ccOXERCfW'; // your app master key
-
-/*var APP_ID = process.env.LC_APP_ID;
+var APP_ID = process.env.LC_APP_ID;
 var APP_KEY = process.env.LC_APP_KEY;
-var MASTER_KEY = process.env.LC_APP_MASTER_KEY;*/
+var MASTER_KEY = process.env.LC_APP_MASTER_KEY;
 
 AV.initialize(APP_ID, APP_KEY, MASTER_KEY);
 router.get('/jd_root.txt',function(req,res){//首页
