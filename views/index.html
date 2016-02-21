@@ -53,6 +53,7 @@
                 </tr>
             </tbody>
         </table>
+        <div class="empty" ng-if="cardList.length==0">该冲刺还未创建故事 <em title="新建故事" ng-click="addcard({'type':'story'})">+添加</em></div>
     </div>
     <div class="carddetail scroll-wrap" ng-cloak ng-show="show" ng-controller="cardDetail" paste>
         <form class="addcard ng-pristine ng-valid" ng-submit="submit()">

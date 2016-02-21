@@ -109,6 +109,9 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .owner{display:block;padding:0 2px;font-size:12px;width:100%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
 .content em.red{padding:0 1px;margin:0 -1px;background-color:#fffc00;font-weight:inherit}
 .content .date-range{color:#999;font-size:11px;}
+.content .empty{padding:120px 0;font-size:18px;text-align:center;}
+.content .empty em{color:#07e;cursor:pointer;}
+.content .empty em:hover{text-decoration:underline;}
 form ul{padding-right:260px;position:relative;width:410px;}
 form ul .qrcode{position:absolute;right:0;top:0;width:256px;height:256px;background:url(../images/code.png) no-repeat;background-size:100% 100%;}
 form ul .qrcode .k{width:100%;padding-bottom:4px;}
