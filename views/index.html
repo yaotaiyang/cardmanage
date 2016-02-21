@@ -37,7 +37,7 @@
                         <div class="story-card" ng-dblclick="cardclick(lineobj.story)">
                             {{lineobj.story.title}}
                             <div class="story-add-card" ng-click="addcard({'parentId':lineobj.story.objectId,'parentName':lineobj.story.title})" title="添加任务">+</div>
-                            <i class="weight" data-weight="{{lineobj.story.weight}}"></i>
+                            <i title="优先级" class="weight" data-weight="{{lineobj.story.weight}}"></i>
                         </div>
                     </td>
                     <td masonry ng-if="expendind | expend:$index" dropable dataitem="cardtype" ng-repeat="cardtype in lineobj.cards" data-parentid="{{lineobj.story.objectId}}">

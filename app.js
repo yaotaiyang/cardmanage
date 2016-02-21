@@ -4,7 +4,7 @@
  * Date: 14-7-30
  * Time: 下午9:38
  * To change this template use File | Settings | File Templates.
- */
+ */ 
 var express = require("express");
 var router=require("./routes");
 var bodyParser=require("body-parser");
@@ -15,7 +15,7 @@ var template = require('art-template');
 var AV = require('leanengine');
 
 template.config('base', '');
-template.config('openTag','{%'); 
+template.config('openTag','{%');
 template.config('closeTag','%}');
 //template.config('compress',true);
 template.config('extname', '.html');
