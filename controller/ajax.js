@@ -235,7 +235,7 @@ function init(req,res,obj){
         var comment = new Comments();
         comment.set("description",description);
         comment.set("cardId",cardId);
-        comment.set("createdBy",{"objectId":user.id,"username":user.get("username")});
+        comment.set("createdBy",{"objectId":user.id,"displayName":user.get("displayName")});
         comment.save().then(function(data){
             if(hasComments!=1){
                 card.get(cardId).then(function(rescard){
