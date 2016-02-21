@@ -10,11 +10,20 @@ var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
 var router = express.Router();
 var AV = require('leanengine');
+
 var APP_ID = 'h229mcsmVjAhq3Ju7jccfqjy'; // your app id
 var APP_KEY = 'U8iBLQrsjrE7A32kgjeN2YJm'; // your app key
 var MASTER_KEY =  'IslyhutDnP72E60ccOXERCfW'; // your app master key
 
+/*var APP_ID = process.env.LC_APP_ID;
+var APP_KEY = process.env.LC_APP_KEY;
+var MASTER_KEY = process.env.LC_APP_MASTER_KEY;*/
+
 AV.initialize(APP_ID, APP_KEY, MASTER_KEY);
+router.get('/jd_root.txt',function(req,res){//首页
+    var cur_controller = require('../controller/static.js');
+    cur_controller.init(req,res,{render:render,AV:AV});
+});
 router.get("*",function(req,res,next){ //判断登录没登录去登录页
     if(!(req.path == "/login") && !(req.path == "/register") && !AV.User.current()){
         res.redirect('/login');
@@ -31,7 +40,7 @@ router.get('/statistics',function(req,res){//统计页面
     cur_controller.init(req,res,{render:render,AV:AV});
 });
 router.get('/login', function(req, res, next) {//正常访问登录页
-    render(req,res,{data:{title: '用户登录'},template:"login"});
+    render(req,res,{data:{title: '敏捷管理平台-用户登录'},template:"login"});
 });
 router.post('/login', function(req, res, next) {//提交表单页面
     var cur_controller = require('../controller/login.js');
@@ -42,7 +51,7 @@ router.get('/logout', function(req, res, next) {//登出
     res.redirect('/login');
 });
 router.get('/register', function(req, res, next) {//用户注册页面
-    render(req,res,{data:{title: '用户登录'},template:"register"});
+    render(req,res,{data:{title: '敏捷管理平台-用户注册'},template:"register"});
 });
 router.post('/register', function(req, res, next) {
     var cur_controller = require('../controller/register.js');

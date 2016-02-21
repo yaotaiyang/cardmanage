@@ -6,6 +6,7 @@
     .content .total{margin: 10px 10px 0; background-color: #fcfcfc; padding: 10px;}
     .content em.number{font-size:150%;color:#96D0FF;font-weight:bold;padding:0 4px;}
     .graphic-item{width:400px;height:300px;border:1px solid #ddd;margin:10px 0 0 10px;float:left;}
+    .stroy-detail .graphic-item{width:48%;height:280px}
 </style>
 <div class="body cls"  ng-app="statistics" ng-controller="body">
     <div id="header" class="header ng-scope" ng-controller="head">
@@ -19,14 +20,19 @@
             总任务量计划<em class="number">{{amount}}</em>天，
             实际量<em class="number">{{realAmount}}</em>天
         </div>
-
-        <div class="graphic-item" graphicpie option="option_class"></div>
-        <div class="graphic-item" graphicpie option="option_people"></div>
-        <div class="graphic-item" graphicbar option="option_people_class"></div>
+        <div class="cls">
+            <div class="graphic-item" graphicpie option="option_class"></div>
+            <div class="graphic-item" graphicpie option="option_people"></div>
+            <div class="graphic-item" graphicbar option="option_people_class"></div>
+        </div>
+        <div class="cls stroy-detail">
+            <div class="graphic-item" graphicbar option="option_story"></div>
+        </div>
     </div>
 </div>
 <script>
     seajs.use(["angular","echarts","directive"],function(){
+        var color = ['#35c1a4', '#fd826e', '#ffc153','#1E69A2', '#91c7ae', '#6e7074', '#61a0a8', '#bda29a', '#44525d', '#c4ccd3'];
         tplData.sprintId = tplData.sprintId || tplData.sprints[0].id;
         var app = angular.module('statistics', ['ngDirective']);
         app.controller("body",function($scope,$rootScope,$http){
@@ -70,6 +76,7 @@
                     arr.push({name:key,value:cardClass[key]});
                 }
                 $scope.option_class ={
+                    color:color,
                     title:{
                         text:"任务种类分布(个)",
                         x:'left',
@@ -110,6 +117,7 @@
                     arr.push({name:key,value:peo_d[key]});
                 }
                 $scope.option_people ={
+                    color:color,
                     title:{
                         text:"个人任务量(天)",
                         x:'left',
@@ -168,6 +176,7 @@
                     series.push(cur_obj);
                 });
                 var option = {
+                    color:color,
                     title:{
                         text:"个人任分类展示(天)",
                         x:'left',
@@ -194,6 +203,90 @@
                     series : series
                 };
                 $scope.option_people_class = option;
+
+                //故事任务情况
+                var story_name = [];
+                var renwu_list = [],charuxiang_list = [],bug_list = [];
+                tplData.cardList.forEach(function(obj){
+                    story_name.push(obj.story.title);
+                    var renwu = 0,charuxiang= 0,bug=0;
+                    obj.cards.forEach(function(list){
+                        list.list.forEach(function(card){
+                            if(card.cardClass == "任务"){
+                                renwu+=card.amount;
+                            }else if(card.cardClass == "插入项"){
+                                charuxiang+=card.amount;
+                            }else if(card.cardClass == "bug"){
+                                bug+=card.amount;
+                            }
+                        });
+                    });
+                    renwu_list.push(renwu||"");
+                    charuxiang_list.push(charuxiang||"");
+                    bug_list.push(bug||"");
+                });
+                var option = {
+                    title:{
+                        text:"故事工作量详情(天)",
+                        x:'left',
+                        textStyle:{
+                            fontSize:14
+                        }
+                    },
+                    color:color,
+                    tooltip : {
+                        trigger: 'axis',
+                        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        }
+                    },
+                    legend: {
+                        data:['任务','插入项', 'bug'],
+                        top:20
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    xAxis : [
+                        {
+                            type : 'value'
+                        }
+                    ],
+                    yAxis : [
+                        {
+                            type : 'category',
+                            data : story_name
+                        }
+                    ],
+                    series : [
+                        {
+                            name:'任务',
+                            barWidth : 20,
+                            type:'bar',
+                            stack: '总量',
+                            itemStyle : { normal: {label : {show: true, position: 'insideRight'}}},
+                            data:renwu_list
+                        },
+                        {
+                            name:'插入项',
+                            type:'bar',
+                            stack: '总量',
+                            itemStyle : { normal: {label : {show: true, position: 'insideRight'}}},
+                            data:charuxiang_list
+                        },
+                        {
+                            name:'bug',
+                            type:'bar',
+                            stack: '总量',
+                            itemStyle : { normal: {label : {show: true, position: 'insideRight'}}},
+                            data:bug_list
+                        }
+                    ]
+                };
+                $scope.option_story = option;
                 $scope.$broadcast("refreshData");
             },function(data){});
         });

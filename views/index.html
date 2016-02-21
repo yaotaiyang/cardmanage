@@ -14,7 +14,7 @@
             </select>
             <label for="filterpeo">责任人：</label>
             <select ng-cloak name="dateselect" id="filterpeo" ng-model="ownerId" ng-change="change(1)">
-                <option ng-repeat="val in companyPeople" value="{{val.objectId}}">{{val.displayName}}</option>
+                <option ng-repeat="val in teamPeople" value="{{val.objectId}}">{{val.displayName}}</option>
             </select>
         </form>
         <a class="statistics" href="{{statistics}}">查看统计</a>
@@ -83,7 +83,7 @@
                 </li>
                 <li><label class="k">负责人：</label><span class="v">
                     <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.displayName}}</em></span>
-                    <select class="owner-select" ng-change="change(cacheS)" title="选择添加用户" ng-model="cacheS" name="owners" ng-options="owner.objectId as owner.displayName for owner in companyPeople">
+                    <select class="owner-select" ng-change="change(cacheS)" title="选择添加用户" ng-model="cacheS" name="owners" ng-options="owner.objectId as owner.displayName for owner in teamPeople">
                     </select></span>
                 </li>
                 <li class="imgs"><label class="k">图片：</label>
@@ -205,18 +205,18 @@
             $scope.teamId=tplData.teamId;
             $scope.sprintId =tplData.sprintId;
             $scope.sprints = tplData.sprints;
-            $scope.companyPeople=[{"objectId":"all","displayName":"全部"}];//下拉选择添加全部
+            $scope.teamPeople=[{"objectId":"all","displayName":"全部"}];//下拉选择添加全部
             $scope.ownerId="all";
             $scope.statistics = "/statistics?teamId="+$scope.teamId+"&sprintId="+$scope.sprintId;
-            for(var i=0;i<tplData.companyPeople.length;i++){
+            for(var i=0;i<tplData.teamPeople.length;i++){
                 var inteam = 0;
-                for(var j=0;j<tplData.companyPeople[i].teams.length;j++){
-                    if(tplData.companyPeople[i].teams[j].teamId == $scope.teamId){
+                for(var j=0;j<tplData.teamPeople[i].teams.length;j++){
+                    if(tplData.teamPeople[i].teams[j].teamId == $scope.teamId){
                         inteam = 1;
                     }
                 }
                 if(inteam){
-                    $scope.companyPeople.push(tplData.companyPeople[i])
+                    $scope.teamPeople.push(tplData.teamPeople[i])
                 }
             }
             $scope.change = function (isname) {
@@ -321,7 +321,7 @@
                 $scope.show = 1;
                 $scope.ajaxing = 0;
                 $scope.cacheComment = "";
-                $scope.companyPeople =tplData.companyPeople;
+                $scope.teamPeople =tplData.teamPeople;
                 if(data && data.hasComments == 1){
                     //获取评论
                     $http.get("/ajax?type=get-comments&cardId="+data.objectId).then(function(data){
@@ -378,9 +378,9 @@
                     }
                 });
                 if(ret){return};
-                for(var i=0;i<$scope.companyPeople.length;i++){
-                    if(id==$scope.companyPeople[i].objectId){
-                        $scope.card.owners.push($scope.companyPeople[i]);
+                for(var i=0;i<$scope.teamPeople.length;i++){
+                    if(id==$scope.teamPeople[i].objectId){
+                        $scope.card.owners.push($scope.teamPeople[i]);
                         break;
                     }
                 }

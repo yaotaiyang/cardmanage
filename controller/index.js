@@ -2,8 +2,6 @@
  * Created by yaoxy on 2015/10/30.
  */
 function init(req,res,obj){
-
-
     var AV= obj.AV;
     var teamId = req.query["teamId"];
     var user = AV.User.current();
@@ -23,7 +21,6 @@ function init(req,res,obj){
         //校验权限
         res.redirect('/logout');
     }
-
     var roleACL = new AV.ACL();
     var role = new AV.Role('Administrator', roleACL);
     role.getUsers().add(user);
@@ -59,7 +56,17 @@ function init(req,res,obj){
         q_user.equalTo("companyId", companyId);
         q_user.find({
             success: function(data) {
-                resobj.companyPeople = data;
+                resobj.teamPeople = [];
+                data.forEach(function(obj){
+                    var cur_teams = obj.get("teams"),isteampeo = 0;
+                    for(var i=0;i<cur_teams.length;i++){
+                        if(cur_teams[i].teamId == teamId){
+                            isteampeo = 1;
+                            break;
+                        }
+                    }
+                    resobj.teamPeople.push(obj);
+                });
             },error:function(){
                 obj.render(req,res,{data:{err:{}}});
             }

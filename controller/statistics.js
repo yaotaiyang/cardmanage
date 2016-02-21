@@ -25,7 +25,7 @@ function init(req,res,obj){
     var Card = AV.Object.extend('Card');
     var Team = AV.Object.extend('Team');
     var Sprint = AV.Object.extend('Sprint');
-    var resobj = {title:"首页",teamId:teamId,sprintId:sprintId};
+    var resobj = {title:"统计",teamId:teamId,sprintId:sprintId};
     var sprint_q = new AV.Query(Sprint);
     sprint_q.equalTo("teamId", teamId);
     sprint_q.descending("createAt");
@@ -50,7 +50,17 @@ function init(req,res,obj){
         q_user.equalTo("companyId", companyId);
         q_user.find({
             success: function(data) {
-                resobj.companyPeople = data;
+                resobj.teamPeople = [];
+                data.forEach(function(obj){
+                    var cur_teams = obj.get("teams"),isteampeo = 0;
+                    for(var i=0;i<cur_teams.length;i++){
+                        if(cur_teams[i].teamId == teamId){
+                            isteampeo = 1;
+                            break;
+                        }
+                    }
+                    resobj.teamPeople.push(obj);
+                });
             },error:function(){
                 obj.render(req,res,{data:{err:{}}});
             }
