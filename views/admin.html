@@ -15,6 +15,7 @@
     <div id="header" class="header ng-scope">
         <h2>{%company.get('name')%}</h2>
         <span>后台管理系统</span>
+        <a class="go-back" href="javascript:history.back()">点击返回</a>
         <span class="user" ng-cloak>欢迎：{%user.displayName%}</span>
     </div>
     <div class="content" ng-controller="content" ng-cloak>
