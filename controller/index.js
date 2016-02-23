@@ -44,39 +44,48 @@ function init(req,res,obj){
                     resobj.curSprint = obj;
                 }
             });
-            resobj.teams = user.get("teams");
+            var cur_teams = user.get("teams"),teamIds = [];;
+            cur_teams.forEach(function(team){
+                teamIds.push(team.teamId);
+            });
+            var Team = AV.Object.extend('Team');
+            var team_q = new AV.Query(Team);
+            team_q.containedIn('objectId',teamIds);
+            team_q.find().then(function(data){ //获取
+                resobj.teams = data;
+                var q_user = new AV.Query(AV.User);
+                var companyId = user.get("companyId");
+                q_user.equalTo("companyId", companyId);
+                q_user.notEqualTo("role", 'superAdmin');
+                q_user.find({
+                    success: function(data) {
+                        resobj.teamPeople = [];
+                        data.forEach(function(obj){
+                            var cur_teams = obj.get("teams"),isteampeo = 0;
+                            for(var i=0;i<cur_teams.length;i++){
+                                if(cur_teams[i].teamId == teamId){
+                                    isteampeo = 1;
+                                    break;
+                                }
+                            }
+                            resobj.teamPeople.push(obj);
+                        });
+                    },error:function(){
+                        obj.render(req,res,{data:{err:{}}});
+                    }
+                }).then(function(){
+                    var team_q = new AV.Query(Team);
+                    team_q.get(teamId).then(function(data){
+                        resobj.curTeam=data;
+                        obj.render(req,res,{template:"index",data:resobj});
+                    });
+                });
+            });
         },
         error: function(object, error) {
             resobj.err = error;
             obj.render(req,res,resobj);
         }
-    }).then(function(){ //获取
-        var q_user = new AV.Query(AV.User);
-        var companyId = user.get("companyId");
-        q_user.equalTo("companyId", companyId);
-        q_user.find({
-            success: function(data) {
-                resobj.teamPeople = [];
-                data.forEach(function(obj){
-                    var cur_teams = obj.get("teams"),isteampeo = 0;
-                    for(var i=0;i<cur_teams.length;i++){
-                        if(cur_teams[i].teamId == teamId){
-                            isteampeo = 1;
-                            break;
-                        }
-                    }
-                    resobj.teamPeople.push(obj);
-                });
-            },error:function(){
-                obj.render(req,res,{data:{err:{}}});
-            }
-        }).then(function(){
-            var team_q = new AV.Query(Team);
-            team_q.get(teamId).then(function(data){
-                resobj.curTeam=data;
-                obj.render(req,res,{template:"index",data:resobj});
-            });
-        });
-    });
+    })
 }
 exports.init=init;

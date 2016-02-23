@@ -16,7 +16,7 @@ var APP_KEY = process.env.LC_APP_KEY;
 var MASTER_KEY = process.env.LC_APP_MASTER_KEY;
 
 AV.initialize(APP_ID, APP_KEY, MASTER_KEY);
-router.get('/jd_root.txt',function(req,res){//首页
+router.get('/*.txt',function(req,res){//根目录静态文件输出，搜索引擎文件等
     var cur_controller = require('../controller/static.js');
     cur_controller.init(req,res,{render:render,AV:AV});
 });

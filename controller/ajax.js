@@ -4,6 +4,9 @@
 function init(req,res,obj){
     var AV= obj.AV;
     var type = req.query["type"];
+    function err(error){ //错误返回统一方法
+        obj.render(req,res,{data:{title:"修改失败",err:error}});
+    }
     if(type =="get-card-list"){
         var teamId = req.query["teamId"];
         var sprintId = req.query["sprintId"];
@@ -60,9 +63,7 @@ function init(req,res,obj){
                     obj.render(req, res, {data: resarr});
                     return;
                 },
-                error:function(){
-                    obj.render(req,res,{data:{title:"获取数据失败",err:{}}});
-                }
+                error:err
             });
         });
     }else if(type=="add-card"){
@@ -91,9 +92,7 @@ function init(req,res,obj){
             success:function(data){
                 obj.render(req,res,{data:data});
             },
-            error:function(){
-                obj.render(req,res,{data:{title:"添加失败",err:{}}});
-            }
+            error:err
         });
     }else if(type=="update-card"){
         var teamId = req.query["teamId"];
@@ -116,9 +115,7 @@ function init(req,res,obj){
             if(req.body.sprintId == card.get("sprintId")){
                 card.save({success:function(data){
                     obj.render(req,res,{data:data});
-                },error:function(error){
-                    obj.render(req,res,{data:{title:"保存失败",err:error}});
-                }});
+                },error:err});
             }else{
                 //修改了冲刺，关联的card都要修改
                 var sql  = "select * from Card where parentId='"+cardId+"' or objectId = '"+cardId+"'";
@@ -131,14 +128,9 @@ function init(req,res,obj){
                         success: function(data) {
                             obj.render(req,res,{data:data});
                         },
-                        error: function(error) {
-                            obj.render(req,res,{data:{title:"修改失败",err:error}});
-                        }
+                        error:err
                     });
-                }, function(error) {
-                    //查询失败，查看 error
-                    obj.render(req,res,{data:{title:"修改失败",err:error}});
-                });
+                }, err);
             }
 
         });
@@ -170,9 +162,7 @@ function init(req,res,obj){
                     }else{
                         obj.render(req,res,{data:data});
                     }
-                },error:function(){
-                    obj.render(req,res,{data:{title:"删除失败",err:{}}});
-                }});
+                },error:err});
             }else{
                 obj.render(req,res,{data:{title:"无权删除",err:{}}});
             }
@@ -187,9 +177,7 @@ function init(req,res,obj){
             card.set("type",newType);
             card.save({success:function(data){
                 obj.render(req,res,{data:data});
-            },error:function(){
-                obj.render(req,res,{data:{title:"登录失败",err:{}}});
-            }});
+            },error:err});
         });
     }else if(type=="get-people"){
         var q_user = new AV.Query(AV.User);
@@ -211,9 +199,7 @@ function init(req,res,obj){
                     }
                 });
                 obj.render(req,res,{data:peopleList});
-            },error:function(){
-                obj.render(req,res,{data:{err:{}}});
-            }
+            },error:err
         });
     }else if(type=="get-comments"){
         var cardId = req.query["cardId"];
@@ -274,37 +260,40 @@ function init(req,res,obj){
         user.set('displayName',displayName);
         user.save().then(function(user){
             obj.render(req,res,{data:user});
-        },function(error){
-            obj.render(req,res,{data:{title:"登录失败",err:error}});
-        });
+        },err);
     }else if(type=="update-user"){
         var cur_user = AV.User.current();
         if(cur_user.get("companyId")!=req.body.companyId){
             obj.render(req,res,{data:{title:"无权修改",err:{message:"无权修改"}}});
         }
         AV.Cloud.useMasterKey();
-        var username = req.body.username,password=req.body.password,displayName=req.body.displayName,email = req.body.email;
+        var username = req.body.username,password=req.body.password,displayName=req.body.displayName,email = req.body.email,teams = req.body.teams;
         var companyId = req.body.companyId,id = req.body.objectId;
         if(!(username&&displayName)){
             obj.render(req,res,{data:{title:"参数不正确",err:{}}});
             return;
         };
+        //所在项目去重
+        var teamobj ={},temp_arr= [];
+        for(var i = 0;i<teams.length;i++){
+            if(!teamobj[teams[i].teamId]){
+                teamobj[teams[i].teamId]=teams[i];
+                temp_arr.push(teams[i]);
+            }
+        }
         var user_q = new AV.Query(AV.User);
         user_q.get(id).then(function(user){
             user.set("username",username);
             user.set("displayName",displayName);
             user.set("email",email);
+            user.set("teams",temp_arr);
             if(password!=undefined && password.length){
                 user.set("password",password);
             }
             user.save().then(function(user_r){
                 obj.render(req,res,{data:user_r});
-            },function(error){
-                obj.render(req,res,{data:{title:"修改失败",err:error}});
-            });
-        },function(error){
-            obj.render(req,res,{data:{title:"修改失败",err:error}});
-        });
+            },err);
+        },err);
     }else if(type=="add-sprint"){
         var name = req.body.name,teamId = req.body.teamId;
         var cur_user = AV.User.current();
@@ -320,9 +309,7 @@ function init(req,res,obj){
         sprint.set("name",name);
         sprint.save().then(function(cur_sprint){
             obj.render(req,res,{data:cur_sprint});
-        },function(error){
-            obj.render(req,res,{data:{title:"修改失败",err:error}});
-        });
+        },err);
     }else if(type=="update-sprint"){
         var name = req.body.name,id=req.body.objectId,deleted = req.body.deleted,isDefault = req.body.isDefault;
         if(!(name)){
@@ -337,12 +324,36 @@ function init(req,res,obj){
             cur_sprint.set("isDefault",isDefault);
             cur_sprint.save().then(function(new_sprint){
                 obj.render(req,res,{data:new_sprint});
-            },function(error){
-                obj.render(req,res,{data:{title:"修改失败",err:error}});
-            });
-        },function(error){
-            obj.render(req,res,{data:{title:"修改失败",err:error}});
-        });
+            },err);
+        },err);
+    }else if(type == 'add-team'){
+        var name = req.body.name;
+        var cur_user = AV.User.current();
+        var companyId = cur_user.get("companyId");
+        if(!(name)){
+            obj.render(req,res,{data:{title:"参数不正确",err:{message:"参数不正确"}}});
+            return;
+        };
+        var Team = AV.Object.extend('Team');
+        var team = new Team();
+        team.set("companyId",companyId);
+        team.set("name",name);
+        team.save().then(function(cur_team){
+            cur_user.get("teams").push({"teamId":cur_team.id});
+            cur_user.save().then(function(team){
+                obj.render(req,res,{data:cur_team});
+            },err);
+        },err);
+    }else if(type == 'update-team'){
+        var name = req.body.name,id=req.body.objectId;
+        var Team = AV.Object.extend('Team');
+        var team = new AV.Query(Team);
+        team.get(id,function(team){
+            team.set("name",name);
+            team.save().then(function(cur_team){
+                obj.render(req,res,{data:cur_team});
+            },err);
+        },err);
     }else{
         obj.render(req,res,{data:{title:"登录失败",err:{message:"该接口不存在"}}});
     }

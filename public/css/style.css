@@ -38,7 +38,7 @@ a,a:visited{color:#07e;text-decoration: underline;}
 a:hover{color:#f00;}
 .add{font-weight: normal;text-decoration: underline;font-size:12px;cursor: pointer}
 .add:hover{color:#f00;}
-::-webkit-input-placeholder { color:#666;font-size:12px;line-height:18px;}
+::-webkit-input-placeholder { color:#aaa;font-size:12px;line-height:18px;}
 select{border: 1px solid #ccc;height:22px;color:#666;}
 .header{height:39px;line-height:39px;padding:0 0 0 10px;font-size:12px;position:relative;}
 .header h2{float:left;font-size:130%;margin-right:20px;}

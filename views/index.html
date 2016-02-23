@@ -5,8 +5,8 @@
         <h2>敏捷管理平台</h2>
         <form id="filter" class="filter">
             <label for="groupfilter">组：</label>
-            <select ng-cloak name="groupfilter" id="groupfilter" ng-model="teamId"  ng-change="change()">
-                <option ng-repeat="val in teams" value="{{val.teamId}}">{{val.teamName}}</option>
+            <select ng-cloak name="groupfilter" id="groupfilter" ng-model="teamId"  ng-change="change('team')">
+                <option ng-repeat="val in teams" value="{{val.objectId}}">{{val.name}}</option>
             </select>
            <label for="dateselect">区间：</label>
             <select ng-cloak name="dateselect" id="dateselect" ng-model="sprintId"  ng-change="change()">
@@ -18,8 +18,8 @@
             </select>
         </form>
         <a class="statistics" href="{{statistics}}">查看统计</a>
-        {%if user.role=='admin'%}&nbsp;&nbsp;
-        <a href="/admin">管理后台</a>
+        {%if user.role=='admin'|| user.role=='superAdmin'%}&nbsp;&nbsp;
+        <a href="/admin?teamId={%params.teamId%}">管理后台</a>
         {%/if%}
         <span class="user" ng-cloak>欢迎：{%user.displayName%} &nbsp;<a href="/logout">退出</a></span>
     </div>
@@ -224,8 +224,10 @@
             }
             $scope.change = function (isname) {
                 $scope.statistics = "/statistics?teamId="+$scope.teamId+"&sprintId="+$scope.sprintId;
-                if(isname){
+                if(isname==1){
                     $scope.$emit("headChange", {sprintId:$scope.sprintId,teamId:$scope.teamId,ownerId:$scope.ownerId});
+                }else if(isname == 'team'){
+                    location.href = "/?teamId="+$scope.teamId;
                 }else{
                     location.href = "/?teamId="+$scope.teamId+"&sprintId="+$scope.sprintId;
                 }

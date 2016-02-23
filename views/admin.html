@@ -10,17 +10,32 @@
     .team-list .add-sprint{cursor:pointer;padding:4px 8px;}
     .team-list .add-sprint:hover{color:#f00;}
     .team-list .people{padding:4px 8px;}
+    .admin .carddetail{bottom:0;}
+    .admin form .v [type='text']{width:150px;}
+    .admin .carddetail{background-color:#fff;}
+    .company-people{position:absolute;top:42px;left:280px;padding:0px 10px 10px;bottom:10px;border:1px solid #ddd;}
+    .company-people input{border:1px solid #ddd;padding:2px;}
+    .company-people ul{padding:5px 0;font-size:12px;}
+    .company-people li{cursor:default;padding:2px;}
+    .company-people li:hover{background-color:#f0f0f0;}
+    .company-people .info{color:#aaa;font-size:12px;line-height:2em;}
 </style>
-<div class="body cls"  ng-app="admin" ng-controller="body">
+<div class="body cls admin"  ng-app="admin" ng-controller="body">
     <div id="header" class="header ng-scope">
         <h2>{%company.get('name')%}</h2>
-        <span>后台管理系统</span>
+        <span>后台管理</span>
+        {%if user.role=='superAdmin'%}
+            <label for="groupfilter">组：</label>
+            <select ng-cloak name="groupfilter" id="groupfilter" ng-model="teamId"  ng-change="change()">
+                <option ng-repeat="val in companyTeams" value="{{val.objectId}}">{{val.name}}</option>
+            </select>
+        {%/if%}
         <a class="go-back" href="javascript:history.back()">点击返回</a>
-        <span class="user" ng-cloak>欢迎：{%user.displayName%}</span>
+        <span class="user" ng-cloak>欢迎：{%user.displayName%} &nbsp;<a href="/logout">退出</a></span>
     </div>
     <div class="content" ng-controller="content" ng-cloak>
-        <div class="team-list" ng-repeat="team in teams">
-            <h3>{{team.teamName}}</h3>
+        <div class="team-list">
+            <h3>{{curTeam.teamName}}</h3>
             <div class="item-wrap">
                 <h4>冲刺调整</h4>
                 <ul class="sprint-list">
@@ -37,31 +52,49 @@
                             </label>
                         </div>
                     </li>
-                    <li class="item add-sprint" ng-click="modify('addsprint',team.sprints)">+</li>
+                    <li class="item add-sprint" ng-click="modify('addsprint')">+</li>
                 </ul>
             </div>
             <div class="item-wrap">
                 <h4>人员调整</h4>
                 <ul class="sprint-list">
-                    <li ng-dblclick="modify('user',people)" class="people item" ng-repeat="people in team.peoples">
+                    <li ng-dblclick="modify('user',people)" class="people item" ng-repeat="people in curTeam.peoples">
                         <span>{{people.displayName}}</span>
                     </li>
-                    <li class="item add-sprint" ng-click="modify('adduser',team.peoples)">+</li>
+                    <li class="item add-sprint" ng-click="modify('adduser',curTeam.peoples)">+</li>
+                </ul>
+            </div>
+
+        </div>
+        {%if user.role=='superAdmin'%}
+        <div class="team-list">
+            <div class="item-wrap">
+                <h4>团队调整</h4>
+                <ul class="teams">
+                    <li ng-dblclick="modify('team',team)" class="people item" ng-repeat="team in companyTeams">
+                        <span>{{team.name}}</span>
+                    </li>
+                    <li class="item add-sprint" ng-click="modify('addteam',companyTeams)">+</li>
                 </ul>
             </div>
         </div>
+        {%/if%}
     </div>
     <div class="carddetail" ng-cloak ng-show="show" ng-controller="modify">
         <form class="addcard ng-pristine ng-valid" ng-submit="submit(actiontype)">
             <div class="show-title cls">{{title}}</div>
+                <ul ng-if="actiontype=='team'||actiontype=='addteam'">
+                    <li><label class="k"><em class="red">*</em>团队名称：</label><span class="v"><input type="text" ng-model="data.name" required rows="1" class="title"/></span></li>
+                    <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="提交" /></span></li>
+                </ul>
                 <ul ng-if="actiontype=='adduser'">
                     <li><label class="k"><em class="red">*</em>登录名：</label><span class="v"><input type="text" ng-model="data.username" required rows="1" class="title"  placeholder="登录使用后续不能修改"/></span></li>
                     <li><label class="k"><em class="red">*</em>显示名称：</label><span class="v"><input type="text" ng-model="data.displayName" required rows="1" class="title"  placeholder="系统中显示名称"/></span></li>
                     <li><label class="k"><em class="red">*</em>邮箱：</label><span class="v"><input type="text" ng-model="data.email" required rows="1" class="title"  placeholder="邮箱名"/></span></li>
-                    <li><label class="k"><em class="red">*</em>登录密码：</label><span class="v"><input type="text" ng-model="data.password" required rows="1" class="title" placeholder="登录密码" /></span></li>
+                    <li><label class="k"><em class="red">*</em>密码：</label><span class="v"><input type="text" ng-model="data.password" required rows="1" class="title" placeholder="登录密码" /></span></li>
                     <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="提交" /></span></li>
                 </ul>
-                <ul ng-if="actiontype=='user'">
+                <ul ng-if="actiontype=='user'|| actiontype=='addcompanyuser'">
                     <li><label class="k"><em class="red">*</em>登录名：</label><span class="v"><input type="text" ng-model="data.username" required rows="1" class="title" placeholder="登录名" /></span></li>
                     <li><label class="k"><em class="red">*</em>显示名称：</label><span class="v"><input type="text" ng-model="data.displayName" required rows="1" class="title" placeholder="系统中显示名称" /></span></li>
                     <li><label class="k"><em class="red">*</em>邮箱：</label><span class="v"><input type="text" ng-model="data.email" required rows="1" class="title"  placeholder="邮箱名"/></span></li>
@@ -72,6 +105,13 @@
                     <li><label class="k"><em class="red">*</em>计划名称：</label><span class="v"><input type="text" ng-model="data.name" required rows="1" class="title"/></span></li>
                     <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="提交" /></span></li>
                 </ul>
+                <div class="company-people" ng-if="actiontype=='adduser'|| actiontype=='addcompanyuser'">
+                    <div class="info">双击选择公司其他人员</div>
+                    <input type="text" ng-model="fiterTxt" placeholder="输入关键字过滤"/>
+                    <ul class="scroll-wrap">
+                        <li ng-if="people | filterpeople:fiterTxt" ng-dblclick="filedata(people)" ng-repeat="people in companyPeople">{{people.displayName}}</li>
+                    </ul>
+                </div>
             <span class="close" ng-click="closepanel()">×</span>
         </form>
     </div>
@@ -79,10 +119,35 @@
 <script>
     seajs.use(["angular","angular-animate","directive"],function(){
         var app = angular.module('admin', ['ngAnimate','ngDirective']);
+        app.filter("filterpeople",function(){
+            return function(obj,txt){
+                var inCur = 0;
+                for(var i=0;i<obj.teams.length;i++){
+                    if(obj.teams[i].teamId == tplData.curTeam.teamId){
+                        return 0;
+                    }
+                }
+                if(typeof txt == "string" && txt.length > 0){
+                    var str = JSON.stringify(obj);
+                    if(str.indexOf(txt)!=-1){
+                        return 1;
+                    }else{
+                        return 0;
+                    }
+                }else{
+                    return 1;
+                }
+            }
+        });
         app.controller("body",function($scope,$rootScope,$http){
             $scope.$on("modify",function(event,type,data){
                 $scope.$broadcast("showmodify",type,data);
             });
+            $scope.teamId = tplData.params.teamId;
+            $scope.companyTeams = tplData.companyTeams;
+            $scope.change=function(){
+                location.href = "/admin?teamId="+$scope.teamId;
+            }
         });
         app.controller("content",function($scope,$rootScope,$http){
             $scope.teams = tplData.user.teams;
@@ -106,8 +171,9 @@
                     cur_team = team;
                 }
             });
-            tplData.curTeam = cur_team;
+            $scope.curTeam = tplData.curTeam = cur_team;
             $scope.sprints = tplData.sprints;
+            $scope.companyTeams = tplData.companyTeams;
             getdata($http,cur_team);
         });
         app.controller("modify",function($scope,$rootScope,$http){
@@ -118,16 +184,22 @@
                     adduser:"添加用户",
                     addsprint:"添加计划",
                     sprint:"修改计划",
-                    user:"修改用户"
+                    user:"修改用户",
+                    addcompanyuser:"添加公司用户到该团队",
+                    team:"修改团队名称",
+                    addteam:"添加团队"
                 };
                 var renderdata = data;
                 if(type == "addsprint"){
                     renderdata = {}
                 }else if(type == "adduser"){
                     renderdata = {}
+                }else if(type == "addteam"){
+                    renderdata= {};
                 }
                 $scope.title = objtitle[type];
                 $scope.data = renderdata;
+                $scope.companyPeople = tplData.companyPeople;
                 $scope.show = 1;
             });
             $scope.submit=function(type){
@@ -138,9 +210,11 @@
                         if(data.status == 1) {
                             $scope.ajaxing = 0;
                             tplData.curTeam.peoples.push(data.result);
+                            $scope.show = 0;
                         }else{
                             alert(data.result.err.message);
                             $scope.ajaxing = 0;
+                            $scope.show = 0;
                         }
                     }).error(function(){
                         alert("添加失败");
@@ -191,16 +265,64 @@
                         alert("添加失败");
                         $scope.ajaxing = 0;
                     });
+                }else if(type=='addcompanyuser'){
+                    $scope.data.teams.push({teamId:tplData.curTeam.teamId,teamName:tplData.curTeam.teamName});
+                    var url = "/ajax?type=update-user";
+                    $http.post(url,$scope.data).success(function(data){
+                        if(data.status == 1) {
+                            $scope.ajaxing = 0;
+                            tplData.companyTeams.push(data.result);
+                            $scope.show = 0;
+                        }else{
+                            alert(data.result.err.message);
+                            $scope.ajaxing = 0;
+                        }
+                    }).error(function(){
+                        alert("添加失败");
+                        $scope.ajaxing = 0;
+                    });
+                }else if(type=='team'){
+                    var url = "/ajax?type=update-team";
+                    $http.post(url,$scope.data).success(function(data){
+                        if(data.status == 1) {
+                            $scope.ajaxing = 0;
+                            $scope.show = 0;
+                        }else{
+                            alert(data.result.err.message);
+                            $scope.ajaxing = 0;
+                        }
+                    }).error(function(){
+                        alert("添加失败");
+                        $scope.ajaxing = 0;
+                    });
+                }else if(type == 'addteam'){
+                    var url = "/ajax?type=add-team";
+                    $http.post(url,$scope.data).success(function(data){
+                        if(data.status == 1) {
+                            $scope.ajaxing = 0;
+                            tplData.companyTeams.push(data.result);
+                            $scope.show = 0;
+                        }else{
+                            alert(data.result.err.message);
+                            $scope.ajaxing = 0;
+                        }
+                    }).error(function(){
+                        alert("添加失败");
+                        $scope.ajaxing = 0;
+                    });console.log($scope.data);
                 }
-            }
+            };
+            $scope.filedata = function(people){
+                $scope.data = people;
+                $scope.actiontype = "addcompanyuser";
+                $scope.title = "添加公司用户到该团队";
+            };
             $scope.closepanel=function(){
                 $scope.show = 0;
             };
         });
         function getdata($http,team){
-            $http.get("/ajax?type=get-people&teamId="+team.teamId).success(function(data){
-                team.peoples = data.result;
-            });
+            team.peoples = tplData.teamPeople;
         }
     });
 </script>

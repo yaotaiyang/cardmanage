@@ -5,7 +5,7 @@ function init(req,res,obj){
     var AV= obj.AV;
     var user = AV.User.current();
     var Company = AV.Object.extend('Company');
-    if(user.get("role") != "admin"){
+    if(user.get("role") != "admin" && user.get("role") != "superAdmin"){
         res.redirect('/');
     }
     var teamId = req.query["teamId"];
@@ -38,25 +38,61 @@ function init(req,res,obj){
             res.redirect('/');
         }
     }).then(function(){
-        var teams = [];
-        user.get("teams").forEach(function(team){
-            teams.push(team.teamId);
-        });
         var Sprint = AV.Object.extend('Sprint');
         var sprint_q = new AV.Query(Sprint);
-        sprint_q.containedIn('teamId',teams);
+        sprint_q.equalTo('teamId',teamId);
         sprint_q.addDescending("createdAt");
       /*  sprint_q.addDescending("isDefault");
         sprint_q.descending("createAt");*/
         sprint_q.find({ //获取冲刺信息
             success:function(data){
                 renderObj.sprints=data;
-                obj.render(req,res,{template:"admin",data:renderObj});
             },
             error:function(){
                 obj.render(req,res,{data:{title:"获取数据失败",err:{}}});
             }
-         });
+         }).then(function(){
+            var q_user = new AV.Query(AV.User);
+            var companyId = AV.User.current().get("companyId");
+            q_user.equalTo("companyId", companyId);
+            q_user.find({
+                success: function(data) {
+                    var peopleList = [];
+                    data.forEach(function(obj){
+                        var teams = obj.get("teams");
+                        if(teams){
+                            for(var i=0;i<teams.length;i++){
+                                if(teams[i]["teamId"]==teamId){
+                                    peopleList.push(obj);
+                                    break;
+                                }
+                            }
+                        }
+                    });
+                    renderObj.teamPeople = peopleList;//团队人员
+                    renderObj.companyPeople=data;//公司人员
+                    if(user.get("role")=='superAdmin'){
+                        var Team = AV.Object.extend('Team');
+                        var team_q = new AV.Query(Team);
+                        team_q.equalTo('companyId',companyId);
+                        team_q.find({
+                            success:function(data){
+                                renderObj.companyTeams = data;
+                                obj.render(req,res,{template:"admin",data:renderObj});
+                            },
+                            error:function(error){
+                                obj.render(req,res,{data:{title:"获取数据失败",err:error}});
+                            }
+                        });
+                    }else{
+                        obj.render(req,res,{template:"admin",data:renderObj});
+                    }
+                },error:function(error){
+                    obj.render(req,res,{data:{title:"获取数据失败",err:error}});
+                }
+            });
+
+        });
     });
 }
 exports.init=init;
