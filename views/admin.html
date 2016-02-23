@@ -82,7 +82,8 @@
     </div>
     <div class="carddetail" ng-cloak ng-show="show" ng-controller="modify">
         <form class="addcard ng-pristine ng-valid" ng-submit="submit(actiontype)">
-            <div class="show-title cls">{{title}}</div>
+            <div class="form-wrap">
+                <div class="show-title cls">{{title}}</div>
                 <ul ng-if="actiontype=='team'||actiontype=='addteam'">
                     <li><label class="k"><em class="red">*</em>团队名称：</label><span class="v"><input type="text" ng-model="data.name" required rows="1" class="title"/></span></li>
                     <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="提交" /></span></li>
@@ -112,6 +113,7 @@
                         <li ng-if="people | filterpeople:fiterTxt" ng-dblclick="filedata(people)" ng-repeat="people in companyPeople">{{people.displayName}}</li>
                     </ul>
                 </div>
+            </div>
             <span class="close" ng-click="closepanel()">×</span>
         </form>
     </div>
