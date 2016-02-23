@@ -102,15 +102,15 @@
                 <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="保 存" /><span class="createdby" ng-if="card.createdBy">{{card.createdBy.userName}} 创建于 {{card.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span></span></li>
             </ul>
             <span class="close" ng-click="closepanel()">×</span>
+            <div class="comment" ng-if="card.objectId">
+                <ul>
+                    <li ng-repeat="comment in comments | orderBy:'updatedAt':'reverse'">
+                        <div class="cont">{{comment.description}}</div>
+                        <div class="info"><span class="time">{{comment.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span><span class="name">{{comment.createdBy.displayName}}</span></div>
+                    </li>
+                </ul>
+            </div>
         </form>
-        <div class="comment" ng-if="card.objectId">
-            <ul>
-               <li ng-repeat="comment in comments | orderBy:'updatedAt':'reverse'">
-                   <div class="cont">{{comment.description}}</div>
-                   <div class="info"><span class="time">{{comment.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span><span class="name">{{comment.createdBy.displayName}}</span></div>
-               </li>
-            </ul>
-        </div>
         <div class="comment-input-wrap">
             <textarea maxlength="200" ng-disabled="commenting"  ng-keypress="ctrlenter($event)" class="comment-input" ng-model="cacheCom" placeholder="ctrl+enter提交（200字内）"></textarea>
         </div>

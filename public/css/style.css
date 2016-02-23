@@ -177,9 +177,9 @@ form .v .createdby{color:#ccc;font-size:12px;position:absolute;left:92px;top:-16
 .carddetail{position:fixed;top:0;right:0;background-color:#f6f6f6;bottom:0;width:580px;border-left:1px solid #ddd;overflow:auto;border-right:1px solid #fff;}
 .carddetail span.close{position:absolute;right:0;top:0;font-size:24px;cursor:pointer;text-align:center;width:32px;}
 .carddetail span.close:hover{color:#f00;}
-.carddetail .addcard{background-color:#fff;padding:20px 0 10px;position:absolute;top:0;bottom:58px;width:100%;left:0;overflow-y:auto;}
+.carddetail .addcard{padding:20px 0 10px;position:absolute;top:0;bottom:58px;width:100%;left:0;overflow-y:auto;}
 .carddetail .addcard .parentinfo{margin-left:92px;font-size:12px;color:#ccc;margin-right: 50px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-.carddetail .addcard ul{padding-right:0;width:auto;}
+.carddetail .addcard ul{padding-right:0;width:auto;background-color:#fff}
 .carddetail .addcard .show-title{margin:-10px 50px 0 92px;font-size:16px;}
 .carddetail.ng-animate{-webkit-transition:-webkit-transform 300ms ease-in-out;display: block!important;}
 .carddetail.ng-hide{-webkit-transform:translateX(100%)}
