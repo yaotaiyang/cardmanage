@@ -56,8 +56,8 @@
         <div class="empty" ng-if="cardList.length==0">该冲刺还未创建故事 <em title="新建故事" ng-click="addcard({'type':'story'})">+添加</em></div>
         <div class="empty gray" ng-if="!cardList">数据加载中…</div>
     </div>
-    <div class="carddetail scroll-wrap" ng-cloak ng-show="show" ng-controller="cardDetail" paste>
-        <form class="addcard ng-pristine ng-valid" ng-submit="submit()">
+    <div class="carddetail" ng-cloak ng-show="show" ng-controller="cardDetail" paste>
+        <form class="addcard ng-pristine ng-valid scroll-wrap" ng-submit="submit()">
             <div class="show-title cls" ng-if="showTitle">{{showTitle}}</div>
             <div ng-if="card.parentName" class="parentinfo">所属：{{card.parentName}}</div>
             <ul>

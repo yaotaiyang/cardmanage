@@ -24,10 +24,10 @@ input::-webkit-inner-spin-button{
     margin: 0;
 }
 /**webkit自定义滚动条**/
-.scroll-wrap::-webkit-scrollbar{width:6px;z-index:100}
-.scroll-wrap::-webkit-scrollbar-track-piece{background-color: #ccc;-webkit-border-radius: 5px; }
-.scroll-wrap::-webkit-scrollbar-thumb:vertical{height: 5px;background-color: #999;-webkit-border-radius: 5px; }
-.scroll-wrap::-webkit-scrollbar-thumb:horizontal{width: 5px;background-color: #ccc;-webkit-border-radius: 5px; }
+::-webkit-scrollbar{width:10px;z-index:100}
+::-webkit-scrollbar-track-piece{background-color: #ccc;-webkit-border-radius: 5px; }
+::-webkit-scrollbar-thumb:vertical{height: 5px;background-color: #999;-webkit-border-radius: 5px; }
+::-webkit-scrollbar-thumb:horizontal{width: 5px;background-color: #ccc;-webkit-border-radius: 5px; }
 .gray{color:#aaa}
 article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary {display:block;}
 @keyframes hlcard {30%  {background-color:#07e;}}
@@ -174,10 +174,10 @@ form .v .createdby{color:#ccc;font-size:12px;position:absolute;left:92px;top:-16
 .calender .preMonth, .calender .nextMonth{font-weight:bold;cursor:pointer;color:#96D0FF;font-size:18px;}
 .calender .preMonth{padding:0 5px;}
 .calender .nextMonth{padding:0 5px;}
-.carddetail{position:fixed;top:0;right:0;background-color:#f6f6f6;bottom:58px;width:580px;border-left:1px solid #ddd;overflow:auto;}
+.carddetail{position:fixed;top:0;right:0;background-color:#f6f6f6;bottom:0;width:580px;border-left:1px solid #ddd;overflow:auto;border-right:1px solid #fff;}
 .carddetail span.close{position:absolute;right:0;top:0;font-size:24px;cursor:pointer;text-align:center;width:32px;}
 .carddetail span.close:hover{color:#f00;}
-.carddetail .addcard{background-color:#fff;padding:20px 0 10px;}
+.carddetail .addcard{background-color:#fff;padding:20px 0 10px;position:absolute;top:0;bottom:58px;width:100%;left:0;overflow-y:auto;}
 .carddetail .addcard .parentinfo{margin-left:92px;font-size:12px;color:#ccc;margin-right: 50px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 .carddetail .addcard ul{padding-right:0;width:auto;}
 .carddetail .addcard .show-title{margin:-10px 50px 0 92px;font-size:16px;}
@@ -191,7 +191,7 @@ form .v .createdby{color:#ccc;font-size:12px;position:absolute;left:92px;top:-16
 .carddetail .comment li{margin:4px;padding:8px;background-color:#fff;-webkit-transition:opacity 50ms ease-in-out;}
 .carddetail .comment li.ng-enter{opacity:0;}
 .carddetail .comment li.ng-leave{opacity:0;}
-.carddetail .comment-input-wrap{position:fixed;bottom:0;right:0;width:581px;text-align:center;background-color:#E7E7E7;padding:8px;box-sizing:border-box;}
+.carddetail .comment-input-wrap{position:absolute;bottom:0;right:0;width:581px;text-align:center;background-color:#E7E7E7;padding:8px;box-sizing:border-box;}
 .carddetail .comment-input{border:1px solid #ddd;padding:4px;font-size:14px;width:100%;display:block;box-sizing:border-box;resize:none;}
 .carddetail .delcard{position:absolute;top:2px;left:8px;font-size:12px;color:#00f;cursor:pointer}
 .carddetail .delcard:hover{text-decoration:underline;}
