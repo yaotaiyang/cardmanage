@@ -58,38 +58,42 @@
     </div>
     <div class="carddetail" ng-cloak ng-show="show" ng-controller="cardDetail" paste>
         <form class="addcard ng-pristine ng-valid scroll-wrap" ng-submit="submit()">
-            <div class="show-title cls" ng-if="showTitle">{{showTitle}}</div>
-            <div ng-if="card.parentName" class="parentinfo">所属：{{card.parentName}}</div>
-            <ul>
-                <li><label class="k"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" required rows="2" class="title"></textarea></span></li>
-                <li><label class="k"><em class="red">*</em>工作量：</label>
+            <div class="form-wrap">
+                <div class="show-title cls" ng-if="showTitle">{{showTitle}}</div>
+                <div ng-if="card.parentName" class="parentinfo">所属：{{card.parentName}}</div>
+                <ul class="form-ul">
+                    <li><label class="k"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" required rows="2" class="title"></textarea></span></li>
+                    <li><label class="k"><em class="red">*</em>工作量：</label>
                     <span class="v"><input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.amount" required class="amount"/>天　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.realAmount" class="amount"/>天</span>
                         　　　　从 <input  tabindex="-1" readonly type="text" class="datetime" ng-model="card.startTime" value="{{card.startTime | date:'yyyy-MM-dd'}}" datetime="datetime"/> 至 <input  tabindex="-1" readonly  ng-model="card.endTime" type="text" class="datetime" datetime="datetime" value="{{card.endTime | date:'yyyy-MM-dd'}}"/>
                     </span></li>
-                <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" required rows="3" class="descri" name="descri"></textarea></span></li>
-                <li><label class="k">优先级：</label>
+                    <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" required rows="3" class="descri" name="descri"></textarea></span></li>
+                    <li><label class="k">优先级：</label>
                     <span class="v"><input type="number" ng-model="card.weight" class="amount"/>
-                        <span ng-if="(card.type!='story'&&card.objectId)">　种类:
-                    <select title="选择添加用户" ng-model="card.cardClass" name="owners" class="card-class">
-                        <option  ng-repeat="cardClass in cardClassList" value="{{cardClass}}">{{cardClass}}</option>
-                    </select>
-                        　　所属故事 : <select style="max-width:140px;" title="选择该任务到其他故事" ng-model="card.parentId" name="owners" class="card-class" ng-change="movetostory('{{card.parentId}}',card)">
-                                <option  ng-repeat="story in storyList" value="{{story.objectId}}">{{story.title}}</option>
+                        <span ng-if="(card.type!='story')">
+                            　种类:
+                            <select title="选择添加用户" ng-model="card.cardClass" name="owners" class="card-class">
+                                <option  ng-repeat="cardClass in cardClassList" value="{{cardClass}}">{{cardClass}}</option>
                             </select>
+                        </span>
+                        <span ng-if="(card.type!='story'&&card.objectId)">
+                        　　所属故事 : <select style="max-width:140px;" title="选择该任务到其他故事" ng-model="card.parentId" name="owners" class="card-class" ng-change="movetostory('{{card.parentId}}',card)">
+                            <option  ng-repeat="story in storyList" value="{{story.objectId}}">{{story.title}}</option>
+                        </select>
                         </span>
                         <span ng-if="(card.type=='story'&&card.objectId)">
                         　　所属冲刺 : <select style="max-width:140px;" title="选择该故事到其他冲刺" ng-model="card.sprintId" name="owners" class="card-class" ng-change="movetosprint('{{card.sprintId}}',card)">
-                                <option  ng-repeat="sprint in sprintList" value="{{sprint.id}}">{{sprint.name}}</option>
-                            </select>
+                            <option  ng-repeat="sprint in sprintList" value="{{sprint.id}}">{{sprint.name}}</option>
+                        </select>
                         </span>
                     </span>
-                </li>
-                <li><label class="k">负责人：</label><span class="v">
+                    </li>
+                    <li><label class="k">负责人：</label><span class="v">
                     <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.displayName}}</em></span>
                     <select class="owner-select" ng-change="change(cacheS)" title="选择添加用户" ng-model="cacheS" name="owners" ng-options="owner.objectId as owner.displayName for owner in teamPeople">
                     </select></span>
-                </li>
-                <li class="imgs"><label class="k">图片：</label>
+                    </li>
+                    <li class="imgs"><label class="k">图片：</label>
                     <span class="v">
                         <span class="imgs-wrap" ng-cloak><img ng-click="showimg()" title="右键删除" ng-repeat="img in card.images" ng-if="!img.deleted" rightclick="deletePic(card,img.id)"  ng-src="{{img.url}}"/></span>
                         <span class="uploadbtn {{loading}}">
@@ -98,9 +102,10 @@
                             <input tabindex="-1" class="fileupload" type="file" name="mypic" onchange="angular.element(this).scope().onFileSelect(this.files)"/>
                         </span>
                     </span>
-                </li>
-                <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="保 存" /><span class="createdby" ng-if="card.createdBy">{{card.createdBy.userName}} 创建于 {{card.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span></span></li>
-            </ul>
+                    </li>
+                    <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="保 存" /><span class="createdby" ng-if="card.createdBy">{{card.createdBy.userName}} 创建于 {{card.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span></span></li>
+                </ul>
+            </div>
             <span class="close" ng-click="closepanel()">×</span>
             <div class="comment" ng-if="card.objectId">
                 <ul>
