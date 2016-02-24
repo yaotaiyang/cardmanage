@@ -62,7 +62,7 @@
                 <div class="show-title cls" ng-if="showTitle">{{showTitle}}</div>
                 <div ng-if="card.parentName" class="parentinfo">所属：{{card.parentName}}</div>
                 <ul class="form-ul">
-                    <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea placeholder="描述信息，用于卡片内容展示" ng-model="card.description" required rows="2" class="descri" name="descri"></textarea></span></li>
+                    <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea placeholder="描述信息，用于卡片内容展示" ng-model="card.description" required rows="3" class="descri" name="descri"></textarea></span></li>
                     <li><label class="k"><em class="red">*</em>简称：</label><span class="v"><input type="text" placeholder="简要信息（建议10字内）" ng-model="card.title" required class="title" /></span></li>
                     <li><label class="k"><em class="red">*</em>工作量：</label>
                     <span class="v"><input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.amount" required class="amount"/>天　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.realAmount" class="amount"/>天</span>
