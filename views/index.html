@@ -27,7 +27,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <td style="width:140px;">故事 <em title="新建故事" ng-click="addcard({'type':'story'})">添加</em></td>
+                    <td style="width:200px;">故事 <em title="新建故事" ng-click="addcard({'type':'story'})">添加</em></td>
                     <td ng-if="expendind | expend:$index" ng-repeat="value in cardType">{{value}} <span class="screen" ng-click="screen($index)"><i class="unfold">{{expendind != $index?'﹥':'﹤'}}  </i></span></td>
                 </tr>
             </thead>
@@ -35,7 +35,10 @@
                 <tr ng-if="lineobj | showline" ng-repeat="lineobj in cardList | orderBy:orderfunc:'reverse'">
                     <td>
                         <div class="story-card" ng-dblclick="cardclick(lineobj.story)">
-                            {{lineobj.story.description}}
+                            <h4 class="title">{{lineobj.story.title}}</h4>
+                            <div class="cont">
+                                {{lineobj.story.description}}
+                            </div>
                             <div class="story-add-card" ng-click="addcard({'parentId':lineobj.story.objectId,'parentName':lineobj.story.title})" title="添加任务">+</div>
                             <i title="优先级" class="weight" data-weight="{{lineobj.story.weight}}"></i>
                         </div>
@@ -89,7 +92,7 @@
                         </span>
                     </span>
                     </li>
-                    <li><label class="k">负责人：</label><span class="v">
+                    <li ng-if="(card.type!='story')"><label class="k">负责人：</label><span class="v">
                     <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.displayName}}</em></span>
                     <select class="owner-select" ng-change="change(cacheS)" title="选择添加用户" ng-model="cacheS" name="owners" ng-options="owner.objectId as owner.displayName for owner in teamPeople">
                     </select></span>
