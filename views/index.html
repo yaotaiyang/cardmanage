@@ -35,14 +35,14 @@
                 <tr ng-if="lineobj | showline" ng-repeat="lineobj in cardList | orderBy:orderfunc:'reverse'">
                     <td>
                         <div class="story-card" ng-dblclick="cardclick(lineobj.story)">
-                            {{lineobj.story.title}}
+                            {{lineobj.story.description}}
                             <div class="story-add-card" ng-click="addcard({'parentId':lineobj.story.objectId,'parentName':lineobj.story.title})" title="添加任务">+</div>
                             <i title="优先级" class="weight" data-weight="{{lineobj.story.weight}}"></i>
                         </div>
                     </td>
                     <td masonry ng-if="expendind | expend:$index" dropable dataitem="cardtype" ng-repeat="cardtype in lineobj.cards" data-parentid="{{lineobj.story.objectId}}">
                         <div classify="{{item.cardClass}}" ng-if="item | filterpeople:filterid" draggable item="item" itemtype="cardtype" class="card masonry-brick"  ng-dblclick="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
-                            <h4>{{item.title}}</h4>
+                            <h4>{{item.description}}</h4>
                             <ul class="ownerslist cls">
                                 <li class="name owner">责任人: {{item.owners | ownersname}}</li>
                             </ul>
@@ -62,12 +62,13 @@
                 <div class="show-title cls" ng-if="showTitle">{{showTitle}}</div>
                 <div ng-if="card.parentName" class="parentinfo">所属：{{card.parentName}}</div>
                 <ul class="form-ul">
-                    <li><label class="k"><em class="red">*</em>标题：</label><span class="v"><textarea ng-model="card.title" required rows="2" class="title"></textarea></span></li>
+                    <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea placeholder="描述信息，用于卡片内容展示" ng-model="card.description" required rows="2" class="descri" name="descri"></textarea></span></li>
+                    <li><label class="k"><em class="red">*</em>简称：</label><span class="v"><input type="text" placeholder="简要信息（建议10字内）" ng-model="card.title" required class="title" /></span></li>
                     <li><label class="k"><em class="red">*</em>工作量：</label>
                     <span class="v"><input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.amount" required class="amount"/>天　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.realAmount" class="amount"/>天</span>
                         　　　　从 <input  tabindex="-1" readonly type="text" class="datetime" ng-model="card.startTime" value="{{card.startTime | date:'yyyy-MM-dd'}}" datetime="datetime"/> 至 <input  tabindex="-1" readonly  ng-model="card.endTime" type="text" class="datetime" datetime="datetime" value="{{card.endTime | date:'yyyy-MM-dd'}}"/>
                     </span></li>
-                    <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea ng-model="card.description" required rows="3" class="descri" name="descri"></textarea></span></li>
+                    <li ng-if="card.type=='story'"><label class="k">验收标准：</label><span class="v"><textarea placeholder="描述如何为故事达成" ng-model="card.acceptance" rows="3" class="title"></textarea></span></li>
                     <li><label class="k">优先级：</label>
                     <span class="v"><input type="number" ng-model="card.weight" class="amount"/>
                         <span ng-if="(card.type!='story')">
