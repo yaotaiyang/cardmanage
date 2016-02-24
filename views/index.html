@@ -100,14 +100,14 @@
                     <li class="imgs"><label class="k">图片：</label>
                     <span class="v">
                         <span class="imgs-wrap" ng-cloak><img ng-click="showimg()" title="右键删除" ng-repeat="img in card.images" ng-if="!img.deleted" rightclick="deletePic(card,img.id)"  ng-src="{{img.url}}"/></span>
-                        <span class="uploadbtn {{loading}}">
-                            <span class="text"><span class="normal">截屏  ctrl+v</span><i>+</i></span>
+                        <span class="uploadbtn {{loading}}" title="截屏工具截屏后,ctrl+v可粘贴">
+                            <span class="text"><span class="normal"></span><i>+</i></span>
                             <span class="status">{{loadStatus}}</span>
                             <input tabindex="-1" class="fileupload" type="file" name="mypic" onchange="angular.element(this).scope().onFileSelect(this.files)"/>
                         </span>
                     </span>
                     </li>
-                    <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="保 存" /><span class="createdby" ng-if="card.createdBy">{{card.createdBy.userName}} 创建于 {{card.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span></span></li>
+                    <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="保 存" /><span class="createdby" ng-if="card.createdBy">{{card.createdBy.displayName}} 创建于 {{card.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span></span></li>
                 </ul>
             </div>
             <span class="close" ng-click="closepanel()">×</span>

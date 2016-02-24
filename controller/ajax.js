@@ -75,7 +75,7 @@ function init(req,res,obj){
         card.set("teamId",teamId);
         card.set("sprintId",sprintId);
         card.set("companyId",cur_user.get("companyId"));
-        card.set("createdBy",{"userId": cur_user.id,"userName":cur_user.get("username")});
+        card.set("createdBy",{"userId": cur_user.id,"displayName":cur_user.get("displayName")});
         card.set("title",req.body.title);
         card.set("type",req.body.type);
         card.set("description",req.body.description);

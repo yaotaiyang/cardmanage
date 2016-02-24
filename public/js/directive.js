@@ -25,7 +25,6 @@ define(function(require,exports,module){
                 restrict:"EA",
                 link:function(scope,element){
                     element.on("paste",function(e){
-                        console.log("paste");
                         var clipboardData = e.clipboardData,i = 0, item,fd = new FormData();
                         if(clipboardData && clipboardData instanceof DataTransfer){
                             for(i=0 ; i < clipboardData.items.length; i++ ){
@@ -60,10 +59,9 @@ define(function(require,exports,module){
                             alert("上传失败！");
                         }
                         function loadsuccess(data){
-                            console.log(data);
                             var txt_wrap = $(".panel .uploadbtn .text"),img_wrap = txt_wrap.closest(".v").find(".imgs-wrap"),btn_wrap = txt_wrap.closest(".uploadbtn"),input_html = '<input tabindex="-1" class="fileupload" type="file" name="mypic">';
                             if(data.status==0){
-                                txt_wrap.html("拖放<br/>ctrl+v");
+                                txt_wrap.html("");
                                 var imgs = img_wrap.find("img");
                                 if(imgs.size()>=5){
                                     imgs.eq(0).remove();
@@ -76,7 +74,6 @@ define(function(require,exports,module){
                         }
                         function loadprogress(e){
                             console.log(e.loaded/ e.total);
-
                         }
                     });
                 }
