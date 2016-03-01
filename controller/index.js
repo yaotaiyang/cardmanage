@@ -68,7 +68,9 @@ function init(req,res,obj){
                                     break;
                                 }
                             }
-                            resobj.teamPeople.push(obj);
+                            if(isteampeo == 1){
+                                resobj.teamPeople.push(obj);
+                            }
                         });
                     },error:function(){
                         obj.render(req,res,{data:{err:{}}});
