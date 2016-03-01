@@ -40,7 +40,7 @@ a:hover{color:#f00;}
 .add:hover{color:#f00;}
 ::-webkit-input-placeholder { color:#aaa;font-size:12px;line-height:18px;}
 select{border: 1px solid #ccc;height:22px;color:#666;}
-.header{height:39px;line-height:39px;padding:0 0 0 10px;font-size:12px;position:relative;}
+.header{height:39px;line-height:39px;padding:0 0 0 10px;font-size:12px;position:fixed;top:0;width:100%;background-color: #fff;z-index: 10}
 .header h2{float:left;font-size:130%;margin-right:20px;}
 .header .user{position:absolute;top:0;right:10px;background-color:#fff;}
 .header .go-back{margin-left:8px;}
@@ -64,8 +64,8 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .menuwrap .prev{left:0;}
 .menuwrap .next{right:0;}
 .notice{font-weight:bold;margin-left:10px;display:inline-block;}
-.content{position:relative;width:100%;overflow:hidden;-webkit-user-select:none;}
-.content .table{width:100%;table-layout:fixed;}
+.content{position:relative;width:100%;overflow:hidden;-webkit-user-select:none;padding-top: 56px;}
+.content .table{width:100%;table-layout:fixed;z-index: 10;}
 .content .table tr:nth-child(even){background-color:#f0f0f0}
 .content .table tr:nth-child(odd){background-color:#fcfcfc}
 .table thead td{background-color:#1E69A2;text-align:center;color: #fff;font-size:14px;padding:2px 0;}
@@ -79,6 +79,7 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .table thead td em:hover{color:#f00;}
 .table tbody td{vertical-align:top;padding:5px 0;}
 .table td.hide{display:none;}
+.content .table.fixed{position:fixed;top:34px;background-color: #fff;}
 .content .wrap{-webkit-box-flex:10000;box-flew:10000;width:25%;text-align:center;border-right:1px solid #96D0FF;background-color: #fff;-webkit-transition: width 100ms linear;}
 .content .wrap:last-child{border-right: none}
 .content .wrap.fold{width:100px;-webkit-box-flex:0.00001;box-flex:0.00001;}
@@ -176,7 +177,7 @@ form .v .createdby{color:#ccc;font-size:12px;position:absolute;left:92px;top:-16
 .calender .preMonth, .calender .nextMonth{font-weight:bold;cursor:pointer;color:#96D0FF;font-size:18px;}
 .calender .preMonth{padding:0 5px;}
 .calender .nextMonth{padding:0 5px;}
-.carddetail{position:fixed;top:0;right:0;background-color:#f6f6f6;bottom:0;width:580px;border-left:1px solid #ddd;overflow:auto;border-right:1px solid #fff;}
+.carddetail{position:fixed;top:0;right:0;background-color:#f6f6f6;bottom:0;width:580px;border-left:1px solid #ddd;overflow:auto;border-right:1px solid #fff;z-index: 20}
 .carddetail span.close{position:absolute;right:0;top:0;font-size:24px;cursor:pointer;text-align:center;width:32px;}
 .carddetail span.close:hover{color:#f00;}
 .carddetail .addcard{padding:0px 0 10px;position:absolute;top:0;bottom:58px;width:100%;left:0;overflow-y:auto;}

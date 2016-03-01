@@ -24,16 +24,18 @@
         <span class="user" ng-cloak>欢迎：{%user.displayName%} &nbsp;<a href="/logout">退出</a></span>
     </div>
     <div id="content" ng-cloak class="content cls" ng-controller="list">
-        <table class="table">
+        <table class="table fixed">
             <thead>
                 <tr>
                     <td style="width:200px;">故事 <em title="新建故事" ng-click="addcard({'type':'story'})">添加</em></td>
                     <td ng-if="expendind | expend:$index" ng-repeat="value in cardType">{{value}} <span class="screen" ng-click="screen($index)"><i class="unfold">{{expendind != $index?'﹥':'﹤'}}  </i></span></td>
                 </tr>
             </thead>
+        </table>
+        <table class="table">
             <tbody>
                 <tr ng-if="lineobj | showline" ng-repeat="lineobj in cardList | orderBy:orderfunc:'reverse'">
-                    <td>
+                    <td style="width:200px;">
                         <div class="story-card" ng-dblclick="cardclick(lineobj.story)">
                             <h4 class="title">{{lineobj.story.title}}</h4>
                             <div class="cont">
