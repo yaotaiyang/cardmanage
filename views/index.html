@@ -96,7 +96,9 @@
                     </li>
                     <li ng-if="(card.type!='story')"><label class="k">负责人：</label><span class="v">
                     <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.displayName}}</em></span>
-                    <select class="owner-select" ng-change="change(cacheS)" title="选择添加用户" ng-model="cacheS" name="owners" ng-options="owner.objectId as owner.displayName for owner in teamPeople">
+                    <select id="userChange" class="owner-select" title="选择添加用户" name="owners" ng-change="userChange(cacheS,$event)" ng-model="cacheS">
+                        <option value=""></option>
+                        <option ng-repeat="val in teamPeople" value="{{val.objectId}}">{{val.displayName}}</option>
                     </select></span>
                     </li>
                     <li class="imgs"><label class="k">图片：</label>
@@ -347,6 +349,7 @@
                     $scope.comments=[];
                 }
                 if(data && data.objectId){
+
                     //修改卡片
                     $scope.card = data;
                     $scope.showTitle="";
@@ -386,11 +389,14 @@
                     };
                 }
             });
-            $scope.change=function(id){
+            $scope.userChange=function(id,event){
+                delete  $scope.cacheS;
                 var ret = 0;
+               document.getElementById("userChange").value="";
                 $scope.card.owners.forEach(function(obj){
                     if(obj.objectId == id){
                         ret = 1;
+                        document.getElementById("userChange").value="";
                     }
                 });
                 if(ret){return};
@@ -400,7 +406,6 @@
                         break;
                     }
                 }
-                delete $scope.cacheS;
             };
             $scope.movetostory = function(parentId,card){
                 tplData.cardList.forEach(function(item){
