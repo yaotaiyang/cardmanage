@@ -1,6 +1,6 @@
 {%include "layout/header"%}
 <link rel="stylesheet" href="/public/css/style.css"/>
-<div class="body cls"  ng-app="card" ng-controller="body">
+<div class="body cls" viewstyle="{{viewstyle}}"  ng-app="card" ng-controller="body">
     <div id="header" class="header" ng-controller="head">
         <h2>敏捷管理平台</h2>
         <form id="filter" class="filter">
@@ -22,18 +22,20 @@
         <a href="/admin?teamId={%params.teamId%}">管理后台</a>
         {%/if%}
         <span class="user" ng-cloak>欢迎：{%user.displayName%} &nbsp;<a href="/logout">退出</a></span>
+        <span class="viewstyle" ng-click="switchview()"><em ng-if="viewstyle=='block'" title="点击列表展示">≡</em><em ng-if="viewstyle=='line'" title="点击块状展示">&nbsp;</em></span>
     </div>
     <div id="content" ng-cloak class="content cls" ng-controller="list">
-        <table class="table fixed">
-            <thead>
+        <div ng-if="viewstyle=='block'" class="view-block">
+            <table class="table fixed">
+                <thead>
                 <tr>
                     <td style="width:200px;">故事 <em title="新建故事" ng-click="addcard({'type':'story'})">添加</em></td>
                     <td ng-if="expendind | expend:$index" ng-repeat="value in cardType">{{value}} <span class="screen" ng-click="screen($index)"><i class="unfold">{{expendind != $index?'﹥':'﹤'}}  </i></span></td>
                 </tr>
-            </thead>
-        </table>
-        <table class="table">
-            <tbody>
+                </thead>
+            </table>
+            <table class="table">
+                <tbody>
                 <tr ng-if="lineobj | showline" ng-repeat="lineobj in cardList | orderBy:orderfunc:'reverse'">
                     <td style="width:200px;">
                         <div class="story-card" ng-dblclick="cardclick(lineobj.story)">
@@ -56,8 +58,30 @@
                         </div>
                     </td>
                 </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
+        <div ng-if="viewstyle=='line'" class="view-line">
+                <div class="story-wrap" ng-if="lineobj | showline" ng-repeat="lineobj in cardList | orderBy:orderfunc:'reverse'">
+                    <div class="story">
+                        <div class="story-card" ng-click="cardclick(lineobj.story)">
+                            <h4 class="title">{{lineobj.story.title}}</h4>
+                            <div class="story-add-card" ng-click="addcard({'parentId':lineobj.story.objectId,'parentName':lineobj.story.title})" title="添加任务">+</div>
+                            <i title="优先级" class="weight" data-weight="{{lineobj.story.weight}}"></i>
+                        </div>
+                    </div>
+                    <div ng-if="expendind | expend:$index" dataitem="cardtype" ng-repeat="cardtype in lineobj.cards" data-parentid="{{lineobj.story.objectId}}">
+                        <div classify="{{item.cardClass}}" ng-if="item | filterpeople:filterid" item="item" itemtype="cardtype" class="card cls"  ng-click="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
+                            <h4>{{item.description}}</h4>
+                            <div class="pull-right">
+                                <span class="name owner">责任人: {{item.owners | ownersname}}</span>
+                            <span class="owner">时间: {{item.amount}}天
+                                <span class="date-range" ng-if="(item.startTime&&item.endTime)">{{item.startTime | ftime }}~{{item.endTime | ftime}}</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
         <div class="empty" ng-if="cardList.length==0">该冲刺还未创建故事 <em title="新建故事" ng-click="addcard({'type':'story'})">+添加</em></div>
         <div class="empty gray" ng-if="!cardList">数据加载中…</div>
     </div>
@@ -214,6 +238,14 @@
             $scope.$on("drop",function(event,data){
                 $scope.$broadcast("dropcard",data);
             });
+            $scope.viewstyle = "block";
+            $scope.switchview = function(){
+                if($scope.viewstyle == "block"){
+                    $scope.viewstyle ="line";
+                }else{
+                    $scope.viewstyle = "block"
+                }
+            }
         });
         app.controller('head', function($scope,$http) {
             $scope.scope = $scope;
