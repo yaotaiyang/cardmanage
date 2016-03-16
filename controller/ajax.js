@@ -58,7 +58,14 @@ function init(req,res,obj){
                         }
                     });
                     for(var key in cardHash){
-                        resarr.push(cardHash[key]);
+                        var cur_item  = cardHash[key];
+                        cur_item.allCards = [];
+                        cur_item.cards.forEach(function(obj){
+                            obj.list.forEach(function(card){
+                                cur_item.allCards.push(card);
+                            });
+                        });
+                        resarr.push(cur_item);
                     }
                     obj.render(req, res, {data: resarr});
                     return;

@@ -70,8 +70,8 @@
                             <i title="优先级" class="weight" data-weight="{{lineobj.story.weight}}"></i>
                         </div>
                     </div>
-                    <div ng-if="expendind | expend:$index" dataitem="cardtype" ng-repeat="cardtype in lineobj.cards" data-parentid="{{lineobj.story.objectId}}">
-                        <div classify="{{item.cardClass}}" ng-if="item | filterpeople:filterid" item="item" itemtype="cardtype" class="card cls"  ng-click="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
+                    <div ng-if="expendind | expend:$index" dataitem="cardtype" data-parentid="{{lineobj.story.objectId}}">
+                        <div classify="{{item.cardClass}}" ng-if="item | filterpeople:filterid" item="item" itemtype="cardtype" class="card cls"  ng-click="cardclick(item)" ng-repeat="item in lineobj.allCards | orderBy:'weight':'reverse'">
                             <h4>{{item.description}}</h4>
                             <div class="pull-right">
                                 <span class="name owner">责任人: {{item.owners | ownersname}}</span>
