@@ -70,15 +70,26 @@
                     <colgroup>
                         <col width="50"/>
                         <col/>
-                        <col width="120"/>
+                        <col width="100"/>
+                        <col width="100"/>
                         <col width="140"/>
                     </colgroup>
+                    <thead>
+                    <tr>
+                        <td>类型</td>
+                        <td >任务</td>
+                        <td>报告人</td>
+                        <td>责任人</td>
+                        <td>时间</td>
+                    </tr>
+                    </thead>
                     <tbody>
                     <tr  class="card"  classify="{{item.cardClass}}"  item="item" itemtype="cardtype" ng-if="item | filterpeople:filterid:filterClass"  ng-repeat="item in wholeCards | orderBy:'weight':'reverse'"  ng-click="cardclick(item)">
                         <td><i class="tag">{{item.cardClass}}</i></td>
                         <td><h4>{{item.description}}</h4></td>
-                        <td><span class="name owner">责任人: {{item.owners | ownersname}}</span></td>
-                        <td><span class="owner">时间: {{item.amount}}天
+                        <td>{{item.createdBy.displayName}}</td>
+                        <td><span class="name owner">{{item.owners | ownersname}}</span></td>
+                        <td><span class="owner">{{item.amount}}天
                                 <span class="date-range" ng-if="(item.startTime&&item.endTime)">{{item.startTime | ftime }}~{{item.endTime | ftime}}</span></span>
                         </td>
                     </tr>
@@ -97,8 +108,8 @@
                 <ul class="form-ul">
                     <li><label class="k"><em class="red">*</em>简称：</label><span class="v"><input type="text" placeholder="简要信息（建议10字内）" ng-model="card.title" required class="title" /></span></li>
                     <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea placeholder="描述信息，用于卡片内容展示" ng-model="card.description" required rows="3" class="descri" name="descri"></textarea></span></li>
-                    <li><label class="k"><em class="red">*</em>工作量：</label>
-                    <span class="v"><input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.amount" required class="amount"/>天　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.realAmount" class="amount"/>天</span>
+                    <li><label class="k">工作量：</label>
+                    <span class="v"><input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.amount" class="amount"/>天　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.realAmount" class="amount"/>天</span>
                         　　　　从 <input  tabindex="-1" readonly type="text" class="datetime" ng-model="card.startTime" value="{{card.startTime | date:'yyyy-MM-dd'}}" datetime="datetime"/> 至 <input  tabindex="-1" readonly  ng-model="card.endTime" type="text" class="datetime" datetime="datetime" value="{{card.endTime | date:'yyyy-MM-dd'}}"/>
                     </span></li>
                     <li ng-if="card.type=='story'"><label class="k">验收标准：</label><span class="v"><textarea placeholder="描述如何为故事达成" ng-model="card.acceptance" rows="3" class="title"></textarea></span></li>
@@ -378,11 +389,12 @@
                 }
             };
             $scope.$on("showDetail",function(event,data){
-                if($scope.storyList.length == 0){
-                    tplData.cardList.forEach(function(item){
+                $scope.storyList = [];
+                tplData.cardList.forEach(function(item){
+                    if(item.deleted != "1"){
                         $scope.storyList.push(item.story);
-                    });
-                }
+                    }
+                });
                 $scope.oldData = JSON.parse(JSON.stringify(data));
                 $scope.oldCardList = JSON.parse(JSON.stringify(tplData.cardList));
                 $scope.show = 1;

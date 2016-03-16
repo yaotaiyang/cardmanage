@@ -23,6 +23,7 @@ input::-webkit-inner-spin-button{
     -webkit-appearance: none !important;
     margin: 0;
 }
+.align-center{text-align: center;}
 /**webkit自定义滚动条**/
 ::-webkit-scrollbar{width:10px;z-index:100}
 ::-webkit-scrollbar-track-piece{background-color: #ccc;-webkit-border-radius: 5px; }
@@ -83,7 +84,8 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .view-line .story-card .story-add-card{top:-6px;}
 .content .view-line .story-card h4.title{display: inline-block;padding-right:8px;width:auto;color:#333;}
 .content .view-line .story-card .weight{display: inline-block;position:relative;top:-5px;}
-.content .view-line .table td{vertical-align: middle;padding:5px 8px;border-bottom: 1px solid #ddd;}
+.content .view-line .table td{vertical-align: middle;padding:5px 8px;border-bottom: 1px solid #ddd;font-size: 12px;background-color: transparent;color:#333;text-align: left;}
+.content .view-line thead td{font-weight: bold;}
 .content .view-line .table tr{border-top:1px solid #ddd;}
 .content .story-wrap .story-card{margin:0;}
 .table thead td{background-color:#1E69A2;text-align:center;color: #fff;font-size:14px;padding:2px 0;}
