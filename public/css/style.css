@@ -79,6 +79,7 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .view-line .card[classify='插入项'] .tag{background-color:#fd826e}
 .content .view-line .card[classify='bug']  .tag{background-color:#ffc153}
 .content .view-line .card h4{font-size:14px;height:auto;padding:0;color:#333;}
+.content .view-line .card h4 .tag{background-color: #aaa!important;}
 .content .story-wrap{border:1px solid #ddd;}
 [viewstyle="line"] .content{padding-top: 30px;}
 .content .view-line .story-card .story-add-card{top:-6px;}

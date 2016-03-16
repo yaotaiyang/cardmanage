@@ -86,7 +86,7 @@
                     <tbody>
                     <tr  class="card"  classify="{{item.cardClass}}"  item="item" itemtype="cardtype" ng-if="item | filterpeople:filterid:filterClass"  ng-repeat="item in wholeCards | orderBy:'weight':'reverse'"  ng-click="cardclick(item)">
                         <td><i class="tag">{{item.cardClass}}</i></td>
-                        <td><h4>{{item.description}}</h4></td>
+                        <td><h4>{{item.description}} <i class="tag">{{item.type}}</i></h4></td>
                         <td>{{item.createdBy.displayName}}</td>
                         <td><span class="name owner">{{item.owners | ownersname}}</span></td>
                         <td><span class="owner">{{item.amount}}天
