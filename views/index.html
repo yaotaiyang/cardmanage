@@ -8,13 +8,17 @@
             <select ng-cloak name="groupfilter" id="groupfilter" ng-model="teamId"  ng-change="change('team')">
                 <option ng-repeat="val in teams" value="{{val.objectId}}">{{val.name}}</option>
             </select>
-           <label for="dateselect">区间：</label>
+           <label for="dateselect"> 区间：</label>
             <select ng-cloak name="dateselect" id="dateselect" ng-model="sprintId"  ng-change="change()">
                 <option ng-repeat="val in sprints" value="{{val.id}}">{{val.name}}</option>
             </select>
-            <label for="filterpeo">责任人：</label>
+            <label for="filterpeo"> 责任人：</label>
             <select ng-cloak name="dateselect" id="filterpeo" ng-model="ownerId" ng-change="change(1)">
                 <option ng-repeat="val in teamPeople" value="{{val.objectId}}">{{val.displayName}}</option>
+            </select>
+            <label for="cardclass"> 任务类型：</label>
+            <select ng-cloak name="dateselect" id="cardclass" ng-model="filterClass" ng-change="change(1)">
+                <option ng-repeat="val in cardClass" value="{{val}}">{{val}}</option>
             </select>
         </form>
         <a class="statistics" href="{{statistics}}">查看统计</a>
@@ -22,7 +26,7 @@
         <a href="/admin?teamId={%params.teamId%}">管理后台</a>
         {%/if%}
         <span class="user" ng-cloak>欢迎：{%user.displayName%} &nbsp;<a href="/logout">退出</a></span>
-        <span class="viewstyle" ng-click="switchview()"><em ng-if="viewstyle=='block'" title="点击列表展示">≡</em><em ng-if="viewstyle=='line'" title="点击块状展示">&nbsp;</em></span>
+        <span class="viewstyle" ng-click="switchview()"><em ng-if="viewstyle=='block'" title="点击列表展示">≡</em><em ng-if="viewstyle=='line'" title="点击块状展示">○</em></span>
     </div>
     <div id="content" ng-cloak class="content cls" ng-controller="list">
         <div ng-if="viewstyle=='block'" class="view-block">
@@ -48,7 +52,7 @@
                         </div>
                     </td>
                     <td masonry ng-if="expendind | expend:$index" dropable dataitem="cardtype" ng-repeat="cardtype in lineobj.cards" data-parentid="{{lineobj.story.objectId}}">
-                        <div classify="{{item.cardClass}}" ng-if="item | filterpeople:filterid" draggable item="item" itemtype="cardtype" class="card masonry-brick"  ng-dblclick="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
+                        <div classify="{{item.cardClass}}" ng-if="item | filterpeople:filterid:filterClass" draggable item="item" itemtype="cardtype" class="card masonry-brick"  ng-dblclick="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
                             <h4>{{item.description}}</h4>
                             <ul class="ownerslist cls">
                                 <li class="name owner">责任人: {{item.owners | ownersname}}</li>
@@ -62,25 +66,25 @@
             </table>
         </div>
         <div ng-if="viewstyle=='line'" class="view-line">
-                <div class="story-wrap" ng-if="lineobj | showline" ng-repeat="lineobj in cardList | orderBy:orderfunc:'reverse'">
-                    <div class="story">
-                        <div class="story-card" ng-click="cardclick(lineobj.story)">
-                            <h4 class="title">{{lineobj.story.title}}</h4>
-                            <div class="story-add-card" ng-click="addcard({'parentId':lineobj.story.objectId,'parentName':lineobj.story.title})" title="添加任务">+</div>
-                            <i title="优先级" class="weight" data-weight="{{lineobj.story.weight}}"></i>
-                        </div>
-                    </div>
-                    <div ng-if="expendind | expend:$index" dataitem="cardtype" data-parentid="{{lineobj.story.objectId}}">
-                        <div classify="{{item.cardClass}}" ng-if="item | filterpeople:filterid" item="item" itemtype="cardtype" class="card cls"  ng-click="cardclick(item)" ng-repeat="item in lineobj.allCards | orderBy:'weight':'reverse'">
-                            <h4>{{item.description}}</h4>
-                            <div class="pull-right">
-                                <span class="name owner">责任人: {{item.owners | ownersname}}</span>
-                            <span class="owner">时间: {{item.amount}}天
+                <table class="story-wrap table" cellpadding="0" cellspacing="0">
+                    <colgroup>
+                        <col width="50"/>
+                        <col/>
+                        <col width="120"/>
+                        <col width="140"/>
+                    </colgroup>
+                    <tbody>
+                    <tr  class="card"  classify="{{item.cardClass}}"  item="item" itemtype="cardtype" ng-if="item | filterpeople:filterid:filterClass"  ng-repeat="item in wholeCards | orderBy:'weight':'reverse'"  ng-click="cardclick(item)">
+                        <td><i class="tag">{{item.cardClass}}</i></td>
+                        <td><h4>{{item.description}}</h4></td>
+                        <td><span class="name owner">责任人: {{item.owners | ownersname}}</span></td>
+                        <td><span class="owner">时间: {{item.amount}}天
                                 <span class="date-range" ng-if="(item.startTime&&item.endTime)">{{item.startTime | ftime }}~{{item.endTime | ftime}}</span></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
         </div>
         <div class="empty" ng-if="cardList.length==0">该冲刺还未创建故事 <em title="新建故事" ng-click="addcard({'type':'story'})">+添加</em></div>
         <div class="empty gray" ng-if="!cardList">数据加载中…</div>
@@ -196,13 +200,16 @@
             }
         });
         app.filter("filterpeople",function(){
-            return function(item,ownerId){
+            return function(item,ownerId,filterClass){
                 if(item.deleted==1){
                     return 0;
                 }
+                if(filterClass != item.cardClass && filterClass != "全部"){
+                    return 0;
+                };
                 if(ownerId == "all"){
                     return 1;
-                };
+                }
                 var res = 0;
                 for(var i=0;i<item.owners.length;i++){
                     if(ownerId == item.owners[i].objectId){
@@ -254,7 +261,10 @@
             $scope.sprintId =tplData.sprintId;
             $scope.sprints = tplData.sprints;
             $scope.teamPeople=[{"objectId":"all","displayName":"全部"}];//下拉选择添加全部
+            $scope.cardClass = tplData.curTeam.cardClass;
+            $scope.cardClass.unshift("全部");
             $scope.ownerId="all";
+            $scope.filterClass="全部";
             $scope.statistics = "/statistics?teamId="+$scope.teamId+"&sprintId="+$scope.sprintId;
             for(var i=0;i<tplData.teamPeople.length;i++){
                 var inteam = 0;
@@ -270,7 +280,7 @@
             $scope.change = function (isname) {
                 $scope.statistics = "/statistics?teamId="+$scope.teamId+"&sprintId="+$scope.sprintId;
                 if(isname==1){
-                    $scope.$emit("headChange", {sprintId:$scope.sprintId,teamId:$scope.teamId,ownerId:$scope.ownerId});
+                    $scope.$emit("headChange", {sprintId:$scope.sprintId,teamId:$scope.teamId,ownerId:$scope.ownerId,filterClass:$scope.filterClass});
                 }else if(isname == 'team'){
                     location.href = "/?teamId="+$scope.teamId;
                 }else{
@@ -281,11 +291,17 @@
         app.controller('list', function($scope,$rootScope,$http) {
             $scope.cardType = tplData.curTeam.cardType;
             $scope.filterid = "all";
+            $scope.filterClass = "全部";
             render({sprintId:tplData.sprintId,teamId:tplData.teamId,ownerId:"all"});
             function render(obj){
                 var url = "/ajax?type=get-card-list&sprintId="+ obj.sprintId+"&teamId="+obj.teamId;
                     $http.get(url).then(function(data){
                         tplData.cardList = $scope.cardList = data.data.result;
+                        var wholeCards = [];
+                        $scope.cardList.forEach(function(obj){
+                            wholeCards = wholeCards.concat(obj.allCards);
+                        });
+                        tplData.wholeCards = $scope.wholeCards = wholeCards;
                     },function(data){});
                 }
             $scope.cardclick=function(data){
@@ -340,6 +356,7 @@
             });
             $scope.$on("filterChange",function (event, obj) {
                 $scope.filterid = obj.ownerId;
+                $scope.filterClass = obj.filterClass;
             });
         });
         app.controller('cardDetail',function($scope,$rootScope,$http){
