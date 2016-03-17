@@ -88,6 +88,7 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .view-line .table td{vertical-align: middle;padding:5px 8px;border-bottom: 1px solid #ddd;font-size: 12px;background-color: transparent;color:#333;text-align: left;}
 .content .view-line thead td{font-weight: bold;}
 .content .view-line .table tr{border-top:1px solid #ddd;}
+.content .view-line .type-wrap select{border-radius:4px;border:1px solid #ddd;background-color: #e0e0e0;}
 .content .story-wrap .story-card{margin:0;}
 .table thead td{background-color:#1E69A2;text-align:center;color: #fff;font-size:14px;padding:2px 0;}
 .table thead td .screen{width:24px;line-height:20px;float:right;text-shadow:none;cursor:pointer;height:20px;text-align:right;font-size:20px;}

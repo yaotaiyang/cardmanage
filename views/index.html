@@ -86,7 +86,12 @@
                     <tbody>
                     <tr  class="card"  classify="{{item.cardClass}}"  item="item" itemtype="cardtype" ng-if="item | filterpeople:filterid:filterClass"  ng-repeat="item in wholeCards | orderBy:'weight':'reverse'"  ng-click="cardclick(item)">
                         <td><i class="tag">{{item.cardClass}}</i></td>
-                        <td><h4>{{item.description}} <i class="tag">{{item.type}}</i></h4></td>
+                        <td><h4>{{item.description}} <span class="type-wrap"  ng-click="$event.stopPropagation();">
+                            <select ng-cloak name="dateselect" ng-model="item.type" ng-change="typeChange(item,'{{item.type}}')">
+                            <option ng-repeat="val in cardType" valuse="{{val}}">{{val}}</option>
+                            </select></span>
+                            </h4>
+                        </td>
                         <td>{{item.createdBy.displayName}}</td>
                         <td><span class="name owner">{{item.owners | ownersname}}</span></td>
                         <td><span class="owner">{{item.amount}}天
@@ -310,7 +315,9 @@
                         tplData.cardList = $scope.cardList = data.data.result;
                         var wholeCards = [];
                         $scope.cardList.forEach(function(obj){
-                            wholeCards = wholeCards.concat(obj.allCards);
+                            obj.cards.forEach(function(cur_obj){
+                                wholeCards = wholeCards.concat(cur_obj.list);
+                            });
                         });
                         tplData.wholeCards = $scope.wholeCards = wholeCards;
                     },function(data){});
@@ -318,7 +325,49 @@
             $scope.cardclick=function(data){
                 $scope.$emit("modefyCard",data);
             };
+            $scope.typeChange = function(item,old_type){
+                //列表展示状态，修改任务状态
+                var url = "/ajax?type=card-move&cardId="+item.objectId+"&newType="+item.type;
+                $http.get(url).success(function(res){
+                    if(res.status != 1) {
+                        alert("修改失败！");
+                        item.type = old_type;
+                    }else{
+                        //重组数据
+                        var parentObj;
+                        //查找当前改变card父级
+                        for(var i=0;i<tplData.cardList.length;i++){
+                            if(item.parentId == tplData.cardList[i].story.objectId){
+                                parentObj =  tplData.cardList[i];
+                                break;
+                            }
+                        }
+                        //获取改变的card
+                        var moveCard;
+                        for(var j=0;j<parentObj.cards.length;j++){
+                            var typelist = parentObj.cards[j],bk = 0;
+                            for(var m=0;m<typelist.list.length;m++){
+                                if(typelist.list[m].type!=typelist.type){
+                                    moveCard = typelist.list.splice(m,1)[0];
+                                    bk = 1;
+                                    break;
+                                }
+                            }
+                            if(bk ==1){
+                                break;
+                            }
+                        }
+                        //回塞改变状态的cards
+                        for(var n = 0;n<parentObj.cards.length;n++){
+                            if(parentObj.cards[n].type == moveCard.type){
+                                parentObj.cards[n].list.push(moveCard);
+                            }
+                        }
+                    }
+                });
+            };
             $scope.$on("moveCard",function(event,data){
+                //卡片显示状态拖动卡片
                 $scope.$apply();
                 var url = "/ajax?type=card-move&cardId="+data.item.objectId+"&newType="+data.item.type;
                 $http.get(url).success(function(res){
