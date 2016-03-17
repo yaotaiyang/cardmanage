@@ -26,7 +26,7 @@
         <a href="/admin?teamId={%params.teamId%}">管理后台</a>
         {%/if%}
         <span class="user" ng-cloak>欢迎：{%user.displayName%} &nbsp;<a href="/logout">退出</a></span>
-        <span class="viewstyle" ng-click="switchview()"><em ng-if="viewstyle=='block'" title="点击列表展示">≡</em><em ng-if="viewstyle=='line'" title="点击块状展示">○</em></span>
+        <span class="viewstyle" ng-click="switchview()" ng-cloak><em ng-if="viewstyle=='block'" title="点击列表展示">≡</em><em ng-if="viewstyle=='line'" title="点击块状展示">○</em></span>
     </div>
     <div id="content" ng-cloak class="content cls" ng-controller="list">
         <div ng-if="viewstyle=='block'" class="view-block">
@@ -177,6 +177,9 @@
 <script>
     seajs.use(["angular","angular-animate","tools","directive"],function(){
         tplData.sprintId = tplData.sprintId || tplData.sprints[0].id;
+        tplData.pageConfig = JSON.parse(localStorage.getItem("pageConfig")) || { //页面配置信息
+                    viewType:"block"
+                };
          var app = angular.module('card', ['ngAnimate','ngDirective']);
         app.filter("ownersname",function(){
             return function(owners){
@@ -261,13 +264,15 @@
             $scope.$on("drop",function(event,data){
                 $scope.$broadcast("dropcard",data);
             });
-            $scope.viewstyle = "block";
+            $scope.viewstyle = tplData.pageConfig.viewType;
             $scope.switchview = function(){
                 if($scope.viewstyle == "block"){
                     $scope.viewstyle ="line";
                 }else{
                     $scope.viewstyle = "block"
                 }
+                tplData.pageConfig.viewType = $scope.viewstyle;
+                localStorage.setItem("pageConfig",JSON.stringify(tplData.pageConfig));//配置信息重写入localstroage
             }
         });
         app.controller('head', function($scope,$http) {
