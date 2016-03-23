@@ -123,7 +123,7 @@
                         <span ng-if="(card.type!='story')">
                             　种类:
                             <select title="选择添加用户" ng-model="card.cardClass" name="owners" class="card-class">
-                                <option  ng-repeat="cardClass in cardClassList" value="{{cardClass}}">{{cardClass}}</option>
+                                <option ng-if="cardClass!='全部'" ng-repeat="cardClass in cardClassList" value="{{cardClass}}">{{cardClass}}</option>
                             </select>
                         </span>
                         <span ng-if="(card.type!='story'&&card.objectId)">
@@ -140,9 +140,8 @@
                     </li>
                     <li ng-if="(card.type!='story')"><label class="k">负责人：</label><span class="v">
                     <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.displayName}}</em></span>
-                    <select id="userChange" class="owner-select" title="选择添加用户" name="owners" ng-change="userChange(cacheS,$event)" ng-model="cacheS">
+                    <select id="userChange" class="owner-select" title="选择添加用户" name="owners" ng-change="userChange(cacheS)" ng-model="cacheS" ng-options='val.objectId as val.displayName for val in teamPeople'>
                         <option value=""></option>
-                        <option ng-repeat="val in teamPeople" value="{{val.objectId}}">{{val.displayName}}</option>
                     </select></span>
                     </li>
                     <li class="imgs"><label class="k">图片：</label>
@@ -318,13 +317,7 @@
                 var url = "/ajax?type=get-card-list&sprintId="+ obj.sprintId+"&teamId="+obj.teamId;
                     $http.get(url).then(function(data){
                         tplData.cardList = $scope.cardList = data.data.result;
-                        var wholeCards = [];
-                        $scope.cardList.forEach(function(obj){
-                            obj.cards.forEach(function(cur_obj){
-                                wholeCards = wholeCards.concat(cur_obj.list);
-                            });
-                        });
-                        tplData.wholeCards = $scope.wholeCards = wholeCards;
+                        syncCard();//处理两种状态的数据，卡片块状，卡片列表状
                     },function(data){});
                 }
             $scope.cardclick=function(data){
@@ -416,13 +409,22 @@
                             break;
                         }
                     }
-
                 }
+                syncCard();//同步两张状态卡片装啊太
             });
             $scope.$on("filterChange",function (event, obj) {
                 $scope.filterid = obj.ownerId;
                 $scope.filterClass = obj.filterClass;
             });
+            function syncCard(){
+                var wholeCards = [];
+                $scope.cardList.forEach(function(obj){
+                    obj.cards.forEach(function(cur_obj){
+                        wholeCards = wholeCards.concat(cur_obj.list);
+                    });
+                });
+                tplData.wholeCards = $scope.wholeCards = wholeCards;
+            }
         });
         app.controller('cardDetail',function($scope,$rootScope,$http){
             $scope.show = 0;
@@ -443,6 +445,7 @@
                 }
             };
             $scope.$on("showDetail",function(event,data){
+                $("#userChange").val("");
                 $scope.storyList = [];
                 tplData.cardList.forEach(function(item){
                     if(item.deleted != "1"){
@@ -505,13 +508,11 @@
                 }
             });
             $scope.userChange=function(id,event){
-                delete  $scope.cacheS;
                 var ret = 0;
-               document.getElementById("userChange").value="";
+                if(!id) return;
                 $scope.card.owners.forEach(function(obj){
                     if(obj.objectId == id){
                         ret = 1;
-                        document.getElementById("userChange").value="";
                     }
                 });
                 if(ret){return};
