@@ -68,6 +68,7 @@
         <div ng-if="viewstyle=='line'" class="view-line">
                 <table class="story-wrap table" cellpadding="0" cellspacing="0">
                     <colgroup>
+                        <col width="200"/>
                         <col width="50"/>
                         <col/>
                         <col width="100"/>
@@ -76,6 +77,7 @@
                     </colgroup>
                     <thead>
                     <tr>
+                        <td>故事</td>
                         <td>类型</td>
                         <td >任务</td>
                         <td>报告人</td>
@@ -83,24 +85,50 @@
                         <td>时间</td>
                     </tr>
                     </thead>
-                    <tbody>
-                    <tr  class="card"  classify="{{item.cardClass}}"  item="item" itemtype="cardtype" ng-if="item | filterpeople:filterid:filterClass"  ng-repeat="item in wholeCards | orderBy:'weight':'reverse'"  ng-click="cardclick(item)">
-                        <td><i class="tag">{{item.cardClass}}</i></td>
-                        <td><h4>{{item.description}} <span class="type-wrap"  ng-click="$event.stopPropagation();">
-                            <select ng-cloak name="dateselect" ng-model="item.type" ng-change="typeChange(item,'{{item.type}}')">
-                            <option ng-repeat="val in cardType" valuse="{{val}}">{{val}}</option>
-                            </select></span>
-                            </h4>
+                </table>
+            <div class="table">
+                <table class="story-table" ng-if="lineobj | showline" ng-repeat="lineobj in cardList | orderBy:orderfunc:'reverse'">
+                    <tr>
+                        <td style="width: 200px">
+                            <div class="story-card" ng-click="cardclick(lineobj.story)">
+                                <h4 class="title">{{lineobj.story.title}}</h4>
+                                <div class="cont">
+                                    {{lineobj.story.description}}
+                                </div>
+                                <div class="story-add-card" ng-click="addcard({'parentId':lineobj.story.objectId,'parentName':lineobj.story.title})" title="添加任务">+</div>
+                                <i title="优先级" class="weight" data-weight="{{lineobj.story.weight}}"></i>
+                            </div>
                         </td>
-                        <td>{{item.createdBy.displayName}}</td>
-                        <td><span class="name owner">{{item.owners | ownersname}}</span></td>
-                        <td><span class="owner">{{item.amount}}天
+                        <td>
+                            <div ng-if="expendind | expend:$index" dataitem="cardtype" ng-repeat="cardtype in lineobj.cards" data-parentid="{{lineobj.story.objectId}}">
+                                <table class="table-line" cellpadding="0" cellspacing="0">
+                                    <colgroup>
+                                        <col width="50"/>
+                                        <col/>
+                                        <col width="100"/>
+                                        <col width="100"/>
+                                        <col width="140"/>
+                                    </colgroup>
+                                    <tr classify="{{item.cardClass}}" ng-if="item | filterpeople:filterid:filterClass" item="item" itemtype="cardtype" class="card masonry-brick"  ng-click="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
+                                        <td><i class="tag">{{item.cardClass}}</i></td>
+                                        <td><h4>{{item.description}} <span class="type-wrap"  ng-click="$event.stopPropagation();">
+                            <select ng-cloak name="dateselect" ng-model="item.type" ng-change="typeChange(item,'{{item.type}}')">
+                                <option ng-repeat="val in cardType" valuse="{{val}}">{{val}}</option>
+                            </select></span>
+                                        </h4>
+                                        </td>
+                                        <td>{{item.createdBy.displayName}}</td>
+                                        <td><span class="name owner">{{item.owners | ownersname}}</span></td>
+                                        <td><span class="owner">{{item.amount}}天
                                 <span class="date-range" ng-if="(item.startTime&&item.endTime)">{{item.startTime | ftime }}~{{item.endTime | ftime}}</span></span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
                         </td>
                     </tr>
-                    </tbody>
-
                 </table>
+            </div>
         </div>
         <div class="empty" ng-if="cardList.length==0">该冲刺还未创建故事 <em title="新建故事" ng-click="addcard({'type':'story'})">+添加</em></div>
         <div class="empty gray" ng-if="!cardList">数据加载中…</div>
