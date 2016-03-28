@@ -94,6 +94,8 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .view-line .story-table:first-child{margin-top: 0;}
 .content  .view-line .story-card h4.title{padding: 8px 10px;}
 .content .view-line .story-card .cont{padding: 8px 10px;}
+.content .view-line .fix-wrap{position:fixed;top:34px;left:8px;right:8px;z-index: 100;background-color: #fff;}
+.content .view-line div.table{padding-top: 20px;}
 .content .story-wrap .story-card{margin:0;}
 .table thead td{background-color:#1E69A2;text-align:center;color: #fff;font-size:14px;padding:2px 0;}
 .table thead td .screen{width:24px;line-height:20px;float:right;text-shadow:none;cursor:pointer;height:20px;text-align:right;font-size:20px;}

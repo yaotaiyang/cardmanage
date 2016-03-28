@@ -66,7 +66,8 @@
             </table>
         </div>
         <div ng-if="viewstyle=='line'" class="view-line">
-                <table class="story-wrap table" cellpadding="0" cellspacing="0">
+            <div class="fix-wrap">
+                <table class="story-wrap table">
                     <colgroup>
                         <col width="200"/>
                         <col width="50"/>
@@ -78,7 +79,7 @@
                     </colgroup>
                     <thead>
                     <tr>
-                        <td>故事</td>
+                        <td>故事<em title="新建故事" ng-click="addcard({'type':'story'})">添加</em></td>
                         <td>类型</td>
                         <td >任务</td>
                         <td >状态</td>
@@ -88,6 +89,7 @@
                     </tr>
                     </thead>
                 </table>
+            </div>
             <div class="table">
                 <table class="story-table" ng-if="lineobj | showline" ng-repeat="lineobj in cardList | orderBy:orderfunc:'reverse'">
                     <tr>
