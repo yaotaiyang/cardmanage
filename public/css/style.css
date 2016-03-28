@@ -72,7 +72,7 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .table{width:100%;table-layout:fixed;z-index: 10;}
 .content .table tr:nth-child(even){background-color:#f0f0f0}
 .content .table tr:nth-child(odd){background-color:#fcfcfc}
-.content .view-line{padding: 10px;margin-top: 10px;border-top:1px solid #ddd;background-color: #efefef;}
+.content .view-line{padding: 10px;border-top:1px solid #ddd;background-color: #efefef;}
 .content .view-line .card{font-size:0;width:auto;float:none;background-color: transparent!important;padding: 0 10px;margin: 0;}
 .content .view-line .card:hover{background-color: #f2f2f2!important;}
 .content .view-line .card .tag{background-color:#35c1a4;width:40px;height: 20px;line-height:20px;display: inline-block;color:#fff;font-size: 12px; font-style: normal;text-align: center;border-radius: 4px;}
@@ -80,7 +80,6 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .view-line .card[classify='bug']  .tag{background-color:#ffc153}
 .content .view-line .card h4{font-size:14px;height:auto;padding:0;color:#333;}
 .content .view-line .card h4 .tag{background-color: #aaa!important;}
-.content .story-wrap{border:1px solid #ddd;}
 [viewstyle="line"] .content{padding-top: 30px;}
 .content .view-line .table-line td{vertical-align: middle;padding:5px 8px;border-bottom: 1px solid #ddd;font-size: 12px;background-color: transparent;color:#333;text-align: left;}
 .content .view-line thead td{font-weight: bold;}
@@ -92,6 +91,7 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .view-line .table-line{width:100%;}
 .content .view-line .table >tbody > tr:nth-child(odd){background-color: transparent!important;}
 .content .view-line .story-table{width:100%;border:1px solid #ddd;margin-top: 10px;table-layout: fixed;background-color: #fff;}
+.content .view-line .story-table:first-child{margin-top: 0;}
 .content .story-wrap .story-card{margin:0;}
 .table thead td{background-color:#1E69A2;text-align:center;color: #fff;font-size:14px;padding:2px 0;}
 .table thead td .screen{width:24px;line-height:20px;float:right;text-shadow:none;cursor:pointer;height:20px;text-align:right;font-size:20px;}
