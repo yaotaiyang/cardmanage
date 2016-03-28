@@ -16,7 +16,7 @@
             <select ng-cloak name="dateselect" id="filterpeo" ng-model="ownerId" ng-change="change(1)">
                 <option ng-repeat="val in teamPeople" value="{{val.objectId}}">{{val.displayName}}</option>
             </select>
-            <label for="cardclass"> 任务类型：</label>
+            <label for="cardclass"> 类型：</label>
             <select ng-cloak name="dateselect" id="cardclass" ng-model="filterClass" ng-change="change(1)">
                 <option ng-repeat="val in cardClass" value="{{val}}">{{val}}</option>
             </select>
@@ -47,7 +47,7 @@
                             <div class="cont">
                                 {{lineobj.story.description}}
                             </div>
-                            <div class="story-add-card" ng-click="addcard({'parentId':lineobj.story.objectId,'parentName':lineobj.story.title})" title="添加任务">+</div>
+                            <div class="story-add-card" ng-click="$event.stopPropagation();addcard({'parentId':lineobj.story.objectId,'parentName':lineobj.story.title})" title="添加任务">+</div>
                             <i title="优先级" class="weight" data-weight="{{lineobj.story.weight}}"></i>
                         </div>
                     </td>
@@ -73,6 +73,7 @@
                         <col/>
                         <col width="100"/>
                         <col width="100"/>
+                        <col width="100"/>
                         <col width="140"/>
                     </colgroup>
                     <thead>
@@ -80,6 +81,7 @@
                         <td>故事</td>
                         <td>类型</td>
                         <td >任务</td>
+                        <td >状态</td>
                         <td>报告人</td>
                         <td>责任人</td>
                         <td>时间</td>
@@ -95,7 +97,7 @@
                                 <div class="cont">
                                     {{lineobj.story.description}}
                                 </div>
-                                <div class="story-add-card" ng-click="addcard({'parentId':lineobj.story.objectId,'parentName':lineobj.story.title})" title="添加任务">+</div>
+                                <div class="story-add-card" ng-click="$event.stopPropagation();addcard({'parentId':lineobj.story.objectId,'parentName':lineobj.story.title})" title="添加任务">+</div>
                                 <i title="优先级" class="weight" data-weight="{{lineobj.story.weight}}"></i>
                             </div>
                         </td>
@@ -107,16 +109,17 @@
                                         <col/>
                                         <col width="100"/>
                                         <col width="100"/>
+                                        <col width="100"/>
                                         <col width="140"/>
                                     </colgroup>
                                     <tr classify="{{item.cardClass}}" ng-if="item | filterpeople:filterid:filterClass" item="item" itemtype="cardtype" class="card masonry-brick"  ng-click="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
                                         <td><i class="tag">{{item.cardClass}}</i></td>
-                                        <td><h4>{{item.description}} <span class="type-wrap"  ng-click="$event.stopPropagation();">
+                                        <td><h4><span ng-if="item.tags.length" class="card-tags">【{{item.tags.join(', ')}}】</span>{{item.description}}</h4>
+                                        </td>
+                                        <td><span class="type-wrap"  ng-click="$event.stopPropagation();">
                             <select ng-cloak name="dateselect" ng-model="item.type" ng-change="typeChange(item,'{{item.type}}')">
                                 <option ng-repeat="val in cardType" valuse="{{val}}">{{val}}</option>
-                            </select></span>
-                                        </h4>
-                                        </td>
+                            </select></span></td>
                                         <td>{{item.createdBy.displayName}}</td>
                                         <td><span class="name owner">{{item.owners | ownersname}}</span></td>
                                         <td><span class="owner">{{item.amount}}天
@@ -165,6 +168,9 @@
                         </select>
                         </span>
                     </span>
+                    </li>
+                    <li ng-if="(card.type!='story')"><label class="k">标签：</label>
+                    <span class="v"><label data-check="{{name | tagchk:card.tags}}" class="card-tag" ng-repeat="name in tagsList" ng-click="chk(name,$event)">{{name}}</label></span>
                     </li>
                     <li ng-if="(card.type!='story')"><label class="k">负责人：</label><span class="v">
                     <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.displayName}}</em></span>
@@ -215,6 +221,18 @@
                     arr_name.push(owners[i].displayName);
                 }
                 return arr_name.join(",");
+            }
+        });
+        app.filter("tagchk",function(){
+            return function(str,list){
+                var res = 0;
+                for(var i=0;i<list.length;i++){
+                    if(str == list[i]){
+                        res = 1;
+                        break;
+                    }
+                }
+                return res;
             }
         });
         app.filter("ftime",function(){
@@ -345,7 +363,6 @@
                 var url = "/ajax?type=get-card-list&sprintId="+ obj.sprintId+"&teamId="+obj.teamId;
                     $http.get(url).then(function(data){
                         tplData.cardList = $scope.cardList = data.data.result;
-                        syncCard();//处理两种状态的数据，卡片块状，卡片列表状
                     },function(data){});
                 }
             $scope.cardclick=function(data){
@@ -438,21 +455,11 @@
                         }
                     }
                 }
-                syncCard();//同步两张状态卡片装啊太
             });
             $scope.$on("filterChange",function (event, obj) {
                 $scope.filterid = obj.ownerId;
                 $scope.filterClass = obj.filterClass;
             });
-            function syncCard(){
-                var wholeCards = [];
-                $scope.cardList.forEach(function(obj){
-                    obj.cards.forEach(function(cur_obj){
-                        wholeCards = wholeCards.concat(cur_obj.list);
-                    });
-                });
-                tplData.wholeCards = $scope.wholeCards = wholeCards;
-            }
         });
         app.controller('cardDetail',function($scope,$rootScope,$http){
             $scope.show = 0;
@@ -486,6 +493,7 @@
                 $scope.ajaxing = 0;
                 $scope.cacheComment = "";
                 $scope.teamPeople =tplData.teamPeople;
+                $scope.tagsList = tplData.curTeam.tags;
                 if(data && data.hasComments == 1){
                     //获取评论
                     $http.get("/ajax?type=get-comments&cardId="+data.objectId).then(function(data){
@@ -515,7 +523,7 @@
                     //新建卡片
                     if(data.parentId){
                         $scope.showTitle="新建任务";
-                        $scope.card={images:[],weight:1,cardClass:"任务",owners:[],type:tplData.curTeam.cardType[0],parentId:data.parentId,parentName:data.parentName};
+                        $scope.card={images:[],tags:[],weight:1,cardClass:"任务",owners:[],type:tplData.curTeam.cardType[0],parentId:data.parentId,parentName:data.parentName};
                     }else{
                         $scope.showTitle="新建故事";
                         $scope.card={images:[],owners:[],type:data.type,weight:1};
@@ -535,6 +543,27 @@
                     };
                 }
             });
+            $scope.chk = function(name,event){
+                var card = $scope.card;
+                if(event.target.getAttribute("data-check")=="0"){
+                    var isin = 0;
+                    for(var i=0;i<card.tags.length;i++){
+                        if(card.tags[i]==name){
+                            isin = 1;
+                            break;
+                        }
+                    }
+                    if(!isin){
+                        card.tags.push(name);
+                    }
+                }else{
+                    for(var i=0;i<card.tags.length;i++){
+                        if(card.tags[i]==name){
+                            card.tags.splice(i,1);
+                        }
+                    }
+                }
+            };
             $scope.userChange=function(id,event){
                 var ret = 0;
                 if(!id) return;

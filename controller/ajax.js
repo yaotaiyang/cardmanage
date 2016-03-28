@@ -89,6 +89,7 @@ function init(req,res,obj){
         card.set("owners",req.body.owners);
         card.set("cardClass",req.body.cardClass);
         card.set("images",req.body.images);
+        card.set("tags",req.body.tags);
         card.set("type",req.body.type);
         card.save({
             success:function(data){
@@ -115,6 +116,7 @@ function init(req,res,obj){
             card.set("weight",Number(req.body.weight));
             card.set("acceptance",req.body.acceptance||"");
             card.set("images",req.body.images);
+            card.set("tags",req.body.tags);
             if(req.body.sprintId == card.get("sprintId")){
                 card.save({success:function(data){
                     obj.render(req,res,{data:data});

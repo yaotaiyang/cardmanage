@@ -80,13 +80,13 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .view-line .card[classify='bug']  .tag{background-color:#ffc153}
 .content .view-line .card h4{font-size:14px;height:auto;padding:0;color:#333;}
 .content .view-line .card h4 .tag{background-color: #aaa!important;}
+.content .view-line .card h4 .card-tags{color:#00b7ff}
 [viewstyle="line"] .content{padding-top: 30px;}
 .content .view-line .table-line td{vertical-align: middle;padding:5px 8px;border-bottom: 1px solid #ddd;font-size: 12px;background-color: transparent;color:#333;text-align: left;}
 .content .view-line thead td{font-weight: bold;}
 .content .view-line .table tr{background-color: transparent!important;}
 .content .view-line .table > tbody > td{vertical-align: top;}
 .content .view-line .table-line tr{border-top:1px solid #ddd;}
-.content .view-line .table-line tr:last-child td{border-bottom: none;}
 .content .view-line .type-wrap select{border-radius:4px;border:1px solid #ddd;background-color: #e0e0e0;}
 .content .view-line .table-line{width:100%;}
 .content .view-line .table >tbody > tr:nth-child(odd){background-color: transparent!important;}
@@ -153,7 +153,9 @@ form .k .red{color:#f00;font-weight: bold;vertical-align:middle;padding-right:2p
 form .v{text-align:left;margin-left:92px;display:block;}
 form .v *{font-size:14px;}
 form .v [type='text'],form .v [type='number'],form .v textarea{width:400px;border:1px solid #ddd;padding:4px;font-size:14px;display:block;}
-
+form .v .card-tag{display: inline-block;border:1px solid #eee;padding: 0 3px;height: 20px;line-height: 20px;margin-right:6px;color:#ccc;}
+form .v .card-tag input{width: 0;height: 0;overflow: hidden;opacity: 0;}
+form .v .card-tag[data-check='1']{background-color: #00b7ff;color:#fff;border-color:#00b7ff}
 form input.btn{background:#07e;width: 80px;line-height:24px;text-align: center;cursor: default;color:#fff;border:none;}
 form input.btn:focus{background-color:#96D0FF}
 form input.btn[disabled]{background-color:#ddd;}
