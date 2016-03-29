@@ -18,8 +18,8 @@
     <div class="content" ng-controller="content" ng-cloak>
         <div class="total border">
             本冲刺共有<em class="number">{{cardList.length}}</em>个故事，
-            总任务量计划<em class="number">{{amount}}</em>天，
-            实际量<em class="number">{{realAmount}}</em>天
+            总任务量计划<em class="number">{{amount.toFixed(1)}}</em>天，
+            实际量<em class="number">{{realAmount.toFixed(1)}}</em>天
         </div>
         <div class="cls">
             <div class="graphic-item" graphicpie option="option_class"></div>
