@@ -92,8 +92,6 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .view-line .table >tbody > tr:nth-child(odd){background-color: transparent!important;}
 .content .view-line .story-table{width:100%;border:1px solid #ddd;margin-top: 10px;table-layout: fixed;background-color: #fff;}
 .content .view-line .story-table:first-child{margin-top: 0;}
-.content  .view-line .story-card h4.title{padding: 8px 10px;}
-.content .view-line .story-card .cont{padding: 8px 10px;}
 .content .view-line .fix-wrap{position:fixed;top:34px;left:8px;right:8px;z-index: 10;background-color: #fff;}
 .content .view-line div.table{padding-top: 20px;}
 .content .story-wrap .story-card{margin:0;}
@@ -130,8 +128,8 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .card .completetime{margin:0 2px;background-color:#fff;}
 .content .card.highlightcard{animation: hlcard 2s;-webkit-animation:hlcard 2s;}
 .content .story-card{background-color:#1E69A2;word-break:break-all;margin:4px 6px;line-height:1.3em;-webkit-user-select:none;cursor:default;position:relative;color:#fff;font-size:13px;}
-.content .story-card h4.title{width:100%;box-sizing:border-box;white-space:nowrap;text-overflow:ellipsis;font-size:14px;padding:3px 24px 3px 0;text-indent:3px;overflow:hidden;text-shadow: 1px 1px rgba(0,0,0,0.4);}
-.content .story-card .cont{padding:4px 4px 6px;background-color: rgba(255,255,255,0.2);line-height:1.4em;}
+.content .story-card h4.title{width:100%;box-sizing:border-box;white-space:nowrap;text-overflow:ellipsis;font-size:14px;padding:8px 24px 8px 8px;text-indent:3px;overflow:hidden;text-shadow: 1px 1px rgba(0,0,0,0.4);}
+.content .story-card .cont{padding:8px;background-color: rgba(255,255,255,0.2);line-height:1.4em;}
 .content .story-card .story-add-card{position:absolute;width:32px;height:32px;bottom:-5px;right:-7px;color:#96D0FF;font-weight:bold;cursor:pointer;line-height:32px;text-align:center;font-size:20px;}
 .content .story-card .story-add-card:hover{color:#f00;}
 .content .story-card .weight{position:absolute;right:4px;top:12px;line-height:0;font-style:normal;text-align:right;color:#fd826e;}
