@@ -19,6 +19,7 @@
     .company-people li{cursor:default;padding:2px;}
     .company-people li:hover{background-color:#f0f0f0;}
     .company-people .info{color:#aaa;font-size:12px;line-height:2em;}
+    input.input{border:1px solid #ddd;width:50%;height: 20px;}
 </style>
 <div class="body cls admin"  ng-app="admin" ng-controller="body">
     <div id="header" class="header ng-scope">
@@ -63,6 +64,11 @@
                     </li>
                     <li class="item add-sprint" ng-click="modify('adduser',curTeam.peoples)">+</li>
                 </ul>
+            </div>
+            <div class="item-wrap">
+                <h4>tags编辑（逗号分隔多个）</h4>
+                <input ng-model="tags" type="text" class="input">
+                <input ng-click="savetags(tags)" type="button" value="保存">
             </div>
 
         </div>
@@ -177,6 +183,28 @@
             $scope.sprints = tplData.sprints;
             $scope.companyTeams = tplData.companyTeams;
             getdata($http,cur_team);
+            $scope.tags = tplData.team.tags.join(",");
+            $scope.savetags = function(str){
+                var cur_str = str.trim().replace("，",",");
+                var arr = cur_str.split(",");
+                for(var i=0;i<arr.length;i++){
+                    if(arr[i].length ==0){
+                        arr.splice(i,1);
+                        i--;
+                    }
+                }
+                var url = "/ajax?type=update-team";
+                $http.post(url,{objectId:tplData.team.objectId,tags:arr}).success(function(data){
+                    if(data.status == 1) {
+                        $scope.tags = arr.join(",");
+                    }else{
+                        alert(data.result.err.message);
+                    }
+                }).error(function(){
+                    alert("添加失败");
+                });
+                console.log(arr.join(","));
+            }
         });
         app.controller("modify",function($scope,$rootScope,$http){
             $scope.show = 0;

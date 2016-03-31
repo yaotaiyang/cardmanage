@@ -350,11 +350,16 @@ function init(req,res,obj){
             },err);
         },err);
     }else if(type == 'update-team'){
-        var name = req.body.name,id=req.body.objectId;
+        var name = req.body.name,id=req.body.objectId,tags = req.body.tags;
         var Team = AV.Object.extend('Team');
         var team = new AV.Query(Team);
         team.get(id,function(team){
-            team.set("name",name);
+            if(name){
+                team.set("name",name);
+            }
+            if(tags){
+                team.set("tags",tags);
+            }
             team.save().then(function(cur_team){
                 obj.render(req,res,{data:cur_team});
             },err);

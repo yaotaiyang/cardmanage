@@ -39,6 +39,13 @@ function init(req,res,obj){
         }
     }).then(function(company){
         renderObj.company = company;
+        var Team = AV.Object.extend('Team');
+        var team_q = new AV.Query(Team);
+        return team_q.get(teamId,function(team){
+            return team;
+        });
+    }).then(function(team){
+        renderObj.team = team;
         var Sprint = AV.Object.extend('Sprint');
         var sprint_q = new AV.Query(Sprint);
         sprint_q.equalTo('teamId',teamId);
