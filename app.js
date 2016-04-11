@@ -11,12 +11,12 @@ var bodyParser=require("body-parser");
 var app = express();
 var multipart = require('connect-multiparty');
 //var multipartMiddleware = multipart();
-var template = require('art-template');
+var template = require('art-template'); 
 var AV = require('leanengine');
 
-template.config('base', '');
+template.config('base', ''); 
 template.config('openTag','{%');
-template.config('closeTag','%}'); 
+template.config('closeTag','%}');
 //template.config('compress',true);
 template.config('extname', '.html');
 app.engine('.html', template.__express);

@@ -6,7 +6,7 @@
     .content .total{margin: 10px 10px 0; background-color: #fcfcfc; padding: 10px;}
     .content em.number{font-size:150%;color:#96D0FF;font-weight:bold;padding:0 4px;}
     .graphic-item{width:400px;height:300px;border:1px solid #ddd;margin:10px 0 0 10px;float:left;}
-    .stroy-detail .graphic-item{width:48%;height:280px}
+    .stroy-detail .graphic-item{width:98%;height:280px}
 </style>
 <div class="body cls"  ng-app="statistics" ng-controller="body">
     <div id="header" class="header ng-scope" ng-controller="head">
@@ -24,6 +24,7 @@
         <div class="cls">
             <div class="graphic-item" graphicpie option="option_class"></div>
             <div class="graphic-item" graphicpie option="option_people"></div>
+            <div class="graphic-item" graphicpie option="option_people_r"></div>
             <div class="graphic-item" graphicbar option="option_people_class"></div>
         </div>
         <div class="cls stroy-detail">
@@ -101,26 +102,29 @@
                 };
 
                 //任务量排行
-                 var peo_d = {};
+                 var peo_d = {},peo_r_d={};
                 $scope.cards.forEach(function(card){
                     if(card.owners.length>0){
                         card.owners.forEach(function(owner){
                             if(peo_d[owner.displayName]){
                                 peo_d[owner.displayName]+= Number(card.amount);
+                                peo_r_d[owner.displayName]+= Number(card.realAmount||0);//实际工作量
                             }else{
                                 peo_d[owner.displayName]=Number(card.amount);
+                                peo_r_d[owner.displayName]=Number(card.realAmount||0);
                             }
                         });
                     }
                 });
-                var arr = [];
+                var arr = [],arr_r=[];
                 for(var key in peo_d){
-                    arr.push({name:key,value:peo_d[key]});
+                    arr.push({name:key,value:peo_d[key].toFixed(1)});
+                    arr_r.push({name:key,value:peo_r_d[key].toFixed(1)});
                 }
                 $scope.option_people ={
                     color:color,
                     title:{
-                        text:"个人任务量(天)",
+                        text:"个人计划任务量(天)",
                         x:'left',
                         textStyle:{
 
@@ -129,9 +133,35 @@
                     },
                     series:[
                         {
-                            name:"个人任务量(天)",
+                            name:"个人计划任务量(天)",
                             type:"pie",
                             data:arr,
+                            radius : '60%',
+                            label:{
+                                normal:{
+                                    formatter: '{b} '+'({c}天)'
+                                }
+                            }
+                        }
+                    ]
+                };
+                console.log(arr);
+                console.log(arr_r);
+                $scope.option_people_r ={
+                    color:color,
+                    title:{
+                        text:"个人实际任务量(天)",
+                        x:'left',
+                        textStyle:{
+
+                            fontSize:14
+                        }
+                    },
+                    series:[
+                        {
+                            name:"个人实际任务量(天)",
+                            type:"pie",
+                            data:arr_r,
                             radius : '60%',
                             label:{
                                 normal:{
@@ -171,7 +201,7 @@
                                 cur_val += Number(card.amount);
                             }
                         });
-                        cur_obj.data.push(cur_val);
+                        cur_obj.data.push(cur_val.toFixed(1));
                     });
 
                     series.push(cur_obj);
@@ -222,9 +252,9 @@
                             }
                         });
                     });
-                    renwu_list.push(renwu||"");
-                    charuxiang_list.push(charuxiang||"");
-                    bug_list.push(bug||"");
+                    renwu_list.push(renwu?renwu.toFixed(1):"");
+                    charuxiang_list.push(charuxiang?charuxiang.toFixed(1):"");
+                    bug_list.push(bug?bug.toFixed(1):"");
                 });
                 var option = {
                     title:{
