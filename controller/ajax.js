@@ -15,6 +15,7 @@ function init(req,res,obj){
         card_q.equalTo("teamId", teamId);
         card_q.equalTo("sprintId", sprintId);
         card_q.notEqualTo('deleted', '1');
+        card_q.limit(1000);
         var Team = AV.Object.extend('Team');
         var team_q = new AV.Query(Team);
         var cardType = [];
@@ -23,6 +24,7 @@ function init(req,res,obj){
         }).then(function(){
             card_q.find({
                 success:function(data) {
+                    console.log(data.length);
                     var cardHash = {};
                     var resarr = [];
                     data.forEach(function (obj,ind) {
