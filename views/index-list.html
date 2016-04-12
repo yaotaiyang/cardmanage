@@ -21,7 +21,7 @@
                 </div>
             </td>
             <td masonry ng-if="expendind | expend:$index" dropable dataitem="cardtype" ng-repeat="cardtype in lineobj.cards" data-parentid="{{lineobj.story.objectId}}">
-                <div classify="{{item.cardClass}}" ng-if="item | filterpeople:filterid:filterClass" draggable item="item" itemtype="cardtype" class="card masonry-brick"  ng-dblclick="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
+                <div classify="{{item.cardClass}}" ng-if="item | filterpeople:filterid:filterbyid:filterClass" draggable item="item" itemtype="cardtype" class="card masonry-brick"  ng-dblclick="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
                     <h4>{{item.title}}</h4>
                     <ul class="ownerslist cls">
                         <li class="name owner">责任人: {{item.owners | ownersname}}</li>
@@ -83,7 +83,7 @@
                                 <col width="100"/>
                                 <col width="120"/>
                             </colgroup>
-                            <tr classify="{{item.cardClass}}" ng-if="item | filterpeople:filterid:filterClass" item="item" itemtype="cardtype" class="card masonry-brick"  ng-click="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
+                            <tr classify="{{item.cardClass}}" ng-if="item | filterpeople:filterid:filterbyid:filterClass" item="item" itemtype="cardtype" class="card masonry-brick"  ng-click="cardclick(item)" ng-repeat="item in cardtype.list | orderBy:'weight':'reverse'">
                                 <td><i class="tag">{{item.cardClass}}</i></td>
                                 <td><h4><span ng-if="item.tags.length" class="card-tags">【{{item.tags.join(', ')}}】</span>{{item.title}}</h4>
                                 </td>

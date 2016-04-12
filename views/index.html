@@ -16,6 +16,10 @@
             <select ng-cloak name="dateselect" id="filterpeo" ng-model="ownerId" ng-change="change(1)">
                 <option ng-repeat="val in teamPeople" value="{{val.objectId}}">{{val.displayName}}</option>
             </select>
+            <label for="filterpeo"> 报告人：</label>
+            <select ng-cloak name="dateselect" id="filterpeo_b" ng-model="ownerbyId" ng-change="change(1)">
+                <option ng-repeat="val in teamPeople" value="{{val.objectId}}">{{val.displayName}}</option>
+            </select>
             <label for="cardclass"> 类型：</label>
             <select ng-cloak name="dateselect" id="cardclass" ng-model="filterClass" ng-change="change(1)">
                 <option ng-repeat="val in cardClass" value="{{val}}">{{val}}</option>
@@ -159,24 +163,31 @@
             }
         });
         app.filter("filterpeople",function(){
-            return function(item,ownerId,filterClass){
+            return function(item,ownerId,ownerById,filterClass){
                 if(item.deleted==1){
                     return 0;
                 }
                 if(filterClass != item.cardClass && filterClass != "全部"){
                     return 0;
                 };
-                if(ownerId == "all"){
-                    return 1;
-                }
-                var res = 0;
-                for(var i=0;i<item.owners.length;i++){
-                    if(ownerId == item.owners[i].objectId){
-                        res = 1;
-                        break;
+                if(ownerId!="all"){
+                    var res = 0;
+                    for(var i=0;i<item.owners.length;i++){
+                        if(ownerId == item.owners[i].objectId){
+                            res = 1;
+                            break;
+                        }
+                    }
+                    if(res == 0){//如果此项没通过，直接返回
+                        return res;
                     }
                 }
-                return res;
+                if(ownerById!="all"){
+                    if(ownerById!=item.createdBy.userId){
+                        return 0;
+                    }
+                }
+                return 1;
             }
         });
         app.filter("iscurrentUser",function(){
@@ -225,6 +236,7 @@
             $scope.cardClass = tplData.curTeam.cardClass;
             $scope.cardClass.unshift("全部");
             $scope.ownerId="all";
+            $scope.ownerbyId="all";
             $scope.filterClass="全部";
             $scope.statistics = "/statistics?teamId="+$scope.teamId+"&sprintId="+$scope.sprintId;
             for(var i=0;i<tplData.teamPeople.length;i++){
@@ -241,7 +253,7 @@
             $scope.change = function (isname) {
                 $scope.statistics = "/statistics?teamId="+$scope.teamId+"&sprintId="+$scope.sprintId;
                 if(isname==1){
-                    $scope.$emit("headChange", {sprintId:$scope.sprintId,teamId:$scope.teamId,ownerId:$scope.ownerId,filterClass:$scope.filterClass});
+                    $scope.$emit("headChange", {sprintId:$scope.sprintId,teamId:$scope.teamId,ownerbyId:$scope.ownerbyId,ownerId:$scope.ownerId,filterClass:$scope.filterClass});
                 }else if(isname == 'team'){
                     location.href = "/?teamId="+$scope.teamId;
                 }else{
@@ -252,6 +264,7 @@
         app.controller('list', function($scope,$rootScope,$http) {
             $scope.cardType = tplData.curTeam.cardType;
             $scope.filterid = "all";
+            $scope.filterbyid = "all";
             $scope.filterClass = "全部";
             render({sprintId:tplData.sprintId,teamId:tplData.teamId,ownerId:"all"});
             function render(obj){
@@ -353,6 +366,7 @@
             });
             $scope.$on("filterChange",function (event, obj) {
                 $scope.filterid = obj.ownerId;
+                $scope.filterbyid = obj.ownerbyId;
                 $scope.filterClass = obj.filterClass;
             });
         });
