@@ -199,7 +199,8 @@
                 }
             }
         });
-        app.controller("body",function($scope){
+        app.controller("body",function($scope,$rootScope){
+            $scope.curCardId = null;
             $scope.$on("headChange",function (event, obj) {
                 $scope.$broadcast("filterChange", obj);
             });
@@ -210,7 +211,11 @@
                 $scope.$broadcast("addedCard",data);
             });
             $scope.$on("modefyCard",function(event,data){
+                $scope.curCardId = data.objectId;
                 $scope.$broadcast("showDetail",data);
+            });
+            $scope.$on("closepanel",function(){
+                $scope.curCardId = null;
             });
             $scope.$on("drop",function(event,data){
                 $scope.$broadcast("dropcard",data);
@@ -377,6 +382,7 @@
             $scope.sprintList = tplData.sprints;
             $scope.closepanel= function(){
                 $scope.show = 0;
+                $rootScope.curCardId = null;
                 if($scope.card.sprintId != $scope.oldData.sprintId || $scope.card.parentId != $scope.oldData.parentId){
                     //页面数据回滚
                     $scope.oldCardList.forEach(function(arr,ind){
@@ -387,6 +393,7 @@
                         $scope.card[key]=$scope.oldData[key];
                     }
                 }
+                $scope.$emit("closepanel");
             };
             $scope.$on("showDetail",function(event,data){
                 $("#userChange").val("");
@@ -428,6 +435,7 @@
                             $scope.ajaxing = 0;
                         });
                     };
+
                 }else{
                     //新建卡片
                     if(data.parentId){

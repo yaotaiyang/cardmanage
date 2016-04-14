@@ -75,6 +75,7 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .view-line{padding: 10px;border-top:1px solid #ddd;background-color: #efefef;}
 .content .view-line .card{font-size:0;width:auto;float:none;background-color: transparent!important;padding: 0 10px;margin: 0;}
 .content .view-line .card:hover{background-color: #f2f2f2!important;}
+.content .view-line .card[data-current='1']{background-color: #eee!important;}
 .content .view-line .card .tag{background-color:#35c1a4;width:40px;height: 20px;line-height:20px;display: inline-block;color:#fff;font-size: 12px; font-style: normal;text-align: center;border-radius: 4px;}
 .content .view-line .card[classify='插入项'] .tag{background-color:#fd826e}
 .content .view-line .card[classify='bug']  .tag{background-color:#ffc153}
@@ -116,6 +117,7 @@ form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;
 .content .wrap.fold{width:100px;-webkit-box-flex:0.00001;box-flex:0.00001;}
 .content .cardlist{text-align:left;font-size:12px;background-color:#fff;padding-bottom:10px;background-color:#fdfdfd;}
 .content .card{position:relative;-webkit-user-select:none;float:left;width:190px;margin:4px 2px 2px 6px;padding-bottom:2px;cursor:default;background-color:#35c1a4;box-sizing:border-box;-webkit-box-sizing:border-box;-webkit-user-select:none;}
+.content .card[data-current='1']{background-color: #07e!important;}
 .content .card[classify='bug']{background-color:#ffc153;}
 .content .card[classify='插入项']{background-color:#fd826e;}
 .content .card.cardstatus1{background-color: #b6fcd7;}
