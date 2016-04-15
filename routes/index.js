@@ -6,15 +6,21 @@
  * To change this template use File | Settings | File Templates.
  */
 var express = require('express');
+var fs = require('fs');
 var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
 var router = express.Router();
 var AV = require('leanengine');
-
 var APP_ID = process.env.LC_APP_ID;
 var APP_KEY = process.env.LC_APP_KEY;
 var MASTER_KEY = process.env.LC_APP_MASTER_KEY;
-
+var path_str = './dev_conf.json';
+if(fs.existsSync(path_str) && fs.statSync(path_str).isFile()){//本地调试配置
+    var pathObj = JSON.parse(fs.readFileSync(path_str,"utf-8"));
+    APP_ID = pathObj["DEV_KEY"]["APP_ID"];
+    APP_KEY = pathObj["DEV_KEY"]["APP_KEY"];
+    MASTER_KEY = pathObj["DEV_KEY"]["MASTER_KEY"];
+}
 AV.initialize(APP_ID, APP_KEY, MASTER_KEY);
 router.get('/*.txt',function(req,res){//根目录静态文件输出，搜索引擎文件等
     var cur_controller = require('../controller/static.js');

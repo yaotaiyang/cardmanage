@@ -25,9 +25,10 @@
                 <option ng-repeat="val in cardClass" value="{{val}}">{{val}}</option>
             </select>
         </form>
-        <a class="statistics" href="{{statistics}}">查看统计</a>
+        <a class="statistics" href="{{statistics}}">统计</a>
+        <a class="notice" href="/notice?teamId={%curTeam.id%}">公告</a>
         {%if user.role=='admin'|| user.role=='superAdmin'%}&nbsp;&nbsp;
-        <a href="/admin?teamId={%params.teamId%}">管理后台</a>
+        <a href="/admin?teamId={%params.teamId%}">管理</a>
         {%/if%}
         <span class="user" ng-cloak>欢迎：{%user.displayName%} &nbsp;<a href="/logout">退出</a></span>
         <span class="viewstyle" ng-click="switchview()" ng-cloak><em ng-if="viewstyle=='block'" title="点击列表展示">≡</em><em ng-if="viewstyle=='line'" title="点击块状展示">○</em></span>

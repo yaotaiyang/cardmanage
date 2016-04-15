@@ -4,3 +4,7 @@ start.sh
 # VIM
 *~
 *.swp
+/dev_conf.json
+/.idea
+/web
+/cardmanage.iml
