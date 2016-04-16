@@ -382,10 +382,20 @@ function init(req,res,obj){
             obj.render(req,res,{data:{title:"没权限",err:{message:"没权限"}}});
             return;
         }
-        var sql  = "update Notice set content = '"+html+"' where objectId='"+noticeId+"'";
+        var Notice = AV.Object.extend("Notice");
+        var notice_q = new AV.Query(Notice);
+        notice_q.get(noticeId).then(function(data){
+            data.set("content",html);
+            return data;
+        }).then(function(data){
+            data.save().then(function(data){
+                obj.render(req,res,{data:data});
+            })
+        });
+      /*  var sql  = "update Notice set content = '"+html+"' where objectId='"+noticeId+"'";
         AV.Query.doCloudQuery(sql).then(function(data) {
             obj.render(req,res,{data:data});
-        }, err);
+        }, err);*/
     }else{
         obj.render(req,res,{data:{title:"登录失败",err:{message:"该接口不存在"}}});
     }
