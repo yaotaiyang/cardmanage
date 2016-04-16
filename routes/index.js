@@ -63,6 +63,10 @@ router.get('/admin', function(req, res, next) {
     var cur_controller = require('../controller/admin.js');
     cur_controller.init(req,res,{render:render,AV:AV});
 });
+router.get('/notice', function(req, res, next) {
+    var cur_controller = require('../controller/notice.js');
+    cur_controller.init(req,res,{render:render,AV:AV});
+});
 /**ajax接口**/
 router.get('/ajax', function(req, res, next) {//获取卡片
     var cur_controller = require('../controller/ajax.js');

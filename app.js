@@ -11,9 +11,8 @@ var bodyParser=require("body-parser");
 var app = express();
 var multipart = require('connect-multiparty');
 //var multipartMiddleware = multipart();
-var template = require('art-template'); 
+var template = require('art-template');
 var AV = require('leanengine');
-
 template.config('base', '');
 template.config('openTag','{%');
 template.config('closeTag','%}');
@@ -22,7 +21,7 @@ template.config('extname', '.html');
 app.engine('.html', template.__express);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
-// 加载 cookieSession 以支持 AV.User  的会话状态
+// 加载 cookieSession 以支持 AV.User  的会 话状态
 app.use(AV.Cloud);
 app.use(AV.Cloud.CookieSession({ secret: '05XgTktKPMkU', maxAge: 1000*60*60*24, fetchUser: true }));
 app.use(bodyParser.json({limit: '50mb'}));

@@ -1,0 +1,71 @@
+{%include "layout/header"%}
+<link rel="stylesheet" href="/public/css/style.css"/>
+<style>
+    body{background-color: #f2f2f2;}
+    .header{border-bottom:2px solid #96D0FF}
+    .header .user{right:30px;}
+    .content{padding-top: 40px}
+    .content .item{background-color: #fff;border:1px solid #ddd;margin: 10px;padding: 10px;position: relative;min-height: 50px;line-height:2em;}
+    .content .item .edit{position: absolute;right:10px;top:4px;font-size: 12px;}
+    .editor-wrap{margin:10px;position: relative;display: none;}
+    .content[data-edit='1'] .editor-wrap{display: block;}
+    .content[data-edit='1'] .item{display: none;}
+    .editor-wrap .save,.editor-wrap .cancel{position: absolute;right:50px;top:4px;font-size: 12px;}
+    .editor-wrap .cancel{right:10px;}
+</style>
+<div id="header" class="header ng-scope">
+    <h2>{%company.name%}-{%curTeam.get('name')%}(公告)</h2>
+    <span class="user">欢迎：{%user.displayName%} &nbsp;<a href="/logout">退出</a></span>
+</div>
+<div class="content" ng-cloak ng-app="notice" ng-controller="body" data-edit="{{editing}}">
+    <div class="item" ng-repeat="notice in notices">
+        <div class="editor-dom" ng-bind-html="notice.content"></div>
+        <a href="javascript:void(0)" ng-click="editorHTML(notice.objectId,notice.content)" class="edit">编辑</a>
+    </div>
+    <div id="editor-wrap" class="editor-wrap">
+        <div id="editor"></div>
+        <a class="save" ng-click="editSave()" href="javascript:void(0);">保存</a>
+        <a class="cancel" ng-click="cancel()" href="javascript:void(0);">取消</a>
+    </div>
+</div>
+<script src="/public/js/ckeditor/ckeditor.js"></script>
+<script>
+    seajs.use(["angular","angular-sanitize"],function(){
+        CKEDITOR.config.height = 150;
+        CKEDITOR.config.width = 'auto';
+        tplData.CKEDITOR = CKEDITOR.replace('editor');
+        var app = angular.module('notice', ['ngSanitize']);
+        app.controller("body",function($scope,$rootScope,$http){
+            $scope.notices = tplData.notices;
+            $scope.editing =  0;
+            $scope.objEdit = {};
+            $scope.editorHTML=function(id,html){
+                $scope.editing = 1;
+                tplData.CKEDITOR.setData(html);
+                $scope.objEdit.id = id;
+            };
+            $scope.cancel = function(){
+                $scope.editing = 0;
+            };
+            $scope.editSave = function(){
+               $scope.objEdit.html =  tplData.CKEDITOR.getData();
+                var cur_notice = null;
+               for(var i=0;i<$scope.notices.length;i++){
+                   if($scope.notices[i].objectId == $scope.objEdit.id){
+                       cur_notice = $scope.notices[i];
+                       break;
+                   }
+               }
+                $scope.editing = 0;
+                cur_notice.content = $scope.objEdit.html;
+                var url = "/ajax?type=savenotice&teamId="+tplData.curTeam.objectId;
+                $http.post(url,$scope.objEdit).success(function(data){
+                    if(data.status != 1) {
+                        alert("保存失败，重新编辑保存，或者联系管理员");
+                    }
+                });
+            }
+        });
+    });
+</script>
+{%include "layout/footer"%}

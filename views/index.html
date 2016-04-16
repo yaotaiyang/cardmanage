@@ -26,7 +26,7 @@
             </select>
         </form>
         <a class="statistics" href="{{statistics}}">统计</a>
-        <a class="notice" href="/notice?teamId={%curTeam.id%}">公告</a>
+        <a class="notice" target="_blank" href="/notice?teamId={%curTeam.id%}">公告</a>
         {%if user.role=='admin'|| user.role=='superAdmin'%}&nbsp;&nbsp;
         <a href="/admin?teamId={%params.teamId%}">管理</a>
         {%/if%}
@@ -43,7 +43,7 @@
                 <div ng-if="card.parentName" class="parentinfo">所属：{{card.parentName}}</div>
                 <ul class="form-ul">
                     <li><label class="k"><em class="red">*</em>简称：</label><span class="v"><input type="text" placeholder="简要信息（建议10字内）" ng-model="card.title" required class="title" /></span></li>
-                    <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea placeholder="描述信息，用于卡片内容展示" ng-model="card.description" required rows="3" class="descri" name="descri"></textarea></span></li>
+                    <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea placeholder="描述信息，用于卡片内容展示" ng-model="card.description" required rows="6" class="descri" name="descri"></textarea></span></li>
                     <li><label class="k">工作量：</label>
                     <span class="v"><input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.amount" class="amount"/>天　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.realAmount" class="amount"/>天</span>
                         　　　　从 <input  tabindex="-1" readonly type="text" class="datetime" ng-model="card.startTime" value="{{card.startTime | date:'yyyy-MM-dd'}}" datetime="datetime"/> 至 <input  tabindex="-1" readonly  ng-model="card.endTime" type="text" class="datetime" datetime="datetime" value="{{card.endTime | date:'yyyy-MM-dd'}}"/>

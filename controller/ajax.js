@@ -366,6 +366,26 @@ function init(req,res,obj){
                 obj.render(req,res,{data:cur_team});
             },err);
         },err);
+    }else if(type=='savenotice'){
+        var noticeId = req.body.id;
+        var html = req.body.html;
+        var teamId = req.query["teamId"];
+        var user = AV.User.current();
+        var teams = user.get("teams");
+        var allow = 0;
+        for(var i=0;i<teams.length;i++){
+            if(teams[i].teamId == teamId){
+                allow = 1;
+            }
+        }
+        if(allow!=1){
+            obj.render(req,res,{data:{title:"没权限",err:{message:"没权限"}}});
+            return;
+        }
+        var sql  = "update Notice set content = '"+html+"' where objectId='"+noticeId+"'";
+        AV.Query.doCloudQuery(sql).then(function(data) {
+            obj.render(req,res,{data:data});
+        }, err);
     }else{
         obj.render(req,res,{data:{title:"登录失败",err:{message:"该接口不存在"}}});
     }
