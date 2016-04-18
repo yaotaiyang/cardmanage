@@ -24,87 +24,21 @@
             <select ng-cloak name="dateselect" id="cardclass" ng-model="filterClass" ng-change="change(1)">
                 <option ng-repeat="val in cardClass" value="{{val}}">{{val}}</option>
             </select>
+            <label>过滤：<input type="text" placeholder="输入关键字" ng-model="filterQuery" ng-change="change(1)"></label>
         </form>
         <a class="statistics" href="{{statistics}}">统计</a>
         <a class="notice" target="_blank" href="/notice?teamId={%curTeam.id%}">公告</a>
         {%if user.role=='admin'|| user.role=='superAdmin'%}&nbsp;&nbsp;
         <a href="/admin?teamId={%params.teamId%}">管理</a>
         {%/if%}
-        <span class="user" ng-cloak>欢迎：{%user.displayName%} &nbsp;<a href="/logout">退出</a></span>
+        <span class="user" ng-cloak>{%user.displayName%} &nbsp;<a href="/logout">退出</a></span>
         <span class="viewstyle" ng-click="switchview()" ng-cloak><em ng-if="viewstyle=='block'" title="点击列表展示">≡</em><em ng-if="viewstyle=='line'" title="点击块状展示">○</em></span>
     </div>
     <div id="content" ng-cloak class="content cls" ng-controller="list">
         {%include "index-list"%}
     </div>
     <div class="carddetail" ng-cloak ng-show="show" ng-controller="cardDetail" paste>
-        <form class="addcard ng-pristine ng-valid scroll-wrap" ng-submit="submit()">
-            <div class="form-wrap">
-                <div class="show-title cls" ng-if="showTitle">{{showTitle}}</div>
-                <div ng-if="card.parentName" class="parentinfo">所属：{{card.parentName}}</div>
-                <ul class="form-ul">
-                    <li><label class="k"><em class="red">*</em>简称：</label><span class="v"><input type="text" placeholder="简要信息（建议10字内）" ng-model="card.title" required class="title" /></span></li>
-                    <li><label class="k"><em class="red">*</em>描述：</label><span class="v"><textarea placeholder="描述信息，用于卡片内容展示" ng-model="card.description" required rows="6" class="descri" name="descri"></textarea></span></li>
-                    <li><label class="k">工作量：</label>
-                    <span class="v"><input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.amount" class="amount"/>天　<span class="real-amount" ng-if="card.objectId">实际：<input type="text" onKeypress="return (/[-\d.]/.test(String.fromCharCode(event.keyCode)))" ng-model="card.realAmount" class="amount"/>天</span>
-                        　　　　从 <input  tabindex="-1" readonly type="text" class="datetime" ng-model="card.startTime" value="{{card.startTime | date:'yyyy-MM-dd'}}" datetime="datetime"/> 至 <input  tabindex="-1" readonly  ng-model="card.endTime" type="text" class="datetime" datetime="datetime" value="{{card.endTime | date:'yyyy-MM-dd'}}"/>
-                    </span></li>
-                    <li ng-if="card.type=='story'"><label class="k">验收标准：</label><span class="v"><textarea placeholder="描述如何为故事达成" ng-model="card.acceptance" rows="3" class="title"></textarea></span></li>
-                    <li><label class="k">优先级：</label>
-                    <span class="v"><input type="number" ng-model="card.weight" class="amount"/>
-                        <span ng-if="(card.type!='story')">
-                            　种类:
-                            <select title="选择添加用户" ng-model="card.cardClass" name="owners" class="card-class">
-                                <option ng-if="cardClass!='全部'" ng-repeat="cardClass in cardClassList" value="{{cardClass}}">{{cardClass}}</option>
-                            </select>
-                        </span>
-                        <span ng-if="(card.type!='story'&&card.objectId)">
-                        　　所属故事 : <select style="max-width:140px;" title="选择该任务到其他故事" ng-model="card.parentId" name="owners" class="card-class" ng-change="movetostory('{{card.parentId}}',card)">
-                            <option  ng-repeat="story in storyList" value="{{story.objectId}}">{{story.title}}</option>
-                        </select>
-                        </span>
-                        <span ng-if="(card.type=='story'&&card.objectId)">
-                        　　所属冲刺 : <select style="max-width:140px;" title="选择该故事到其他冲刺" ng-model="card.sprintId" name="owners" class="card-class" ng-change="movetosprint('{{card.sprintId}}',card)">
-                            <option  ng-repeat="sprint in sprintList" value="{{sprint.id}}">{{sprint.name}}</option>
-                        </select>
-                        </span>
-                    </span>
-                    </li>
-                    <li ng-if="(card.type!='story')"><label class="k">标签：</label>
-                    <span class="v"><label data-check="{{name | tagchk:card.tags}}" class="card-tag" ng-repeat="name in tagsList" ng-click="chk(name,$event)">{{name}}</label></span>
-                    </li>
-                    <li ng-if="(card.type!='story')"><label class="k">负责人：</label><span class="v">
-                    <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.displayName}}</em></span>
-                    <select id="userChange" class="owner-select" title="选择添加用户" name="owners" ng-change="userChange(cacheS)" ng-model="cacheS" ng-options='val.objectId as val.displayName for val in teamPeople'>
-                        <option value=""></option>
-                    </select></span>
-                    </li>
-                    <li class="imgs"><label class="k">图片：</label>
-                    <span class="v">
-                        <span class="imgs-wrap" ng-cloak><img ng-click="showimg()" title="右键删除" ng-repeat="img in card.images" ng-if="!img.deleted" rightclick="deletePic(card,img.id)"  ng-src="{{img.url}}"/></span>
-                        <span class="uploadbtn {{loading}}" title="截屏工具截屏后,ctrl+v可粘贴">
-                            <span class="text"><span class="normal"></span><i>+</i></span>
-                            <span class="status">{{loadStatus}}</span>
-                            <input tabindex="-1" class="fileupload" type="file" name="mypic" onchange="angular.element(this).scope().onFileSelect(this.files)"/>
-                        </span>
-                    </span>
-                    </li>
-                    <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="保 存" /><span class="createdby" ng-if="card.createdBy">{{card.createdBy.displayName}} 创建于 {{card.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span></span></li>
-                </ul>
-            </div>
-            <span class="close" ng-click="closepanel()">×</span>
-            <div class="comment" ng-if="card.objectId">
-                <ul>
-                    <li ng-repeat="comment in comments | orderBy:'updatedAt':'reverse'">
-                        <div class="cont">{{comment.description}}</div>
-                        <div class="info"><span class="time">{{comment.createdAt | date : 'yyyy-MM-dd HH:mm'}}</span><span class="name">{{comment.createdBy.displayName}}</span></div>
-                    </li>
-                </ul>
-            </div>
-        </form>
-        <div class="comment-input-wrap">
-            <textarea maxlength="200" ng-disabled="commenting"  ng-keypress="ctrlenter($event)" class="comment-input" ng-model="cacheCom" placeholder="ctrl+enter提交（200字内）"></textarea>
-        </div>
-        <div ng-if="card.createdBy.userId | iscurrentUser" class="delcard" ng-click="delcard()">删除</div>
+        {%include "index-panel"%}
     </div>
 </div>
 <script>
@@ -164,7 +98,7 @@
             }
         });
         app.filter("filterpeople",function(){
-            return function(item,ownerId,ownerById,filterClass){
+            return function(item,ownerId,ownerById,filterClass,filterQuery){
                 if(item.deleted==1){
                     return 0;
                 }
@@ -185,6 +119,11 @@
                 }
                 if(ownerById!="all"){
                     if(ownerById!=item.createdBy.userId){
+                        return 0;
+                    }
+                }
+                if(filterQuery && filterQuery.length !=0){
+                    if(item.title.indexOf(filterQuery)==-1){
                         return 0;
                     }
                 }
@@ -259,7 +198,13 @@
             $scope.change = function (isname) {
                 $scope.statistics = "/statistics?teamId="+$scope.teamId+"&sprintId="+$scope.sprintId;
                 if(isname==1){
-                    $scope.$emit("headChange", {sprintId:$scope.sprintId,teamId:$scope.teamId,ownerbyId:$scope.ownerbyId,ownerId:$scope.ownerId,filterClass:$scope.filterClass});
+                    $scope.$emit("headChange", {sprintId:$scope.sprintId,
+                        teamId:$scope.teamId,
+                        ownerbyId:$scope.ownerbyId,
+                        ownerId:$scope.ownerId,
+                        filterClass:$scope.filterClass,
+                        filterQuery:$scope.filterQuery
+                    });
                 }else if(isname == 'team'){
                     location.href = "/?teamId="+$scope.teamId;
                 }else{
@@ -374,6 +319,7 @@
                 $scope.filterid = obj.ownerId;
                 $scope.filterbyid = obj.ownerbyId;
                 $scope.filterClass = obj.filterClass;
+                $scope.filterQuery = obj.filterQuery;
             });
         });
         app.controller('cardDetail',function($scope,$rootScope,$http){

@@ -42,7 +42,7 @@ a:hover{color:#f00;}
 ::-webkit-input-placeholder { color:#aaa;font-size:12px;line-height:18px;}
 select{border: 1px solid #ccc;height:22px;color:#666;}
 .header{height:39px;line-height:39px;padding:0 0 0 10px;font-size:12px;position:fixed;top:0;width:100%;background-color: #fff;z-index: 10}
-.header h2{float:left;font-size:130%;margin-right:20px;}
+.header h2{float:left;font-size:130%;margin-right:0;}
 .header .user{position:absolute;top:0;right:50px;background-color:#fff;}
 .header .go-back{margin-left:8px;}
 .header label[for="filtername"]{margin-left:8px;}
@@ -50,8 +50,9 @@ select{border: 1px solid #ccc;height:22px;color:#666;}
 .header .viewstyle:hover em{background-color: #07e;color:#fff;}
 .header .viewstyle em{display: inline-block;width:16px;height:16px;border:1px solid #07e;line-height:12px;text-align: center;}
 form.filter{display:inline-block;padding:0 10px;}
-form.filter input{border:1px solid #ccc;;color:#666;height:18px}
+form.filter input{border:1px solid #ccc;;color:#666;height:18px;line-height:18px;}
 form.filter input[type='submit']{height:22px;background:#07e;border-color: #07e;color:#fff}
+form.filter input[type='text']{width: 6em;padding:0 3px;}
 .menu{height:30px;position:relative;overflow: hidden;margin:0 16px;top:1px;z-index:10;}
 .menulist{position:relative;white-space: nowrap;font-size:0;background-color:#f1f1f1;}
 .menu h4{height:42px;line-height: 42px;float: left;}
