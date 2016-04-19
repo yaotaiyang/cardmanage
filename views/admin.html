@@ -4,7 +4,7 @@
     .header{border-bottom:2px solid #96D0FF}
     .team-list{border:1px solid #ddd;margin:10px;}
     .team-list h3{background-color:#f2f2f2;line-height:32px;padding:0 10px;}
-    .team-list .item{display:inline-block;border:1px solid #ddd;background-color:#fff;margin:4px;}
+    .team-list .item{display:inline-block;border:1px solid #ddd;background-color:#fff;margin:4px;cursor: default;}
     .team-list .item-wrap{padding:10px}
     .team-list .option{padding:5px;}
     .team-list .add-sprint{cursor:pointer;padding:4px 8px;}
@@ -13,7 +13,7 @@
     .admin .carddetail{bottom:0;}
     .admin form .v [type='text']{width:150px;}
     .admin .carddetail{background-color:#fff;}
-    .company-people{position:absolute;top:42px;left:280px;padding:0px 10px 10px;bottom:10px;border:1px solid #ddd;}
+    .company-people{position:absolute;top:42px;left:280px;padding:0px 10px 10px;bottom:10px;border:1px solid #ddd;overflow-y: auto;}
     .company-people input{border:1px solid #ddd;padding:2px;}
     .company-people ul{padding:5px 0;font-size:12px;}
     .company-people li{cursor:default;padding:2px;}
@@ -59,7 +59,7 @@
             <div class="item-wrap">
                 <h4>人员调整</h4>
                 <ul class="sprint-list">
-                    <li ng-dblclick="modify('user',people)" class="people item" ng-repeat="people in curTeam.peoples">
+                    <li  rightclick="deletePeo(people,curTeam)" ng-dblclick="modify('user',people)" class="people item" ng-repeat="people in curTeam.peoples">
                         <span>{{people.displayName}}</span>
                     </li>
                     <li class="item add-sprint" ng-click="modify('adduser',curTeam.peoples)">+</li>
@@ -77,7 +77,7 @@
             <div class="item-wrap">
                 <h4>团队调整</h4>
                 <ul class="teams">
-                    <li ng-dblclick="modify('team',team)" class="people item" ng-repeat="team in companyTeams">
+                    <li title="右键删除" ng-dblclick="modify('team',team)" class="people item" ng-repeat="team in companyTeams">
                         <span>{{team.name}}</span>
                     </li>
                     <li class="item add-sprint" ng-click="modify('addteam',companyTeams)">+</li>
@@ -205,6 +205,31 @@
                 });
                 console.log(arr.join(","));
             }
+            $scope.deletePeo=function(peo,team){
+                var peo = peo;
+                if(window.confirm("确定删除"+peo.displayName+"吗？")){
+                    for(var i=0;i<peo.teams.length;i++){
+                        if(peo.teams[i].teamId == team.teamId){
+                            peo.teams.splice(i,1);
+                        }
+                    }
+                    var url = "/ajax?type=update-user";
+                    $http.post(url,peo).success(function(data){
+                        if(data.status == 1) {
+                            for(var i=0;i<tplData.curTeam.peoples.length;i++){
+                                if(tplData.curTeam.peoples[i].objectId ==  peo.objectId){
+                                    tplData.curTeam.peoples.splice(i,1);
+                                }
+                            }
+                        }else{
+                            alert(data.result.err.message);
+                            location.refresh();
+                        }
+                    }).error(function(){
+                        alert("删除失败");
+                    });
+                }
+            }
         });
         app.controller("modify",function($scope,$rootScope,$http){
             $scope.show = 0;
@@ -301,7 +326,7 @@
                     $http.post(url,$scope.data).success(function(data){
                         if(data.status == 1) {
                             $scope.ajaxing = 0;
-                            tplData.companyTeams.push(data.result);
+                            tplData.curTeam.peoples.push(data.result);
                             $scope.show = 0;
                         }else{
                             alert(data.result.err.message);
