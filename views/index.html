@@ -154,9 +154,6 @@
                 $scope.curCardId = data.objectId;
                 $scope.$broadcast("showDetail",data);
             });
-            $scope.$on("closepanel",function(){
-                //$scope.curCardId = null;
-            });
             $scope.$on("drop",function(event,data){
                 $scope.$broadcast("dropcard",data);
             });
@@ -359,13 +356,13 @@
                 }
             });
         });
-        app.controller('cardDetail',function($scope,$rootScope,$http){
+        app.controller('cardDetail',function($document,$scope,$rootScope,$http){
             $scope.show = 0;
+            $scope.lockClose=0;//防止两次点击关闭
             $scope.cardClassList = tplData.curTeam.cardClass;
             $scope.storyList = [];
             $scope.sprintList = tplData.sprints;
-            $scope.closepanel= function(){
-                $scope.show = 0;
+            $scope.closepanel= function(notclose){
                 $rootScope.curCardId = null;
                 if($scope.card.sprintId != $scope.oldData.sprintId || $scope.card.parentId != $scope.oldData.parentId){
                     //页面数据回滚
@@ -377,9 +374,36 @@
                         $scope.card[key]=$scope.oldData[key];
                     }
                 }
-                $scope.$emit("closepanel");
+                if(!notclose){
+                    $scope.show = 0;
+                }
             };
+            $document.bind("click",function(event){//如果面板打开，自动关闭
+                var target = event.target;
+                while(target && !target.classList.contains("card") && !target.classList.contains("story-card") && target.tagName.toLowerCase()!="body"){
+                    target =target.parentNode;
+                }
+                if(target && target.tagName.toLowerCase()=="body"){
+                    if($scope.show==1 && $scope.card.objectId && !$scope.lockClose){
+                        var cur_offset = $document[0].querySelector(".carddetail").getBoundingClientRect();
+                        if(event.pageX<cur_offset.left && !diffObj($scope.oldData,$scope.card)){
+                            if(window.confirm("数据有改动，放弃不保存吗?")){
+                                $scope.closepanel();
+                                $scope.$apply();
+                            }
+                        }else if(event.pageX<cur_offset.left){
+                            $scope.closepanel();
+                            $scope.$apply();
+                        }
+                    }
+                }
+            });
             $scope.$on("showDetail",function(event,data){
+                if($scope.card && $scope.card.objectId){
+                    if(!diffObj($scope.oldData,$scope.card)){
+                        $scope.closepanel(1);//回滚数据，不关闭面板
+                    }
+                }
                 $("#userChange").val("");
                 $scope.storyList = [];
                 tplData.cardList.forEach(function(item){
@@ -443,6 +467,10 @@
                         });
                     };
                 }
+                $scope.lockClose = 1;
+                setTimeout(function(){
+                    $scope.lockClose = 0;
+                },500)
             });
             $scope.chk = function(name,event){
                 var card = $scope.card;
@@ -571,6 +599,21 @@
                 });
             }
         });
+        function diffObj(obj1,obj2){
+            var issame = 1;
+            for(var key in obj1){
+                var cur_obj = obj1[key];
+                if(key.indexOf("$$")==0){
+                }else if(typeof cur_obj == "object"){
+                    if(!diffObj(obj1[key],obj2[key])){
+                        issame = 0;
+                    };
+                }else if(obj1[key]!=obj2[key]){
+                    issame = 0;
+                }
+            }
+            return issame;
+        }
     });
 </script>
 {%include "layout/footer"%}
