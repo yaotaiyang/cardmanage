@@ -42,7 +42,7 @@ a:hover{color:#f00;}
 ::-webkit-input-placeholder { color:#aaa;font-size:12px;line-height:18px;}
 select{border: 1px solid #ccc;height:22px;color:#666;}
 .sort-ani{transition:transform 300ms ease-in-out}
-.header{height:39px;line-height:39px;padding:0 0 0 10px;font-size:12px;position:fixed;top:0;width:100%;background-color: #fff;z-index: 10}
+.header{height:39px;line-height:39px;padding:0 0 0 10px;font-size:12px;position:fixed;top:0;width:100%;background-color: #fff;z-index: 100}
 .header h2{float:left;font-size:130%;margin-right:0;}
 .header .user{position:absolute;top:0;right:50px;background-color:#fff;}
 .header .go-back{margin-left:8px;}
@@ -101,7 +101,7 @@ form.filter input[type='text']{width: 6em;padding:0 3px;}
 .content .view-line .story-table{width:100%;border:1px solid #ddd;margin-top: 10px;table-layout: fixed;background-color: #fff;}
 .content .view-line .story-table.draging{z-index: 20;opacity: 0.9}
 .content .view-line .story-table:first-child{margin-top: 0;}
-.content .view-line .fix-wrap{position:fixed;top:34px;left:8px;right:8px;z-index: 10;background-color: #fff;}
+.content .view-line .fix-wrap{position:fixed;top:34px;left:8px;right:8px;z-index: 100;background-color: #fff;}
 .content .view-line div.table{padding-top: 20px;}
 .content .story-wrap .story-card{margin:0;}
 .table thead td{background-color:#1E69A2;text-align:center;color: #fff;font-size:14px;padding:2px 0;}
@@ -115,7 +115,7 @@ form.filter input[type='text']{width: 6em;padding:0 3px;}
 .table thead td em:hover{color:#f00;}
 .table tbody td{vertical-align:top;padding:5px 0;}
 .table td.hide{display:none;}
-.content .table.fixed{position:fixed;top:34px;background-color: #fff;}
+.content .table.fixed{position:fixed;top:34px;background-color: #fff;z-index: 100}
 .content .wrap{-webkit-box-flex:10000;box-flew:10000;width:25%;text-align:center;border-right:1px solid #96D0FF;background-color: #fff;-webkit-transition: width 100ms linear;}
 .content .wrap:last-child{border-right: none}
 .content .wrap.fold{width:100px;-webkit-box-flex:0.00001;box-flex:0.00001;}
