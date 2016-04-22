@@ -321,6 +321,29 @@
                 $scope.filterClass = obj.filterClass;
                 $scope.filterQuery = obj.filterQuery;
             });
+            $scope.$on("sortted",function(event,data){
+                console.log(data);
+                var num = 1,sortObj={};
+                for(var i=data.length- 1;i>=0;i--){
+                    data[i].weight = num * 5;
+                    sortObj[data[i].storyid]=data[i];
+                    num ++;
+                }
+                for(var i=0;i<tplData.cardList.length;i++){
+                   var cur_story = tplData.cardList[i].story;
+                   cur_story.weight = sortObj[cur_story.objectId].weight;
+                }
+                $scope.$apply();
+                var url = "/ajax?type=card-sort";
+                $http.post(url,sortObj).success(function(data){
+                    if(data.status == 1) {
+                        $scope.show = 0;
+                    }else{
+                        alert("排序失败");
+                        location.reload();
+                    }
+                });
+            });
         });
         app.controller('cardDetail',function($scope,$rootScope,$http){
             $scope.show = 0;

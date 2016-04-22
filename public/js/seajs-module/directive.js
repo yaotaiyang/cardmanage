@@ -153,6 +153,90 @@ define(function(){
 
         }
     });
+    app.directive('sortable', function($document,$rootScope) {
+        return {
+            restrict:"EA",
+            link:function(scope, element, attrs) {
+                var startX=0, startY=0, x = 0, y = 0,minY,maxY, arr_timeout=[],arr_height=[],arr_items=[],cur_offset,parent_offset;
+                element.css({
+                    position: 'relative',
+                    cursor:"default"
+                });
+                element[0].querySelector(".story-card").addEventListener('mousedown', function(event) {
+                    var cur_h = 0;
+                    parent_offset = element.parent()[0].getBoundingClientRect();
+                    cur_offset = element[0].getBoundingClientRect();
+                    minY = parent_offset.top - cur_offset.top;
+                    maxY = parent_offset.bottom - cur_offset.bottom;
+                    startX = event.screenX - x;
+                    startY = event.screenY - y;
+                    $document.bind('mousemove', mousemove);
+                    $document.bind('mouseup', mouseup);
+                    //重置，索引
+                    arr_items = element.parent()[0].querySelectorAll("[sortable]");
+                    arr_height=[];
+                    [].forEach.call(arr_items,function(dom){
+                        dom.classList.add("sort-ani");
+                        cur_h+=dom.getBoundingClientRect().height;
+                        arr_height.push(cur_h);
+                    });
+                },false);
+                function mousemove(event) {
+                    y = event.screenY - startY;
+                    x = event.screenX - startX;
+                    if(y<minY) y = minY;
+                    if(y>maxY) y=maxY;
+                    element.addClass("draging").css({
+                        top: y + 'px'
+                    });
+                    for(var i=0;i<arr_timeout.length;i++){
+                        clearInterval(arr_timeout[i]);
+                    }
+                    arr_timeout.push(setTimeout(resetItem,100));
+                }
+                function mouseup(event) {
+                    element.removeClass("draging");
+                    $document.unbind('mousemove', mousemove);
+                    $document.unbind('mouseup', mouseup);
+                    var arr_tag_story = [];
+                    for(var i=0;i<arr_items.length;i++){
+                        var cur_table = arr_items[i];
+                        arr_tag_story.push({storyid:cur_table.getAttribute("data-storyid"),top:cur_table.getBoundingClientRect().top});
+                        cur_table.classList.remove("sort-ani");
+                        cur_table.style.transform = "translate(0,0)";
+                    }
+                    arr_tag_story.sort(function(obj1,obj2){
+                        return obj1.top>obj2.top;
+                    });
+                    element.css({top:0,left:0});
+                    startX=0;startY=0; x = 0;y = 0;
+                    scope.$emit("sortted",arr_tag_story);
+                }
+                function resetItem(){
+                    var tagIndex= 0,oriIndex=[].indexOf.call(arr_items,element[0]);
+                    var cur_y = (cur_offset.top-parent_offset.top)+y+cur_offset.height/2;
+                    for(var i=0;i<arr_height.length;i++){
+                        if(i==0 && cur_y<=arr_height[i]){
+                            tagIndex = 0;
+                        }else if(cur_y>=arr_height[i-1] && cur_y<=arr_height[i]){
+                            tagIndex = i;
+                            break;
+                        }
+                    }
+                    var min = tagIndex<oriIndex?tagIndex:oriIndex,max = tagIndex>oriIndex?tagIndex:oriIndex,trans = -cur_offset.height;
+                    if(oriIndex == max){ trans = -trans};
+                    for(var i=0;i<arr_items.length;i++){
+                        if(i>=min && i<=max && i!=oriIndex){
+                            arr_items[i].style.transform = "translate(0,"+trans+"px)";
+                        }else{
+                            arr_items[i].style.transform = "translate(0,0)";
+                        }
+                    }
+                    arr_timeout=[];
+                }
+            }
+        }
+    });
     app.directive('rightclick', function($parse) {
         return function(scope, element, attrs) {
             var fn = $parse(attrs.rightclick);

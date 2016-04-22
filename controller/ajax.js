@@ -24,7 +24,6 @@ function init(req,res,obj){
         }).then(function(){
             card_q.find({
                 success:function(data) {
-                    console.log(data.length);
                     var cardHash = {};
                     var resarr = [];
                     data.forEach(function (obj,ind) {
@@ -61,7 +60,7 @@ function init(req,res,obj){
                     });
                     for(var key in cardHash){
                         var cur_item  = cardHash[key];
-                        resarr.push(cur_item);
+                        resarr.unshift(cur_item);
                     }
                     obj.render(req, res, {data: resarr});
                     return;
@@ -185,6 +184,29 @@ function init(req,res,obj){
             card.save({success:function(data){
                 obj.render(req,res,{data:data});
             },error:err});
+        });
+    }else if (type="card-sort"){
+        var cur_obj = req.body,arr_id = [];
+        for(var key in cur_obj){
+            arr_id.push(key);
+        }
+        var Card = AV.Object.extend('Card');
+        var card_q = new AV.Query(Card);
+        card_q.containedIn("objectId",arr_id);
+        card_q.find().then(function(data){
+            var list = data;
+            for(var i=0;i<list.length;i++){
+                var cur_card = list[i];
+                cur_card.set("weight",cur_obj[cur_card.id].weight);
+            }
+            return list;
+        }).then(function(list){
+            AV.Object.saveAll(list, {
+                success: function(data) {
+                    obj.render(req,res,{data:data});
+                },
+                error:err
+            });
         });
     }else if(type=="get-people"){
         var q_user = new AV.Query(AV.User);
