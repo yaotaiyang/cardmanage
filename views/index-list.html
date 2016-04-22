@@ -8,7 +8,7 @@
         </thead>
     </table>
     <div class="tables">
-        <table data-storyid="{{lineobj.story.objectId}}" dragtarget=".stroy-card" class="table" ng-if="lineobj | showline" ng-repeat="lineobj in cardList | orderBy:orderfunc:'reverse'">
+        <table data-storyid="{{lineobj.story.objectId}}" sortable dragtarget=".stroy-card" class="table" ng-if="lineobj | showline" ng-repeat="lineobj in cardList | orderBy:orderfunc:'reverse'">
             <tbody>
             <tr>
                 <td style="width:200px;">
@@ -62,7 +62,7 @@
         </table>
     </div>
         <div class="table">
-            <table data-storyid="{{lineobj.story.objectId}}" class="story-table" ng-if="lineobj | showline" ng-repeat="lineobj in cardList | orderBy:orderfunc:'reverse'">
+            <table data-storyid="{{lineobj.story.objectId}}" sortable class="story-table" ng-if="lineobj | showline" ng-repeat="lineobj in cardList | orderBy:orderfunc:'reverse'">
                 <tr>
                     <td style="width: 200px">
                         <div class="story-card" ng-dblclick="cardclick(lineobj.story)">

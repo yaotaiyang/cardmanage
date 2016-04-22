@@ -206,7 +206,11 @@ define(function(){
                         cur_table.style.webkitTransform = "translate(0,0)";
                     }
                     arr_tag_story.sort(function(obj1,obj2){
-                        return obj1.top>obj2.top;
+                        if(obj1.top>=obj2.top){
+                            return 1;
+                        }else{
+                            return -1;
+                        }
                     });
                     element.css({top:0,left:0});
                     startX=0;startY=0; x = 0;y = 0;

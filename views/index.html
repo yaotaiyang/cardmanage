@@ -321,13 +321,16 @@
                 $scope.filterQuery = obj.filterQuery;
             });
             $scope.$on("sortted",function(event,data){
-                var num = 1,sortObj={};
-                var ori_list =[];
+                var num = 1,sortObj={},ori_list =[];
                 tplData.cardList.forEach(function(obj){
                     ori_list.push({objectId:obj.story.objectId,weight:obj.story.weight});
                 });
                 ori_list.sort(function(obj1,obj2){
-                    return obj1.weight < obj2.weight;
+                    if(obj1.weight<=obj2.weight){
+                        return 1
+                    }else{
+                        return -1
+                    }
                 });
                 var ajax_sort = 0;
                 for(var i=0;i<ori_list.length;i++){
@@ -382,7 +385,7 @@
             };
             $document.bind("click",function(event){//如果面板打开，自动关闭
                 var target = event.target;
-                while(target && !target.classList.contains("card") && !target.classList.contains("story-card") && target.tagName.toLowerCase()!="body"){
+                while(target && target!=document && !target.classList.contains("card") && !target.classList.contains("story-card") && target.tagName.toLowerCase()!="body"){
                     target =target.parentNode;
                 }
                 if(target && target.tagName.toLowerCase()=="body"){
