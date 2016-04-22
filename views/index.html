@@ -60,10 +60,12 @@
         app.filter("tagchk",function(){
             return function(str,list){
                 var res = 0;
-                for(var i=0;i<list.length;i++){
-                    if(str == list[i]){
-                        res = 1;
-                        break;
+                if(list && list.length){
+                    for(var i=0;i<list.length;i++){
+                        if(str == list[i]){
+                            res = 1;
+                            break;
+                        }
                     }
                 }
                 return res;
