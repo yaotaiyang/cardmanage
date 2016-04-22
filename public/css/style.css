@@ -86,7 +86,7 @@ form.filter input[type='text']{width: 6em;padding:0 3px;}
 .content .view-line .card h4 .tag{background-color: #aaa!important;}
 .content .view-line .card h4 .card-tags{color:#00b7ff}
 [viewstyle="line"] .content{padding-top: 30px;}
-.content .view-line .table-line td{vertical-align: middle;padding:5px 8px;border-bottom: 1px solid #ddd;font-size: 12px;background-color: transparent;color:#333;text-align: left;}
+.content .view-line .table-line td{vertical-align: middle;padding:5px 4px;border-bottom: 1px solid #ddd;font-size: 12px;background-color: transparent;color:#333;text-align: left;}
 .content .view-line thead td{font-weight: bold;}
 .content .view-line .table tr{background-color: transparent!important;}
 .content .view-line .table > tbody > td{vertical-align: top;}

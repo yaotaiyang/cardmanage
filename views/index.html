@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="/public/css/style.css"/>
 <div class="body cls" viewstyle="{{viewstyle}}"  ng-app="card" ng-controller="body">
     <div id="header" class="header" ng-controller="head">
-        <h2>敏捷管理平台</h2>
+        <h2>敏捷平台</h2>
         <form id="filter" class="filter">
             <label for="groupfilter">组：</label>
             <select ng-cloak name="groupfilter" id="groupfilter" ng-model="teamId"  ng-change="change('team')">
@@ -388,7 +388,7 @@
                 while(target && target!=document && !target.classList.contains("card") && !target.classList.contains("story-card") && target.tagName.toLowerCase()!="body"){
                     target =target.parentNode;
                 }
-                if(target && target.tagName.toLowerCase()=="body"){
+                if(target && target!=document && target.tagName.toLowerCase()=="body"){
                     if($scope.show==1 && $scope.card.objectId && !$scope.lockClose){
                         var cur_offset = $document[0].querySelector(".carddetail").getBoundingClientRect();
                         if(event.pageX<cur_offset.left && !diffObj($scope.oldData,$scope.card)){

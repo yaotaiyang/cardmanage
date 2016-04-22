@@ -185,7 +185,7 @@ function init(req,res,obj){
                 obj.render(req,res,{data:data});
             },error:err});
         });
-    }else if (type="card-sort"){
+    }else if (type=="card-sort"){
         var cur_obj = req.body,arr_id = [];
         for(var key in cur_obj){
             arr_id.push(key);
