@@ -17,7 +17,7 @@ template.config('base', '');
 template.config('openTag','{%');
 template.config('closeTag','%}');
 //template.config('compress',true);
-template.config('extname', '.html'); 
+template.config('extname', '.html');
 app.engine('.html', template.__express);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
