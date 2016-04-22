@@ -216,7 +216,7 @@ form .v .createdby{color:#ccc;font-size:12px;position:absolute;left:92px;top:-16
 .calender .preMonth, .calender .nextMonth{font-weight:bold;cursor:pointer;color:#96D0FF;font-size:18px;}
 .calender .preMonth{padding:0 5px;}
 .calender .nextMonth{padding:0 5px;}
-.carddetail{position:fixed;top:0;right:0;background-color:#f6f6f6;bottom:0;width:580px;border-left:1px solid #ddd;overflow:auto;border-right:1px solid #fff;z-index: 20}
+.carddetail{position:fixed;top:0;right:0;background-color:#f6f6f6;bottom:0;width:580px;border-left:1px solid #ddd;overflow:auto;border-right:1px solid #fff;z-index: 200}
 .carddetail span.close{position:absolute;right:0;top:0;font-size:24px;cursor:pointer;text-align:center;width:32px;}
 .carddetail span.close:hover{color:#f00;}
 .carddetail .addcard{padding:0px 0 10px;position:absolute;top:0;bottom:58px;width:100%;left:0;overflow-y:auto;}
