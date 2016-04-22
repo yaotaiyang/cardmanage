@@ -322,27 +322,41 @@
                 $scope.filterQuery = obj.filterQuery;
             });
             $scope.$on("sortted",function(event,data){
-                console.log(data);
                 var num = 1,sortObj={};
-                for(var i=data.length- 1;i>=0;i--){
-                    data[i].weight = num * 5;
-                    sortObj[data[i].storyid]=data[i];
-                    num ++;
-                }
-                for(var i=0;i<tplData.cardList.length;i++){
-                   var cur_story = tplData.cardList[i].story;
-                   cur_story.weight = sortObj[cur_story.objectId].weight;
-                }
-                $scope.$apply();
-                var url = "/ajax?type=card-sort";
-                $http.post(url,sortObj).success(function(data){
-                    if(data.status == 1) {
-                        $scope.show = 0;
-                    }else{
-                        alert("排序失败");
-                        location.reload();
-                    }
+                var ori_list =[];
+                tplData.cardList.forEach(function(obj){
+                    ori_list.push({objectId:obj.story.objectId,weight:obj.story.weight});
                 });
+                ori_list.sort(function(obj1,obj2){
+                    return obj1.weight < obj2.weight;
+                });
+                var ajax_sort = 0;
+                for(var i=0;i<ori_list.length;i++){
+                    if(data[i].storyid!=ori_list[i].objectId){
+                        ajax_sort = 1;
+                        break;
+                    }
+                }
+                if(ajax_sort){//判断是否需要跟新服务端排序
+                    for(var i=data.length- 1;i>=0;i--){
+                        data[i].weight = num * 5;
+                        sortObj[data[i].storyid]=data[i];
+                        num ++;
+                    }
+                    for(var i=0;i<tplData.cardList.length;i++){
+                        var cur_story = tplData.cardList[i].story;
+                        cur_story.weight = sortObj[cur_story.objectId].weight;
+                    }
+                    $scope.$apply();
+                    $http.post("/ajax?type=card-sort",sortObj).success(function(data){
+                        if(data.status == 1) {
+                            $scope.show = 0;
+                        }else{
+                            alert("排序失败");
+                            location.reload();
+                        }
+                    });
+                }
             });
         });
         app.controller('cardDetail',function($scope,$rootScope,$http){
