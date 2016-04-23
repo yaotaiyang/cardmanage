@@ -5,7 +5,7 @@
  * Time: 下午9:38
  * To change this template use File | Settings | File Templates.
  */
-var express = require("express");
+var express = require("express"); 
 var router=require("./routes");
 var bodyParser=require("body-parser");
 var app = express();
