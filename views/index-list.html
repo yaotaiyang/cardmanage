@@ -29,6 +29,7 @@
                         </ul>
                         <div class="completetime"><span class="owner">时间: {{item.amount}}天
                                     <span class="date-range" ng-if="(item.startTime&&item.endTime)">{{item.startTime | ftime }}~{{item.endTime | ftime}}</span></span></div>
+                        <i title="计划或实际工作量未填写" ng-if="!item.realAmount || !item.amount" class="nofill"></i>
                     </div>
                 </td>
             </tr>
@@ -95,8 +96,10 @@
                             </select></span></td>
                                     <td>{{item.createdBy.displayName}}</td>
                                     <td><span class="name owner">{{item.owners | ownersname}}</span></td>
-                                    <td><span class="owner">{{item.amount}}天
-                                <span class="date-range" ng-if="(item.startTime&&item.endTime)">{{item.startTime | ftime }}~{{item.endTime | ftime}}</span></span>
+                                    <td><div class="time">{{item.amount}}天
+                                <span class="date-range" ng-if="(item.startTime&&item.endTime)">{{item.startTime | ftime }}~{{item.endTime | ftime}}</span>
+                                     <i title="计划或实际工作量未填写" ng-if="!item.realAmount || !item.amount" class="nofill"></i>
+                                    </div>
                                     </td>
                                 </tr>
                             </table>

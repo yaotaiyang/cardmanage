@@ -15,7 +15,7 @@ var template = require('art-template');
 var AV = require('leanengine');
 template.config('base', '');
 template.config('openTag','{%');
-template.config('closeTag','%}');
+template.config('closeTag','%}'); 
 //template.config('compress',true);
 template.config('extname', '.html');
 app.engine('.html', template.__express);

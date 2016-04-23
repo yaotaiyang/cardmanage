@@ -22,12 +22,18 @@
             实际量<em class="number">{{realAmount.toFixed(1)}}</em>天
         </div>
         <div class="cls">
-            <div class="graphic-item" graphicpie option="option_class"></div>
-            <div class="graphic-item" graphicpie option="option_people"></div>
-            <div class="graphic-item" graphicpie option="option_people_r"></div>
+            <div class="graphic-item" graphicpie option="totalpienumber"></div>
+            <div class="graphic-item" graphicpie option="planpieday"></div>
+            <div class="graphic-item" graphicpie option="realpieday"></div>
         </div>
         <div class="cls stroy-detail">
-            <div class="graphic-item" graphicbar option="option_people_class"></div>
+            <div class="graphic-item" graphicbar option="taskbarnumber"></div>
+        </div>
+        <div class="cls stroy-detail">
+            <div class="graphic-item" graphicbar option="taskbarday"></div>
+        </div>
+        <div class="cls stroy-detail">
+            <div class="graphic-item" graphicbar option="diffamount"></div>
         </div>
         <div class="cls stroy-detail">
             <div class="graphic-item" graphicbar option="option_story"></div>
@@ -73,169 +79,221 @@
                 if(isNaN($scope.realAmount)){
                     $scope.realAmount = "--"
                 }
-
                 //创建种类展示
-                var arr = [];
-                for(var key in cardClass){
-                    arr.push({name:key,value:cardClass[key]});
-                }
-                $scope.option_class ={
-                    color:color,
-                    title:{
-                        text:"任务种类分布(个)",
-                        x:'left',
-                        textStyle:{
-                            fontSize:14
-                        }
-                    },
-                    series:[
-                        {
-                            name:"任务种类(个)",
-                            type:"pie",
-                            radius : '60%',
-                            data:arr,
-                            label:{
-                                normal:{
-                                    formatter: '{b} '+'({c}个)'
-                                }
-                            }
-                        }
-                    ]
-                };
+                $scope.totalpienumber = getPieNumber();
 
                 //任务量排行
-                 var peo_d = {},peo_r_d={};
-                $scope.cards.forEach(function(card){
-                    if(card.owners.length>0){
-                        card.owners.forEach(function(owner){
-                            if(peo_d[owner.displayName]){
-                                peo_d[owner.displayName]+= Number(card.amount);
-                                peo_r_d[owner.displayName]+= Number(card.realAmount||0);//实际工作量
-                            }else{
-                                peo_d[owner.displayName]=Number(card.amount);
-                                peo_r_d[owner.displayName]=Number(card.realAmount||0);
-                            }
-                        });
-                    }
-                });
-                var arr = [],arr_r=[];
-                for(var key in peo_d){
-                    arr.push({name:key,value:peo_d[key].toFixed(1)});
-                    arr_r.push({name:key,value:peo_r_d[key].toFixed(1)});
-                }
-                $scope.option_people ={
-                    color:color,
-                    title:{
-                        text:"个人计划任务量(天)",
-                        x:'left',
-                        textStyle:{
-
-                            fontSize:14
-                        }
-                    },
-                    series:[
-                        {
-                            name:"个人计划任务量(天)",
-                            type:"pie",
-                            data:arr,
-                            radius : '60%',
-                            label:{
-                                normal:{
-                                    formatter: '{b} '+'({c}天)'
-                                }
-                            }
-                        }
-                    ]
-                };
-                console.log(arr);
-                console.log(arr_r);
-                $scope.option_people_r ={
-                    color:color,
-                    title:{
-                        text:"个人实际任务量(天)",
-                        x:'left',
-                        textStyle:{
-
-                            fontSize:14
-                        }
-                    },
-                    series:[
-                        {
-                            name:"个人实际任务量(天)",
-                            type:"pie",
-                            data:arr_r,
-                            radius : '60%',
-                            label:{
-                                normal:{
-                                    formatter: '{b} '+'({c}天)'
-                                }
-                            }
-                        }
-                    ]
-                };
+                var pieDay = getPieDay();
+                $scope.planpieday = pieDay.planDay;
+                $scope.realpieday = pieDay.realDay;
 
                 //个人任务种类分布
-                var peo_card = {},arr_peo=[];
-                $scope.cards.forEach(function(card){
-                    if(card.owners.length>0){
-                        card.owners.forEach(function(owner){
-                            if(!peo_card[owner.displayName]){
-                                peo_card[owner.displayName]={
-                                    list:[]
-                                };
-                                arr_peo.push(owner.displayName);
-                            }
-                            peo_card[owner.displayName].list.push(card);
-                        });
-                    }
-                });
-                var series = [];
-                tplData.curTeam.cardClass.forEach(function(name){
-                    var cur_obj = {
-                        name:name,
-                        type:"bar",
-                        data:[]
-                    };
-                    arr_peo.forEach(function(peo_name){
-                        var cur_val  = 0;
-                        peo_card[peo_name].list.forEach(function(card){
-                            if(card.cardClass == name){
-                                cur_val += Number(card.amount);
-                            }
-                        });
-                        cur_obj.data.push(cur_val.toFixed(1));
-                    });
+                var taskbar = getTaskBar();
+                $scope.taskbarday = taskbar.taskday;
+                $scope.taskbarnumber = taskbar.tasknumber;
+                $scope.diffamount = taskbar.diffamount;
 
-                    series.push(cur_obj);
-                });
-                var option = {
-                    color:color,
-                    title:{
-                        text:"个人任分类展示(天)",
-                        x:'left',
-                        textStyle:{
-                            fontSize:14
+                function getTaskBar(){
+                    var peo_card = {},arr_peo=[],taskList=[{name:"计划任务量",tag:"amount"},{name:"实际任务量",tag:"realAmount"}];
+                    $scope.cards.forEach(function(card){
+                        if(card.owners.length>0){
+                            card.owners.forEach(function(owner){
+                                if(!peo_card[owner.displayName]){
+                                    peo_card[owner.displayName]={
+                                        list:[]
+                                    };
+                                    arr_peo.push(owner.displayName);
+                                }
+                                peo_card[owner.displayName].list.push(card);
+                            });
                         }
-                    },
-                    tooltip : {
-                        trigger: 'axis',
-                        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-                            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                    });
+                    var series = [],series1=[],arrdiff=[];
+                    tplData.curTeam.cardClass.forEach(function(name){
+                        var cur_obj = {
+                            name:name,
+                            type:"bar",
+                            data:[]
+                        };
+                        var cur_obj1 = {
+                            name:name,
+                            type:"bar",
+                            data:[]
+                        };
+                        arr_peo.forEach(function(peo_name){
+                            var cur_val  = 0,cur_val1=0;
+                            peo_card[peo_name].list.forEach(function(card){
+                                if(card.cardClass == name){
+                                    cur_val += Number(card.amount);
+                                    cur_val1+=1;
+                                }
+                            });
+                            cur_obj.data.push(cur_val.toFixed(1));
+                            cur_obj1.data.push(cur_val1);
+                        });
+                        series.push(cur_obj);
+                        series1.push(cur_obj1);
+                    });
+                    taskList.forEach(function(obj){
+                        var diffobj = {
+                            name:obj.name,
+                            type:"bar",
+                            data:[]
+                        };
+                        arr_peo.forEach(function(peo_name){
+                            var resday = 0;
+                            peo_card[peo_name].list.forEach(function(card){
+                                resday += card[obj.tag]||0;
+                            })
+                            diffobj.data.push(resday.toFixed(1));
+                        });
+                        arrdiff.push(diffobj);
+                    });
+                    var res = {
+                        taskday : getCurOption(color,arr_peo,series,"个人冲刺计划任务（天）"),
+                        tasknumber:getCurOption(color,arr_peo,series1,"个人冲刺任务（个）"),
+                        diffamount:getCurOption(color,arr_peo,arrdiff,"计划实际工作量对比（天）"),
+                    }
+                    return res;
+                    function getCurOption(color,arr_peo,series,title){
+                        var option = {
+                            color:color,
+                            title:{
+                                text:title,
+                                x:'left',
+                                textStyle:{
+                                    fontSize:14
+                                }
+                            },
+                            tooltip : {
+                                trigger: 'axis',
+                                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                                }
+                            },
+                            legend: {
+                                data:tplData.curTeam.cardClass,
+                                top:26
+                            },
+                            xAxis : [
+                                {
+                                    type : 'category',
+                                    data : arr_peo
+                                }
+                            ],
+                            series : series
+                        };
+                        return option;
+                    }
+                }
+                function getPieDay(){
+                    var peo_d = {},peo_r_d={};
+                    $scope.cards.forEach(function(card){
+                        if(card.owners.length>0){
+                            card.owners.forEach(function(owner){
+                                if(peo_d[owner.displayName]){
+                                    peo_d[owner.displayName]+= Number(card.amount);
+                                    peo_r_d[owner.displayName]+= Number(card.realAmount||0);//实际工作量
+                                }else{
+                                    peo_d[owner.displayName]=Number(card.amount);
+                                    peo_r_d[owner.displayName]=Number(card.realAmount||0);
+                                }
+                            });
                         }
-                    },
-                    legend: {
-                        data:tplData.curTeam.cardClass,
-                        top:26
-                    },
-                    xAxis : [
-                        {
-                            type : 'category',
-                            data : arr_peo
+                    });
+                    var arr = [],arr_r=[];
+                    for(var key in peo_d){
+                        arr.push({name:key,value:peo_d[key].toFixed(1)});
+                        arr_r.push({name:key,value:peo_r_d[key].toFixed(1)});
+                    }
+                    var resObj = {
+                        planDay:{
+                            color:color,
+                            title:{
+                                text:"个人计划任务量(天)",
+                                x:'left',
+                                textStyle:{
+
+                                    fontSize:14
+                                }
+                            },
+                            series:[
+                                {
+                                    name:"个人计划任务量(天)",
+                                    type:"pie",
+                                    data:arr,
+                                    radius : '60%',
+                                    label:{
+                                        normal:{
+                                            formatter: '{b} '+'({c}天)'
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        realDay:{
+                            color:color,
+                            title:{
+                                text:"个人实际任务量(天)",
+                                x:'left',
+                                textStyle:{
+
+                                    fontSize:14
+                                }
+                            },
+                            series:[
+                                {
+                                    name:"个人实际任务量(天)",
+                                    type:"pie",
+                                    data:arr_r,
+                                    radius : '60%',
+                                    label:{
+                                        normal:{
+                                            formatter: '{b} '+'({c}天)'
+                                        }
+                                    }
+                                }
+                            ]
                         }
-                    ],
-                    series : series
-                };
-                $scope.option_people_class = option;
+                    }
+                    return resObj;
+                }
+                function getPieNumber(){
+                    var arr = [];
+                    for(var key in cardClass){
+                        arr.push({name:key,value:cardClass[key]});
+                    }
+                   var option ={
+                        color:color,
+                        title:{
+                            text:"任务种类分布(个)",
+                            x:'left',
+                            textStyle:{
+                                fontSize:14
+                            }
+                        },
+                        series:[
+                            {
+                                name:"任务种类(个)",
+                                type:"pie",
+                                radius : '60%',
+                                data:arr,
+                                label:{
+                                    normal:{
+                                        formatter: '{b} '+'({c}个)'
+                                    }
+                                }
+                            }
+                        ]
+                    };
+                    return option;
+                }
+
+
+
+
+
+
 
                 //故事任务情况
                 var story_name = [];
@@ -258,7 +316,7 @@
                     charuxiang_list.push(charuxiang?charuxiang.toFixed(1):"");
                     bug_list.push(bug?bug.toFixed(1):"");
                 });
-                var opion = {
+                var option = {
                     title:{
                         text:"故事工作量详情(天)",
                         x:'left',
