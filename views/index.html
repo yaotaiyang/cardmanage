@@ -94,7 +94,10 @@
             return function(obj,ownerId,ownerById,filterClass,filterQuery){
                 if(obj.story.deleted == 1){
                     return 0;
-                }else{
+                }else if(ownerId=="all" && ownerById=="all" && filterClass =="全部" && filterQuery==undefined){
+                    return 1;
+                }
+                else{
                     var res = 0;
                     for(var i=0;i<obj.cards.length;i++){
                         var bre = 0;
