@@ -94,7 +94,7 @@
             return function(obj,ownerId,ownerById,filterClass,filterQuery){
                 if(obj.story.deleted == 1){
                     return 0;
-                }else if(ownerId=="all" && ownerById=="all" && filterClass =="全部" && filterQuery==undefined){
+                }else if(ownerId=="all" && ownerById=="all" && filterClass =="全部" && (filterQuery==undefined||filterQuery=="")){
                     return 1;
                 }
                 else{
