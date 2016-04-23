@@ -91,45 +91,32 @@
             }
         });
         app.filter("showline",function(){
-            return function(obj){
+            return function(obj,ownerId,ownerById,filterClass,filterQuery){
                 if(obj.story.deleted == 1){
                     return 0;
                 }else{
-                    return 1;
+                    var res = 0;
+                    for(var i=0;i<obj.cards.length;i++){
+                        var bre = 0;
+                        for(var j=0;j<obj.cards[i].list.length;j++){
+                            var cur_re = filterFunc(obj.cards[i].list[j],ownerId,ownerById,filterClass,filterQuery);
+                            if(cur_re){
+                                bre=1;
+                                break;
+                            }
+                        }
+                        if(bre){
+                            res = 1;
+                            break;
+                        }
+                    }
+                    return res;
                 }
             }
         });
         app.filter("filterpeople",function(){
             return function(item,ownerId,ownerById,filterClass,filterQuery){
-                if(item.deleted==1){
-                    return 0;
-                }
-                if(filterClass != item.cardClass && filterClass != "全部"){
-                    return 0;
-                };
-                if(ownerId!="all"){
-                    var res = 0;
-                    for(var i=0;i<item.owners.length;i++){
-                        if(ownerId == item.owners[i].objectId){
-                            res = 1;
-                            break;
-                        }
-                    }
-                    if(res == 0){//如果此项没通过，直接返回
-                        return res;
-                    }
-                }
-                if(ownerById!="all"){
-                    if(ownerById!=item.createdBy.userId){
-                        return 0;
-                    }
-                }
-                if(filterQuery && filterQuery.length !=0){
-                    if(item.title.indexOf(filterQuery)==-1){
-                        return 0;
-                    }
-                }
-                return 1;
+                return filterFunc(item,ownerId,ownerById,filterClass,filterQuery);
             }
         });
         app.filter("iscurrentUser",function(){
@@ -618,6 +605,37 @@
                 }
             }
             return issame;
+        }
+        function filterFunc(item,ownerId,ownerById,filterClass,filterQuery){
+            if(item.deleted==1){
+                return 0;
+            }
+            if(filterClass != item.cardClass && filterClass != "全部"){
+                return 0;
+            };
+            if(ownerId!="all"){
+                var res = 0;
+                for(var i=0;i<item.owners.length;i++){
+                    if(ownerId == item.owners[i].objectId){
+                        res = 1;
+                        break;
+                    }
+                }
+                if(res == 0){//如果此项没通过，直接返回
+                    return res;
+                }
+            }
+            if(ownerById!="all"){
+                if(ownerById!=item.createdBy.userId){
+                    return 0;
+                }
+            }
+            if(filterQuery && filterQuery.length !=0){
+                if(item.title.indexOf(filterQuery)==-1){
+                    return 0;
+                }
+            }
+            return 1;
         }
     });
 </script>

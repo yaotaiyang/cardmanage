@@ -69,7 +69,7 @@ form.filter input[type='text']{width: 6em;padding:0 3px;}
 .menuwrap .btn:hover{color:#f00;}
 .menuwrap .prev{left:0;}
 .menuwrap .next{right:0;}
-.notice{font-weight:bold;margin-left:10px;display:inline-block;}
+.notice{font-weight:bold;margin-left:4px;display:inline-block;}
 .content{position:relative;width:100%;overflow:hidden;-webkit-user-select:none;padding-top:60px;}
 .content .table{width:100%;table-layout:fixed;z-index: 10;position: relative;}
 .content .table.draging{z-index: 20;opacity: 0.9}

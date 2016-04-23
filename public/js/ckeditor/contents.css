@@ -133,3 +133,6 @@ a > img {
 	border: none;
 	outline: 1px solid #0782C1;
 }
+
+.cke_editable table{width:100%;border:1px solid #ddd;border-collapse: collapse;}
+.cke_editable table td{border:1px solid #ddd;padding: 4px}
