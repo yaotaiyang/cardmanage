@@ -8,7 +8,7 @@
 var express = require("express");
 var router=require("./routes");
 var bodyParser=require("body-parser");
-var app = express(); 
+var app = express();
 var multipart = require('connect-multiparty');
 //var multipartMiddleware = multipart();
 var template = require('art-template');

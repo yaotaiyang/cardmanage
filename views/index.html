@@ -206,11 +206,13 @@
             $scope.filterid = "all";
             $scope.filterbyid = "all";
             $scope.filterClass = "全部";
+            $scope.filterNum="…";
             render({sprintId:tplData.sprintId,teamId:tplData.teamId,ownerId:"all"});
             function render(obj){
                 var url = "/ajax?type=get-card-list&sprintId="+ obj.sprintId+"&teamId="+obj.teamId;
                     $http.get(url).then(function(data){
                         tplData.cardList = $scope.cardList = data.data.result;
+                        $scope.filterNum = getFilterNum($scope.filterid,$scope.filterbyid,$scope.filterClass);
                     },function(data){});
                 }
             $scope.cardclick=function(data){
@@ -305,6 +307,7 @@
                 }
             });
             $scope.$on("filterChange",function (event, obj) {
+                $scope.filterNum = getFilterNum(obj.ownerId,obj.ownerbyId,obj.filterClass,obj.filterQuery);
                 $scope.filterid = obj.ownerId;
                 $scope.filterbyid = obj.ownerbyId;
                 $scope.filterClass = obj.filterClass;
@@ -594,6 +597,19 @@
                 });
             }
         });
+        function getFilterNum(ownerId,ownerById,filterClass,filterQuery){
+            var res = 0;
+            tplData.cardList.forEach(function(obj){
+                obj.cards.forEach(function(cards){
+                    cards.list.forEach(function(card){
+                        if(filterFunc(card,ownerId,ownerById,filterClass,filterQuery)){
+                            res+=1;
+                        }
+                    });
+                });
+            });
+            return res;
+        }
         function diffObj(obj1,obj2){
             var issame = 1;
             for(var key in obj1){
