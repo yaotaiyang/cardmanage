@@ -41,6 +41,10 @@ router.get('/statistics',function(req,res){//统计页面
     var cur_controller = require('../controller/statistics.js');
     cur_controller.init(req,res,{render:render,AV:AV});
 });
+router.get('/showimg',function(req,res){//统计页面
+    var cur_controller = require('../controller/showimg.js');
+    cur_controller.init(req,res,{render:render,AV:AV});
+});
 router.get('/login', function(req, res, next) {//正常访问登录页
     render(req,res,{data:{title: '敏捷管理平台-用户登录'},template:"login"});
 });

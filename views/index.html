@@ -544,10 +544,15 @@
                 }
             };
             $scope.showimg=function(){
-                var openwindow=window.open("","","location=no,fullscreen=yes");
-                openwindow.document.write("<style type='text/css'>*{padding:0;margin:0}body{text-align:center;padding:10px;}img{border:1px solid #ddd;padding:1px;}</style>");
-                openwindow.document.write("<img style='max-width:100%' src='"+this.img.url+"'/>");
-                openwindow.document.title="查看图片";
+                var url = location.origin+"/showimg";
+                var openwindow=window.open(url,"_blank","location=no,fullscreen=yes");
+                var cur_url = this.img.url,images=[];
+                $scope.card.images.forEach(function(obj){
+                    images.push(obj.url);
+                });
+                openwindow.onload=function(){
+                    openwindow.postMessage({images:images,curUrl:cur_url},url);
+                };
             };
             $scope.ctrlenter = function(ev) {
                 if($scope.commenting == 1) return;
