@@ -2,8 +2,8 @@
 <link rel="stylesheet" href="/public/css/style.css"/>
 <style>
     .buttons{height:32px;}
-    .btn-left,.btn-right{width: 50%;position: fixed;font-size: 18px;line-height: 32px;text-align: center;background-color:rgba(0,120,240,0.2);cursor: pointer;box-sizing: border-box;top:0;}
-    .btn-left:hover,.btn-right:hover{background-color:rgba(0,120,240,0.5);}
+    .btn-left,.btn-right{width: 50%;position: fixed;font-size: 18px;line-height: 32px;text-align: center;background-color:#CCE4FC;cursor: pointer;box-sizing: border-box;top:0;}
+    .btn-left:hover,.btn-right:hover{background-color:#80BCF8;}
     .btn-left{left:0;}
     .btn-right{right:0;border-left:1px solid #fff;}
     .img-wrap{text-align: center;padding-top: 10px}
@@ -19,7 +19,6 @@
         var tplData = {"images":["http://ac-h229mcsm.clouddn.com/a7961516418f4b3fa11b.png"],"curUrl":"http://ac-h229mcsm.clouddn.com/a7961516418f4b3fa11b.png"};
         window.addEventListener("message",function(e){
             var data = e.data,cur_ind = data.images.indexOf(data.curUrl),left = document.querySelector(".btn-left"),right=document.querySelector(".btn-right");
-            console.log(data);
             renderImg(data.curUrl);
             left.addEventListener("click",function(){
                 if(cur_ind>0){
