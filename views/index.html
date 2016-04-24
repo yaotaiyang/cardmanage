@@ -402,7 +402,6 @@
                         $scope.closepanel(1);//回滚数据，不关闭面板
                     }
                 }
-                $("#userChange").val("");
                 $scope.storyList = [];
                 tplData.cardList.forEach(function(item){
                     if(item.deleted != "1"){
@@ -492,8 +491,9 @@
                     }
                 }
             };
-            $scope.userChange=function(id,event){
-                var ret = 0;
+            $scope.userChange=function(dom){
+                var id= dom.value,ret = 0;
+                dom.value="";
                 if(!id) return;
                 $scope.card.owners.forEach(function(obj){
                     if(obj.objectId == id){
@@ -504,6 +504,7 @@
                 for(var i=0;i<$scope.teamPeople.length;i++){
                     if(id==$scope.teamPeople[i].objectId){
                         $scope.card.owners.push($scope.teamPeople[i]);
+                        $scope.$apply();
                         break;
                     }
                 }

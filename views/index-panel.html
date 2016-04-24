@@ -35,8 +35,9 @@
             </li>
             <li ng-if="(card.type!='story')"><label class="k">负责人：</label><span class="v">
                     <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.displayName}}</em></span>
-                    <select id="userChange" class="owner-select" title="选择添加用户" name="owners" ng-change="userChange(cacheS)" ng-model="cacheS" ng-options='val.objectId as val.displayName for val in teamPeople'>
+                    <select id="userChange" class="owner-select" title="选择添加用户" name="owners" onchange="angular.element(this).scope().userChange(this)">
                         <option value=""></option>
+                        <option ng-repeat="val in teamPeople" value="{{val.objectId}}">{{val.displayName}}</option>
                     </select></span>
             </li>
             <li class="imgs"><label class="k">图片：</label>
