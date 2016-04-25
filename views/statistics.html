@@ -297,28 +297,14 @@
 
                 //故事任务情况
                 var story_name = [];
-                var renwu_list = [],charuxiang_list = [],bug_list = [];
+                var gushi_list = [];
                 tplData.cardList.forEach(function(obj){
                     story_name.push(obj.story.title);
-                    var renwu = 0,charuxiang= 0,bug=0;
-                    obj.cards.forEach(function(list){
-                        list.list.forEach(function(card){
-                            if(card.cardClass == "任务"){
-                                renwu+=card.amount;
-                            }else if(card.cardClass == "插入项"){
-                                charuxiang+=card.amount;
-                            }else if(card.cardClass == "bug"){
-                                bug+=card.amount;
-                            }
-                        });
-                    });
-                    renwu_list.push(renwu?renwu.toFixed(1):"");
-                    charuxiang_list.push(charuxiang?charuxiang.toFixed(1):"");
-                    bug_list.push(bug?bug.toFixed(1):"");
+                    gushi_list.push(obj.story.amount);
                 });
                 var option = {
                     title:{
-                        text:"故事工作量详情(天)",
+                        text:"故事工作量详情(故事点)",
                         x:'left',
                         textStyle:{
                             fontSize:14
@@ -332,7 +318,7 @@
                         }
                     },
                     legend: {
-                        data:['任务','插入项', 'bug'],
+                        data:['故事点'],
                         top:20
                     },
                     grid: {
@@ -354,26 +340,12 @@
                     ],
                     series : [
                         {
-                            name:'任务',
+                            name:'故事点',
                             barWidth : 20,
                             type:'bar',
                             stack: '总量',
                             itemStyle : { normal: {label : {show: true, position: 'insideRight'}}},
-                            data:renwu_list
-                        },
-                        {
-                            name:'插入项',
-                            type:'bar',
-                            stack: '总量',
-                            itemStyle : { normal: {label : {show: true, position: 'insideRight'}}},
-                            data:charuxiang_list
-                        },
-                        {
-                            name:'bug',
-                            type:'bar',
-                            stack: '总量',
-                            itemStyle : { normal: {label : {show: true, position: 'insideRight'}}},
-                            data:bug_list
+                            data:gushi_list
                         }
                     ]
                 };
