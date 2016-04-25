@@ -30,8 +30,19 @@ function init(req,res,obj){
         var notice_q = new AV.Query(Notice);
         notice_q.containedIn('objectId',arr_noticeid);
         return notice_q.find().then(function(data){
-            resobj.notices = data;
-            return data;
+            if(data.length == 0){
+                var notice = new Notice();
+                notice.set("content","<a target='_blank' href='/'>敏捷平台</a>");
+                notice.fetchWhenSave(true);
+                return notice.save().then(function(data){
+                    resobj.curTeam.set("notices",[data.id]);
+                    resobj.notices = [data];
+                    return resobj.curTeam.save();
+                });
+            }else{
+                resobj.notices = data;
+                return data;
+            }
         });
     }).then(function(){
         /*var Company = AV.Object.extend('Company');
