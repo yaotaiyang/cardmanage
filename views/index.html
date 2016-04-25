@@ -48,6 +48,12 @@
                     viewType:"block"
                 };
          var app = angular.module('card', ['ngAnimate','ngDirective']);
+        app.filter('totrusted', ['$sce', function ($sce) {
+            return function (text) {
+                var str = (text||"").replace(/\n/g,"<br/>").replace(/\s/g,"&nbsp;");
+                return $sce.trustAsHtml(str);
+            };
+        }]);
         app.filter("ownersname",function(){
             return function(owners){
                 var arr_name = [];
