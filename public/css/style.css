@@ -160,6 +160,7 @@ form ul .qrcode .k{width:100%;padding-bottom:4px;}
 form ul .qrcode img{width:256px;height:256px;display:block;}
 form h4{background-color:#96D0FF;line-height:40px;text-align:center;font-size:1.2em;margin-bottom:10px;color: #fff;text-shadow:1px 1px 1px #333;}
 form li{padding:8px 0}
+form li:after{content:"";display: block;height: 0;line-height: 0;overflow: hidden;clear: both;}
 form .k{width:90px;text-align:right;float:left}
 form .k .red{color:#f00;font-weight: bold;vertical-align:middle;padding-right:2px;}
 form .v{text-align:left;margin-left:92px;display:block;}

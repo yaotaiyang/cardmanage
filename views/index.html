@@ -219,6 +219,9 @@
                     $http.get(url).then(function(data){
                         tplData.cardList = $scope.cardList = data.data.result;
                         $scope.filterNum = getFilterNum($scope.filterid,$scope.filterbyid,$scope.filterClass);
+                        if( $scope.filterNum == 0 && $scope.filterid=="all" && $scope.filterbyid=="all" && $scope.filterClass =="全部"){
+                            $scope.filterNum = "未添加"
+                        }
                     },function(data){});
                 }
             $scope.cardclick=function(data){
