@@ -35,8 +35,8 @@
         <div class="cls stroy-detail">
             <div class="graphic-item" graphicbar option="diffamount"></div>
         </div>
-        <div class="cls stroy-detail">
-            <div class="graphic-item" graphicbar option="option_story"></div>
+        <div class="cls stroy-detail" ng-if="option_story">
+            <div class="graphic-item" style='height:{{option_story.yAxis[0].data.length*50||280}}px' graphicbar option="option_story"></div>
         </div>
     </div>
 </div>
@@ -378,7 +378,7 @@
                     ]
                 };
                 $scope.option_story = option;
-                $scope.$broadcast("refreshData");
+                setTimeout(function(){$scope.$broadcast("refreshData")},0);
             },function(data){});
         });
     });

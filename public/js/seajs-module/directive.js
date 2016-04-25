@@ -276,6 +276,7 @@ define(function(){
                     setTimeout(function(){
                         var cur_data = angular.extend(option,scope.option);
                         myChart.setOption(cur_data);
+                        myChart.resize();
                     },20);
                 });
             }
@@ -314,8 +315,8 @@ define(function(){
                 scope.$on("refreshData",function(){
                     setTimeout(function(){
                         var cur_data = angular.extend(option,scope.option);
-                        console.log(cur_data);
                         myChart.setOption(cur_data);
+                        myChart.resize();
                     },20);
                 });
             }
