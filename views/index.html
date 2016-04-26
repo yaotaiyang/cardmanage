@@ -376,8 +376,8 @@
                     $scope.oldCardList.forEach(function(arr,ind){
                         tplData.cardList[ind] =  $scope.oldCardList[ind];
                     });
-                }else{
-                    for(var key in $scope.card){//数据回滚
+                }else if($scope.card.deleted !=1){
+                    for(var key in $scope.card){//没删除就数据回滚
                         $scope.card[key]=$scope.oldData[key];
                     }
                 }
