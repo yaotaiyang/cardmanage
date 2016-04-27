@@ -390,15 +390,16 @@
                 while(target && target!=document && !target.classList.contains("card") && !target.classList.contains("story-card") && target.tagName.toLowerCase()!="body"){
                     target =target.parentNode;
                 }
-                if(event.pageX>0 && target && target!=document && target.tagName.toLowerCase()=="body"){
+                if(event.screenX>0 && target && target!=document && target.tagName.toLowerCase()=="body"){
                     if($scope.show==1 && $scope.card.objectId && !$scope.lockClose){
+
                         var cur_offset = $document[0].querySelector(".carddetail").getBoundingClientRect();
-                        if(event.pageX<cur_offset.left && !diffObj($scope.oldData,$scope.card)){
+                        if(event.screenX<cur_offset.left && !diffObj($scope.oldData,$scope.card)){
                             if(window.confirm("数据有改动，放弃不保存吗?")){
                                 $scope.closepanel();
                                 $scope.$apply();
                             }
-                        }else if(event.pageX<cur_offset.left){
+                        }else if(event.screenX<cur_offset.left){
                             $scope.closepanel();
                             $scope.$apply();
                         }

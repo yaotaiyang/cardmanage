@@ -20,7 +20,7 @@ template.config('closeTag','%}');
 template.config('extname', '.html');
 app.engine('.html', template.__express);
 app.set('views', __dirname + '/views');
-app.set('view engine', 'html');
+app.set('view engine', 'html'); 
 // 加载 cookieSession 以支持 AV.User  的会 话状态
 app.use(AV.Cloud);
 app.use(AV.Cloud.CookieSession({ secret: '05XgTktKPMkU', maxAge: 1000*60*60*24, fetchUser: true }));
