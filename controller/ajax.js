@@ -287,6 +287,9 @@ function init(req,res,obj){
         user.set('teams',teams);
         user.set("email",email);
         user.set('displayName',displayName);
+        if(req.body.admin){
+            user.set("role","admin");
+        }
         user.save().then(function(user){
             obj.render(req,res,{data:user});
         },err);
