@@ -8,7 +8,7 @@
             <select ng-cloak name="groupfilter" id="groupfilter" ng-model="teamId"  ng-change="change('team')">
                 <option ng-repeat="val in teams" value="{{val.objectId}}">{{val.name}}</option>
             </select>
-           <label for="dateselect"> 区间：</label>
+           <label for="dateselect"> 时：</label>
             <select ng-cloak name="dateselect" id="dateselect" ng-model="sprintId"  ng-change="change()">
                 <option ng-repeat="val in sprints" value="{{val.id}}">{{val.name}}</option>
             </select>
@@ -17,21 +17,27 @@
                 <option ng-repeat="val in teamPeople" value="{{val.objectId}}">{{val.displayName}}</option>
             </select>
             <label for="filterpeo"> 报告人：</label>
-            <select ng-cloak name="dateselect" id="filterpeo_b" ng-model="ownerbyId" ng-change="change(1)">
+            <select ng-cloak name="dateselect" id="filterpeo_b" ng-model="ownerById" ng-change="change(1)">
                 <option ng-repeat="val in teamPeople" value="{{val.objectId}}">{{val.displayName}}</option>
             </select>
             <label for="cardclass"> 类型：</label>
             <select ng-cloak name="dateselect" id="cardclass" ng-model="filterClass" ng-change="change(1)">
                 <option ng-repeat="val in cardClass" value="{{val}}">{{val}}</option>
             </select>
+            <label for="cardclass"> 标签：</label>
+            <select ng-cloak name="dateselect" id="tags" ng-model="filterTag" ng-change="change(1)">
+                <option ng-repeat="val in tags" value="{{val}}">{{val}}</option>
+            </select>
             <label>过滤：<input type="text" placeholder="输入关键字" ng-model="filterQuery" ng-change="change(1)"></label>
         </form>
-        <a class="statistics" href="{{statistics}}">统计</a>
-        <a class="notice" target="_blank" href="/notice?teamId={%curTeam.id%}">公告</a>
-        {%if user.role=='admin'|| user.role=='superAdmin'%}&nbsp;&nbsp;
-        <a href="/admin?teamId={%params.teamId%}">管理</a>
-        {%/if%}
-        <span class="user" ng-cloak>{%user.displayName%} &nbsp;<a href="/logout">退出</a></span>
+        <div class="user" ng-cloak>{%user.displayName%}<i class="up">▲</i><i class="down">▼</i>
+            <div class="hoverpanel">
+                <a class="statistics" href="{{statistics}}">统计</a>
+                <a class="notice" target="_blank" href="/notice?teamId={%curTeam.id%}">公告</a>
+                {%if user.role=='admin'|| user.role=='superAdmin'%}<a href="/admin?teamId={%params.teamId%}">管理</a>{%/if%}
+                <a href="/logout">退出</a>
+            </div>
+        </div>
         <span class="viewstyle" ng-click="switchview()" ng-cloak><em ng-if="viewstyle=='block'" title="点击列表展示">≡</em><em ng-if="viewstyle=='line'" title="点击块状展示">○</em></span>
     </div>
     <div id="content" ng-cloak class="content cls" ng-controller="list">
@@ -96,38 +102,6 @@
                 }
             }
         });
-        app.filter("showline",function(){
-            return function(obj,ownerId,ownerById,filterClass,filterQuery){
-                if(obj.story.deleted == 1){
-                    return 0;
-                }else if(ownerId=="all" && ownerById=="all" && filterClass =="全部" && (filterQuery==undefined||filterQuery=="")){
-                    return 1;
-                }
-                else{
-                    var res = 0;
-                    for(var i=0;i<obj.cards.length;i++){
-                        var bre = 0;
-                        for(var j=0;j<obj.cards[i].list.length;j++){
-                            var cur_re = filterFunc(obj.cards[i].list[j],ownerId,ownerById,filterClass,filterQuery);
-                            if(cur_re){
-                                bre=1;
-                                break;
-                            }
-                        }
-                        if(bre){
-                            res = 1;
-                            break;
-                        }
-                    }
-                    return res;
-                }
-            }
-        });
-        app.filter("filterpeople",function(){
-            return function(item,ownerId,ownerById,filterClass,filterQuery){
-                return filterFunc(item,ownerId,ownerById,filterClass,filterQuery);
-            }
-        });
         app.filter("iscurrentUser",function(){
             return function(id){
                 if(tplData.user.id==id){
@@ -175,9 +149,12 @@
             $scope.teamPeople=[{"objectId":"all","displayName":"全部"}];//下拉选择添加全部
             $scope.cardClass = tplData.curTeam.cardClass;
             $scope.cardClass.unshift("全部");
+            $scope.tags = [].concat(tplData.curTeam.tags);
+            $scope.tags.unshift("全部");
             $scope.ownerId="all";
-            $scope.ownerbyId="all";
+            $scope.ownerById="all";
             $scope.filterClass="全部";
+            $scope.filterTag="全部";
             $scope.statistics = "/statistics?teamId="+$scope.teamId+"&sprintId="+$scope.sprintId;
             for(var i=0;i<tplData.teamPeople.length;i++){
                 var inteam = 0;
@@ -195,9 +172,10 @@
                 if(isname==1){
                     $scope.$emit("headChange", {sprintId:$scope.sprintId,
                         teamId:$scope.teamId,
-                        ownerbyId:$scope.ownerbyId,
+                        ownerById:$scope.ownerById,
                         ownerId:$scope.ownerId,
                         filterClass:$scope.filterClass,
+                        filterTag:$scope.filterTag,
                         filterQuery:$scope.filterQuery
                     });
                 }else if(isname == 'team'){
@@ -212,13 +190,14 @@
             $scope.filterid = "all";
             $scope.filterbyid = "all";
             $scope.filterClass = "全部";
+            $scope.filterTag = "全部";
             $scope.filterNum="…";
             render({sprintId:tplData.sprintId,teamId:tplData.teamId,ownerId:"all"});
             function render(obj){
                 var url = "/ajax?type=get-card-list&sprintId="+ obj.sprintId+"&teamId="+obj.teamId;
                     $http.get(url).then(function(data){
                         tplData.cardList = $scope.cardList = data.data.result;
-                        $scope.filterNum = getFilterNum($scope.filterid,$scope.filterbyid,$scope.filterClass);
+                        $scope.filterNum = getFilterNum({ownerId:$scope.filterid,ownerById:$scope.filterbyid,filterClass:$scope.filterClass,filterTag:$scope.filterTag},1);
                         if( $scope.filterNum == 0 && $scope.filterid=="all" && $scope.filterbyid=="all" && $scope.filterClass =="全部"){
                             $scope.filterNum = "未添加"
                         }
@@ -316,11 +295,7 @@
                 }
             });
             $scope.$on("filterChange",function (event, obj) {
-                $scope.filterNum = getFilterNum(obj.ownerId,obj.ownerbyId,obj.filterClass,obj.filterQuery);
-                $scope.filterid = obj.ownerId;
-                $scope.filterbyid = obj.ownerbyId;
-                $scope.filterClass = obj.filterClass;
-                $scope.filterQuery = obj.filterQuery;
+                $scope.filterNum = getFilterNum(obj);
             });
             $scope.$on("sortted",function(event,data){
                 var num = 1,sortObj={},ori_list =[];
@@ -614,13 +589,20 @@
                 });
             }
         });
-        function getFilterNum(ownerId,ownerById,filterClass,filterQuery){
-            var res = 0;
+        function getFilterNum(obj,isInit){
+            var res = 0,ownerId = obj.ownerId,ownerById=obj.ownerById,filterClass=obj.filterClass,filterTag=obj.filterTag,filterQuery=obj.filterQuery;
             tplData.cardList.forEach(function(obj){
+                if(!isInit){
+                    obj.filterResult="hide";//默认隐藏
+                }
                 obj.cards.forEach(function(cards){
                     cards.list.forEach(function(card){
-                        if(filterFunc(card,ownerId,ownerById,filterClass,filterQuery)){
+                        if(filterFunc(card,ownerId,ownerById,filterClass,filterTag,filterQuery)){
+                            card.filterResult = null;
+                            obj.filterResult = null;
                             res+=1;
+                        }else{
+                            card.filterResult="hide";
                         }
                     });
                 });
@@ -648,7 +630,7 @@
             }
             return issame;
         }
-        function filterFunc(item,ownerId,ownerById,filterClass,filterQuery){
+        function filterFunc(item,ownerId,ownerById,filterClass,filterTag,filterQuery){
             if(item.deleted==1){
                 return 0;
             }
@@ -675,6 +657,17 @@
             if(filterQuery && filterQuery.length !=0){
                 if(item.title.indexOf(filterQuery)==-1){
                     return 0;
+                }
+            }
+            if(filterTag!="全部"){
+                var res = 0;
+                for(var i=0;i<item.tags.length;i++){
+                    if(item.tags[i]==filterTag){
+                        res = 1;
+                    }
+                }
+                if(res ==0){
+                    return res;
                 }
             }
             return 1;
