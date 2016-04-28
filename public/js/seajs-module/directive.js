@@ -28,9 +28,11 @@ define(function(){
                 });
                 scope.loadStatus = "上传…";
                 scope.onFileSelect=function(file){
-                    var fd = new FormData();
-                    fd.append('file', file[0]);
-                    startupload(fd,"/upload",loadprogress,loadsuccess,loaderror);
+                    if(file.length){
+                        var fd = new FormData();
+                        fd.append('file', file[0]);
+                        startupload(fd,"/upload",loadprogress,loadsuccess,loaderror);
+                    }
                 };
                 function startupload(formData,url,progress,success,error){
                     if(scope.loading == "loading") return;
