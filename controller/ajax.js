@@ -316,6 +316,11 @@ function init(req,res,obj){
             user.set("displayName",displayName);
             user.set("email",email);
             user.set("teams",temp_arr);
+            if(req.body.admin){
+                user.set("role","admin");
+            }else{
+                user.set("role","");
+            }
             if(password!=undefined && password.length){
                 user.set("password",password);
             }

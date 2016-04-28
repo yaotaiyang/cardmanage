@@ -106,6 +106,7 @@
                     <li><label class="k"><em class="red">*</em>显示名称：</label><span class="v"><input type="text" ng-model="data.displayName" required rows="1" class="title" placeholder="系统中显示名称" /></span></li>
                     <li><label class="k"><em class="red">*</em>邮箱：</label><span class="v"><input type="text" ng-model="data.email" required rows="1" class="title"  placeholder="邮箱名"/></span></li>
                     <li><label class="k">密码：</label><span class="v"><input type="text" ng-model="data.password" rows="1" class="title" placeholder="为空表示不更改" /></span></li>
+                    <li><label class="k">管理员：</label><span class="v"><input type="checkbox" ng-checked="data.admin" ng-model="data.admin" /></span></li>
                     <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="提交" /></span></li>
                 </ul>
                 <ul ng-if="actiontype=='addsprint'||actiontype=='sprint'">
@@ -275,7 +276,6 @@
                         alert("添加失败");
                         $scope.ajaxing = 0;
                     });
-                    console.log($scope.data);
                 }else if(type == "user"){
                     var url = "/ajax?type=update-user";
                     $http.post(url,$scope.data).success(function(data){
@@ -378,6 +378,11 @@
         });
         function getdata($http,team){
             team.peoples = tplData.teamPeople;
+            team.peoples.forEach(function(obj){
+                if(obj.role=="admin"){
+                    obj.admin=true;
+                }
+            });
         }
     });
 </script>
