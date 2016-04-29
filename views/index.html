@@ -198,7 +198,7 @@
                     $http.get(url).then(function(data){
                         tplData.cardList = $scope.cardList = data.data.result;
                         $scope.filterNum = getFilterNum({ownerId:$scope.filterid,ownerById:$scope.filterbyid,filterClass:$scope.filterClass,filterTag:$scope.filterTag},1);
-                        if( $scope.filterNum == 0 && $scope.filterid=="all" && $scope.filterbyid=="all" && $scope.filterClass =="全部"){
+                        if( $scope.filterNum == 0 && $scope.filterid=="all" && $scope.filterbyid=="all" && $scope.filterClass =="全部" && $scope.filterTag=='全部'){
                             $scope.filterNum = "未添加"
                         }
                     },function(data){});
@@ -591,15 +591,19 @@
         });
         function getFilterNum(obj,isInit){
             var res = 0,ownerId = obj.ownerId,ownerById=obj.ownerById,filterClass=obj.filterClass,filterTag=obj.filterTag,filterQuery=obj.filterQuery;
-            tplData.cardList.forEach(function(obj){
+            tplData.cardList.forEach(function(cardwrap){
                 if(!isInit){
-                    obj.filterResult="hide";//默认隐藏
+                    if(filterClass=="全部"&& filterQuery==undefined && filterTag=="全部" && ownerId =="all" && ownerById =="all"){
+                        cardwrap.filterResult = null;
+                    }else{
+                        cardwrap.filterResult="hide";//默认隐藏
+                    }
                 }
-                obj.cards.forEach(function(cards){
+                cardwrap.cards.forEach(function(cards){
                     cards.list.forEach(function(card){
                         if(filterFunc(card,ownerId,ownerById,filterClass,filterTag,filterQuery)){
                             card.filterResult = null;
-                            obj.filterResult = null;
+                            cardwrap.filterResult = null;
                             res+=1;
                         }else{
                             card.filterResult="hide";
