@@ -91,6 +91,8 @@ form.filter input[type='text']{width: 6em;padding:0 3px;}
 .content .view-line .card[classify='插入项'] .tag{background-color:#fd826e}
 .content .view-line .card[classify='bug']  .tag{background-color:#ffc153}
 .content .view-line .card h4{font-size:14px;height:auto;padding:0;color:#333;}
+.content .view-line .card .title-wrap{position: relative;padding-left: 12px;}
+.content .view-line .card .weight{position: absolute;left:-12px;top:-9px;font-size: 10px;color:#aaa;font-style: normal;width:24px;text-align: right;}
 .content .view-line .card h4 .tag{background-color: #aaa!important;}
 .content .view-line .card h4 .card-tags{color:#00b7ff}
 [viewstyle="line"] .content{padding-top: 30px;}
