@@ -362,23 +362,25 @@
             };
             $document.bind("click",function(event){//如果面板打开，自动关闭
                 var target = event.target;
-                while(target && target!=document && !target.classList.contains("card") && !target.classList.contains("story-card") && target.tagName.toLowerCase()!="body"){
-                    target =target.parentNode;
-                }
-                if(event.screenX>0 && target && target!=document && target.tagName.toLowerCase()=="body"){
+                var panel = $(target).closest(".carddetail");
+                if(!panel.size()){
                     if($scope.show==1 && $scope.card.objectId && !$scope.lockClose){
-
-                        var cur_offset = $document[0].querySelector(".carddetail").getBoundingClientRect();
-                        if(event.screenX<cur_offset.left && !diffObj($scope.oldData,$scope.card)){
+                        if(!diffObj($scope.oldData,$scope.card)){
                             if(window.confirm("数据有改动，放弃不保存吗?")){
-                                $scope.closepanel();
-                                $scope.$apply();
+                                clpanel()
                             }
-                        }else if(event.screenX<cur_offset.left){
+                        }else{
+                           clpanel();
+                        }
+                    }
+                }
+                function clpanel(){
+                    setTimeout(function(){
+                        if(!$scope.lockClose){
                             $scope.closepanel();
                             $scope.$apply();
                         }
-                    }
+                    },200);
                 }
             });
             $scope.$on("showDetail",function(event,data){
