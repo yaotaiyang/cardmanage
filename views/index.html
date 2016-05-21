@@ -353,7 +353,9 @@
                     });
                 }else if($scope.card.deleted !=1){
                     for(var key in $scope.card){//没删除就数据回滚
-                        $scope.card[key]=$scope.oldData[key];
+                        if(key != "type"){//type变化时时请求，不回滚
+                            $scope.card[key]=$scope.oldData[key];
+                        }
                     }
                 }
                 if(!notclose){
