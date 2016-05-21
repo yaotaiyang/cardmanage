@@ -29,6 +29,7 @@
                 <option ng-repeat="val in tags" value="{{val}}">{{val}}</option>
             </select>
             <label>过滤：<input type="text" placeholder="输入关键字" ng-model="filterQuery" ng-change="change(1)"></label>
+            <a class="notice" target="_blank" href="/notice?teamId={%curTeam.id%}">公告</a>
         </form>
         <div class="user" ng-cloak>{%user.displayName%}<i class="up">▲</i><i class="down">▼</i>
             <div class="hoverpanel">
