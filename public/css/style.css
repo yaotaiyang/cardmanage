@@ -106,6 +106,7 @@ form.filter input[type='text']{width: 6em;padding:0 3px;}
 .content .view-line select[data-type='进行中']{background-color: #00b7ff;color:#fff;}
 .content .view-line select[data-type='已完成']{background-color: #fd826e;color:#fff;}
 .content .view-line select[data-type='已验收']{background-color: #39C162;color:#fff;}
+
 .content .view-line .table-line{width:100%;table-layout: fixed}
 .content .view-line .table >tbody > tr:nth-child(odd){background-color: transparent!important;}
 .content .view-line .story-table{width:100%;border:1px solid #ddd;margin-top: 10px;table-layout: fixed;background-color: #fff;}
@@ -135,6 +136,7 @@ form.filter input[type='text']{width: 6em;padding:0 3px;}
 .content .card[data-current='1']{background-color: #07e!important;}
 .content .card[classify='bug']{background-color:#ffc153;}
 .content .card[classify='插入项']{background-color:#fd826e;}
+.content .card[classify='优化项']{background-color:#1CC8E6;}
 .content .card.cardstatus1{background-color: #b6fcd7;}
 .content .fold .card{width:84px;}
 .content .card.del_1{display:none;}
