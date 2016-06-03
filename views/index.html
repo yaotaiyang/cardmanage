@@ -354,7 +354,7 @@
                     });
                 }else if($scope.card.deleted !=1){
                     for(var key in $scope.card){//没删除就数据回滚
-                        if(key != "type" && key!="hasComments"){//type,是否有评论字段变化时时请求，不回滚
+                        if(key != "type" && key!="hasComments" && key !="deleted"){//type,是否有评论字段变化时时请求，不回滚
                             $scope.card[key]=$scope.oldData[key];
                         }
                     }
@@ -584,6 +584,7 @@
                 $http.get(url).then(function(data){
                     if(data.data.status == 1){
                         $scope.card.deleted = "1";
+                        $scope.card.filterResult = "hide";
                         $scope.show=0;
                     }else{
                         alert("删除失败！");
