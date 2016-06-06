@@ -272,7 +272,7 @@
                 }
             }
             $scope.orderfunc=function(data){
-                return data.story.weight;
+                return (data.story && data.story.weight)||1;
             };
             $scope.$on("addedCard",function(event,data){
                 if(data.type == "story"){
