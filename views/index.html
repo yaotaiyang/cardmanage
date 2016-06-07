@@ -605,7 +605,7 @@
             }
         });
         function getFilterNum(obj,isInit){
-            var res = 0,ownerId = obj.ownerId,ownerById=obj.ownerById,filterClass=obj.filterClass,filterTag=obj.filterTag,filterType=obj.filterType,filterQuery=obj.filterQuery;
+            var res = 0,ownerId = obj.ownerId,ownerById=obj.ownerById,filterClass=obj.filterClass,filterTag=obj.filterTag,filterType=obj.filterType,filterQuery=obj.filterQuery||"";
             tplData.cardList.forEach(function(cardwrap){
                 if(!isInit){
                     if(filterClass=="全部"&& filterQuery.length==0 && filterTag=="全部" && filterType=="全部" && ownerId =="all" && ownerById =="all"){
@@ -683,6 +683,7 @@
                     return 0;
                 }
             }
+
             if(filterType!="全部"){
                if(item.type!=filterType){
                    return 0;
