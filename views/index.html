@@ -156,7 +156,7 @@
             $scope.cardClass.unshift("全部");
             $scope.tags = [].concat(tplData.curTeam.tags);
             $scope.tags.unshift("全部");
-            $scope.cardTypes = tplData.curTeam.cardType;
+            $scope.cardTypes = [].concat(tplData.curTeam.cardType);
             $scope.cardTypes.unshift("全部");
             $scope.ownerId="all";
             $scope.ownerById="all";
