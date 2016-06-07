@@ -31,6 +31,12 @@ input::-webkit-inner-spin-button{
 ::-webkit-scrollbar-thumb:horizontal{width: 5px;background-color: #ccc;-webkit-border-radius: 5px; }
 .gray{color:#aaa}
 article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary {display:block;}
+@media screen and (max-width:1080px) {
+    .header .notice {
+        display: none
+    }
+    .header .filter-query{display: none;}
+}
 @keyframes hlcard {30%  {background-color:#07e;}}
 @-webkit-keyframes hlcard{30%  {background-color: #07e;}}
 html,body,.body{min-height:100%;height: 100%;}
