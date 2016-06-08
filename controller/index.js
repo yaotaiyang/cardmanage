@@ -75,6 +75,13 @@ function init(req,res,obj){
                 resobj.teamPeople.push(obj);
             }
         });
+        resobj.teamPeople.sort(function(obj1,obj2){
+           if(obj1.get("email")>=obj2.get("email")){
+               return 1;
+           }else{
+               return -1;
+           }
+        });
     }).then(function(){
         var team_q = new AV.Query(Team);
         team_q.get(teamId).then(function(data){
