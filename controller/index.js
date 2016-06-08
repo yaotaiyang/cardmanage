@@ -76,7 +76,7 @@ function init(req,res,obj){
             }
         });
         resobj.teamPeople.sort(function(obj1,obj2){
-           if(obj1.get("email")>=obj2.get("email")){
+           if(obj1.get("username")>=obj2.get("username")){
                return 1;
            }else{
                return -1;
