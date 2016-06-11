@@ -109,6 +109,9 @@
         });
         app.filter("iscurrentUser",function(){
             return function(id){
+                if(tplData.user.role=="admin"){
+                    return 1;
+                }
                 if(tplData.user.id==id){
                     return 1;
                 }else{
@@ -590,18 +593,20 @@
             };
             $scope.delcard=function(cardId){
                 var url = "/ajax?type=del-card&cardId="+$scope.card.objectId;
-                $http.get(url).then(function(data){
-                    if(data.data.status == 1){
-                        $scope.card.deleted = "1";
-                        $scope.card.filterResult = "hide";
-                        $scope.show=0;
-                    }else{
-                        alert("删除失败！");
-                    }
-                    $scope.commenting=0;
-                },function(data){
-                    $scope.commenting=0;
-                });
+                if(window.confirm("确认删除吗？")){
+                    $http.get(url).then(function(data){
+                        if(data.data.status == 1){
+                            $scope.card.deleted = "1";
+                            $scope.card.filterResult = "hide";
+                            $scope.show=0;
+                        }else{
+                            alert("删除失败！");
+                        }
+                        $scope.commenting=0;
+                    },function(data){
+                        $scope.commenting=0;
+                    });
+                }
             }
         });
         function getFilterNum(obj,isInit){

@@ -146,7 +146,7 @@ function init(req,res,obj){
         var Card = AV.Object.extend('Card');
         var card_q = new AV.Query(Card);
         card_q.get(cardId,function(card){
-            if(card.get("createdBy").userId == cur_user.id){
+            if(card.get("createdBy").userId == cur_user.id || cur_user.get("role")=="admin"){
                 card.set("deleted","1");
                 card.save({success:function(data){
                     if(card.get("type")=="story"){
