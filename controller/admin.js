@@ -65,6 +65,7 @@ function init(req,res,obj){
         var q_user = new AV.Query(AV.User);
         var companyId = AV.User.current().get("companyId");
         q_user.equalTo("companyId", companyId);
+        q_user.limit(1000);
         q_user.notEqualTo("role", "superAdmin");
         return q_user.find({
             success: function(data) {
