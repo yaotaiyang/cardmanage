@@ -213,6 +213,7 @@ function init(req,res,obj){
         var teamId = req.query["teamId"];
         var companyId = AV.User.current().get("companyId");
         q_user.equalTo("companyId", companyId);
+        q_user.limit(1000);
         q_user.find({
             success: function(data) {
                 var peopleList = [];
