@@ -37,6 +37,9 @@
             <li ng-if="(card.type!='story')"><label class="k">标签：</label>
                 <span class="v"><label data-check="{{name | tagchk:card.tags}}" class="card-tag" ng-repeat="name in tagsList" ng-click="chk(name,$event)">{{name}}</label></span>
             </li>
+            <li ng-if="(card.type=='story' && storyTagsList)"><label class="k">标签：</label>
+                <span class="v"><label data-check="{{name | tagchk:card.tags}}" class="card-tag" ng-repeat="name in storyTagsList" ng-click="chk(name,$event)">{{name}}</label></span>
+            </li>
             <li ng-if="(card.type!='story')"><label class="k">负责人：</label><span class="v">
                     <span class="peo-wrap"><em title="右键删除" rightclick="deletePeo(card,peo.objectId)" ng-repeat="peo in card.owners">{{peo.displayName}}</em></span>
                     <select id="userChange" class="owner-select" title="选择添加用户" name="owners" onchange="angular.element(this).scope().userChange(this)">

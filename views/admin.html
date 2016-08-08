@@ -20,6 +20,8 @@
     .company-people li:hover{background-color:#f0f0f0;}
     .company-people .info{color:#aaa;font-size:12px;line-height:2em;}
     input.input{border:1px solid #ddd;width:50%;height: 20px;}
+    table{width:100%;table-layout: fixed}
+    table td{padding: 5px;}
 </style>
 <div class="body cls admin"  ng-app="admin" ng-controller="body">
     <div id="header" class="header ng-scope">
@@ -67,10 +69,21 @@
             </div>
             <div class="item-wrap">
                 <h4>tags编辑（逗号分隔多个）</h4>
-                <input ng-model="tags" type="text" class="input">
-                <input ng-click="savetags(tags)" type="button" value="保存">
-            </div>
+                <table>
+                    <tr>
+                        <td style="width: 80px;">任务tags:</td>
+                        <td><input ng-model="tags" type="text" class="input"></td>
+                    </tr>
+                    <tr>
+                        <td>故事tags:</td>
+                        <td><input ng-model="storyTags" type="text" class="input"></td>
+                    </tr>
+                    <tr>
+                        <td></td><td><input ng-click="savetags(tags,storyTags)" type="button" value="保存"></td>
+                    </tr>
+                </table>
 
+            </div>
         </div>
         {%if user.role=='superAdmin'%}
         <div class="team-list">
@@ -106,7 +119,7 @@
                     <li><label class="k"><em class="red">*</em>显示名称：</label><span class="v"><input type="text" ng-model="data.displayName" required rows="1" class="title" placeholder="系统中显示名称" /></span></li>
                     <li><label class="k"><em class="red">*</em>邮箱：</label><span class="v"><input type="text" ng-model="data.email" required rows="1" class="title"  placeholder="邮箱名"/></span></li>
                     <li><label class="k">密码：</label><span class="v"><input type="text" ng-model="data.password" rows="1" class="title" placeholder="为空表示不更改" /></span></li>
-                    <li><label class="k">管理员：</label><span class="v"><input type="checkbox" ng-checked="data.admin" ng-model="data.admin" /></span></li>
+                    <li><label class="k">管理员：</label><span class="v"><input type="checkbox"  ng-checked="data.admin||data.role=='admin'" ng-model="data.admin" /></span></li>
                     <li><span class="k"></span><span class="v"><input  ng-disabled="ajaxing" type="submit" class="btn" value="提交" /></span></li>
                 </ul>
                 <ul ng-if="actiontype=='addsprint'||actiontype=='sprint'">
@@ -174,37 +187,44 @@
                     alert("添加失败");
                 });
             };
-            var cur_team;
+            var cur_team = tplData.team;;
             tplData.user.teams.forEach(function(team){
                 if(team.teamId == tplData.params.teamId){
                     cur_team = team;
                 }
             });
+            cur_team.teamName = tplData.team.name;
             $scope.curTeam = tplData.curTeam = cur_team;
             $scope.sprints = tplData.sprints;
             $scope.companyTeams = tplData.companyTeams;
             getdata($http,cur_team);
             $scope.tags = tplData.team.tags.join(",");
-            $scope.savetags = function(str){
-                var cur_str = str.trim().replace("，",",");
-                var arr = cur_str.split(",");
-                for(var i=0;i<arr.length;i++){
-                    if(arr[i].length ==0){
-                        arr.splice(i,1);
-                        i--;
-                    }
-                }
+            $scope.storyTags = tplData.team.storyTags.join(",");
+            $scope.savetags = function(str,storyStr){
+                var arr = getArr(str),arr1= getArr(storyStr);
                 var url = "/ajax?type=update-team";
-                $http.post(url,{objectId:tplData.team.objectId,tags:arr}).success(function(data){
+                $http.post(url,{objectId:tplData.team.objectId,tags:arr,storyTags:arr1}).success(function(data){
                     if(data.status == 1) {
                         $scope.tags = arr.join(",");
+                        $scope.storyTags = arr1.join(",");
+                        alert("保存成功")
                     }else{
                         alert(data.result.err.message);
                     }
                 }).error(function(){
                     alert("添加失败");
                 });
-                console.log(arr.join(","));
+                function getArr(str){
+                    var cur_str = str.trim().replace("，",",");
+                    var arr = cur_str.split(",");
+                    for(var i=0;i<arr.length;i++){
+                        if(arr[i].length ==0){
+                            arr.splice(i,1);
+                            i--;
+                        }
+                    }
+                    return arr;
+                }
             }
             $scope.deletePeo=function(peo,team){
                 var peo = peo;
@@ -364,7 +384,7 @@
                     }).error(function(){
                         alert("添加失败");
                         $scope.ajaxing = 0;
-                    });console.log($scope.data);
+                    });
                 }
             };
             $scope.filedata = function(people){

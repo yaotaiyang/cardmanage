@@ -1,19 +1,26 @@
 /**
  * Created by yaoxy on 2015/11/1.
  */
+var getData = require("./getData.js").getData;
 function init(req,res,obj){
     var AV= obj.AV;
     var type = req.query["type"];
     function err(error){ //错误返回统一方法
         obj.render(req,res,{data:{title:"修改失败",err:error}});
     }
-    if(type =="get-card-list"){
+    if(type=="get-story-list"){
+        getData.getCardList(req,res,obj).then(function(data){
+            obj.render(req, res, {data: data});
+        });
+    }else if(type =="get-card-list"){
         var teamId = req.query["teamId"];
         var sprintId = req.query["sprintId"];
+        var type= req.query["card-type"];
         var Card = AV.Object.extend('Card');
         var card_q = new AV.Query(Card);
         card_q.equalTo("teamId", teamId);
-        card_q.equalTo("sprintId", sprintId);
+        sprintId && card_q.equalTo("sprintId", sprintId);
+        type && card_q.equalTo("type",type);
         card_q.notEqualTo('deleted', '1');
         card_q.limit(1000);
         var Team = AV.Object.extend('Team');
@@ -92,6 +99,7 @@ function init(req,res,obj){
         card.set("images",req.body.images);
         card.set("tags",req.body.tags);
         card.set("type",req.body.type);
+        card.fetchWhenSave(true);
         card.save({
             success:function(data){
                 obj.render(req,res,{data:data});
@@ -118,6 +126,7 @@ function init(req,res,obj){
             card.set("acceptance",req.body.acceptance||"");
             card.set("images",req.body.images);
             card.set("tags",req.body.tags);
+            card.set("isBook",String(req.body.isBook));
             if(req.body.sprintId == card.get("sprintId")){
                 card.save({success:function(data){
                     obj.render(req,res,{data:data});
@@ -383,7 +392,7 @@ function init(req,res,obj){
             },err);
         },err);
     }else if(type == 'update-team'){
-        var name = req.body.name,id=req.body.objectId,tags = req.body.tags;
+        var name = req.body.name,id=req.body.objectId,tags = req.body.tags,storyTags = req.body.storyTags;
         var Team = AV.Object.extend('Team');
         var team = new AV.Query(Team);
         team.get(id,function(team){
@@ -392,6 +401,9 @@ function init(req,res,obj){
             }
             if(tags){
                 team.set("tags",tags);
+            }
+            if(storyTags){
+                team.set("storyTags",storyTags);
             }
             team.save().then(function(cur_team){
                 obj.render(req,res,{data:cur_team});
@@ -427,6 +439,46 @@ function init(req,res,obj){
         AV.Query.doCloudQuery(sql).then(function(data) {
             obj.render(req,res,{data:data});
         }, err);*/
+    }else if(type=="distribution"){
+        var cur_user = AV.User.current();
+        var Card = AV.Object.extend('Card');
+        var card = new Card();
+        card.set("type","未开始");
+        card.set("cardClass","任务");
+        card.set("description",req.body.description);
+        card.set("title",req.body.description);
+        card.set("images",req.body.images);
+        card.set("parentId",req.body.curStoryId);
+        card.set("oriCardId",req.body.objectId);
+        card.set("teamId",req.body.teamId);
+        card.set("sprintId",req.body.curSprintId);
+        card.set("companyId",cur_user.get("companyId"));
+        card.set("createdBy",{
+            userId:cur_user.id,
+            userName:cur_user.get("userName")
+        });
+        card.fetchWhenSave(true);
+        card.save().then(function(obj){
+            return obj;
+        }).then(function(card){
+            var Feedback = AV.Object.extend('Feedback');
+            var feedback_q = new AV.Query(Feedback);
+            return feedback_q.get(req.body.objectId,function(item){
+                item.set("relatedCard",card.id);
+                return item.save();
+            });
+        }).then(function(data){
+            obj.render(req,res,{data:data});
+        });
+    }else if(type=="book"){
+        var Feedback = AV.Object.extend('Feedback');
+        var feedback_q = new AV.Query(Feedback);
+        return feedback_q.get(req.body.objectId,function(item){
+            item.set("isBook",1);
+            return item.save();
+        }).then(function(data){
+            obj.render(req,res,{data:data});
+        });
     }else{
         obj.render(req,res,{data:{title:"登录失败",err:{message:"该接口不存在"}}});
     }

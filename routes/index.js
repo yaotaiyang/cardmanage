@@ -26,9 +26,17 @@ router.get('/*.txt',function(req,res){//根目录静态文件输出，搜索引�
     var cur_controller = require('../controller/static.js');
     cur_controller.init(req,res,{render:render,AV:AV});
 });
+router.use("/insertfeedback",function(req,res){
+    var cur_controller = require('../controller/insertfeedback.js');
+    cur_controller.init(req,res,{render:ajaxrender,AV:AV});
+});
 router.get("*",function(req,res,next){ //判断登录没登录去登录页
     if(!(req.path == "/login") && !(req.path == "/register") && !AV.User.current()){
-        res.redirect('/login');
+        if(req.path == "/"){
+            res.redirect('/login?originalUrl='+ encodeURIComponent(req.originalUrl));
+        }else{
+            res.redirect('/login');
+        }
     }else{
         next();
     }
@@ -45,8 +53,16 @@ router.get('/showimg',function(req,res){//统计页面
     var cur_controller = require('../controller/showimg.js');
     cur_controller.init(req,res,{render:render,AV:AV});
 });
+router.get('/feedback',function(req,res){//统计页面
+    var cur_controller = require('../controller/feedback.js');
+    cur_controller.init(req,res,{render:render,AV:AV});
+});
+router.get('/managestory',function(req,res){//统计页面
+    var cur_controller = require('../controller/managestory.js');
+    cur_controller.init(req,res,{render:render,AV:AV});
+});
 router.get('/login', function(req, res, next) {//正常访问登录页
-    render(req,res,{data:{title: '敏捷管理平台-用户登录'},template:"login"});
+    render(req,res,{data:{title: '敏捷管理平台-用户登录',"originalUrl":req.query["originalUrl"]},template:"login"});
 });
 router.post('/login', function(req, res, next) {//提交表单页面
     var cur_controller = require('../controller/login.js');

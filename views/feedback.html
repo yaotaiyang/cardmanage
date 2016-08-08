@@ -1,0 +1,183 @@
+{%include "layout/header"%}
+<link rel="stylesheet" href="/public/css/style.css"/>
+<style>
+    .header .user{right:30px;}
+    .content{padding-top: 40px;-webkit-user-select:auto;}
+    table{width:100%;}
+    table td{border-bottom: 1px solid #ddd;padding: 4px;}
+    table tr.list:hover{background-color: #efefef;}
+    table thead td{background-color: #1E69A2;color:#fff;text-align: center;padding:2px;}
+    table img{max-height: 30px;max-width: 30px;}
+</style>
+<div id="header" class="header ng-scope">
+    <h2>{%company.name%}-{%curTeam.get('name')%}（用户反馈池）</h2>
+    <span class="user">欢迎：{%user.displayName%} &nbsp;<a href="/logout">退出</a></span>
+</div>
+<div class="content">
+    <div class="list" ng-app="feedback" ng-controller="list">
+        <table class="table-line">
+            <colgroup>
+                <col width="40">
+                <col>
+                <col width="120">
+                <col width="120">
+                <col width="120">
+                <col width="50">
+            </colgroup>
+            <thead>
+            <td>序号</td>
+            <td>描述</td>
+            <td>图片</td>
+            <td>冲刺</td>
+            <td>故事</td>
+            <td>操作</td>
+            </thead>
+            <tbody>
+            <tr class="list"  ng-if="feedbackList.length" ng-repeat="item in feedbackList"  ng-cloak>
+                <td>{{$index+1}}</td>
+                <td title="{{item.description}}">{{item.description}}</td>
+                <td>
+                    <span ng-click="showimg(item,img)" ng-repeat="img in item.images"><img ng-src="{{img.url}}"></span>
+                </td>
+                <td  title="{{item.curSprint.name}}">
+                    <div ng-if="item.distribution" class="sprint">
+                        {{item.curSprint.name}}
+                    </div>
+                    <div ng-if="!item.distribution" class="sprint">
+                        <select style="width:100px;" name="abc" ng-model="item.curSprintId" ng-change="sprintchange(item,item.curSprintId)">
+                            <option ng-repeat="sprint in item.sprintList" value="{{sprint.objectId}}">{{sprint.name}}</option>
+                        </select>
+                    </div>
+                </td>
+                <td  title="{{item.curStory.title}}">
+                    <div ng-if="item.distribution" class="story">
+                        {{item.curStory.title}}
+                    </div>
+                    <div ng-if="!item.distribution" class="story">
+                        <select style="width:100px;" name="abc" ng-model="item.curStoryId" ng-change="storychange(item,item.curStoryId)">
+                            <option ng-repeat="story in item.curSprint.storyList" value="{{story.objectId}}">{{story.title}}</option>
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <a ng-if="!item.distribution" href="javascript:void(0)" ng-click="distrib(item)">分配</a>
+                    <a ng-if="item.distribution && !item.isBook" href="javascript:void(0)" ng-click="finish(item)">归档</a>
+                    <span ng-if="item.isBook">已归档</span>
+                </td>
+            </tr>
+            <tr ng-if="feedbackList.length==0">
+                <td colspan="6"><div class="empty ng-scope">暂无用户反馈^_^</div></td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+<script>
+    seajs.use(["angular","angular-animate","tools","directive"],function() {
+        var app = angular.module('feedback', ['ngAnimate','ngDirective']);
+        app.controller("list",function($scope,$rootScope,$http){
+            tplData.sprintList.forEach(function(item){
+                item.storyList = tplData.hashStory[item.objectId]||[];
+            });
+            $scope.sprintList= tplData.sprintList;
+            tplData.feedbackList.forEach(function(item){
+                var cur_ori_card = tplData.hashRelateCardList[item.objectId];
+                if(cur_ori_card){
+                    item.curSprintId = cur_ori_card.sprintId;
+                    item.curStoryId = cur_ori_card.parentId;
+                }
+                if(item.curSprintId && item.curStoryId){
+                    for(var i=0;i<tplData.sprintList.length;i++){
+                        if(tplData.sprintList[i].objectId == item.curSprintId){
+                            item.curSprint = tplData.sprintList[i];
+                        }
+                    }
+                    for(var i=0;i<item.curSprint.storyList.length;i++){
+                        if(item.curSprint.storyList[i].objectId==item.curStoryId){
+                            item.curStory = item.curSprint.storyList[i];
+                        }
+                    }
+                    item.distribution = 1;
+                }
+                item.sprintList = [].concat(tplData.sprintList);
+            });
+            $scope.feedbackList = tplData.feedbackList;
+            $scope.sprintchange=function(item,sprintId){
+                for(var i=0;i<item.sprintList.length;i++){
+                    if(item.sprintList[i].objectId==sprintId){
+                        item.curSprint = item.sprintList[i];
+                    }
+                }
+            };
+            $scope.storychange=function(item,storyId){
+                for(var i=0;i<item.curSprint.storyList.length;i++){
+                    if(item.curSprint.storyList[i].objectId==storyId){
+                        item.curStory = item.curSprint.storyList[i];
+                    }
+                }
+            }
+            $scope.showimg=function(item,curImg){
+                var url = location.origin+"/showimg";
+                var openwindow=window.open(url,"_blank","location=no,fullscreen=yes");
+                var cur_url = curImg.url,images=[];
+                item.images.forEach(function(obj){
+                    images.push(obj.url);
+                });
+                openwindow.onload=function(){
+                    openwindow.postMessage({images:images,curUrl:cur_url},url);
+                };
+            };
+            $scope.distrib=function(item){
+                if(!item.curSprintId||!item.curStoryId){
+                    alert("请选择冲刺与故事");
+                    return;
+                }else{
+                    var url = "/ajax?type=distribution";
+                    $http.post(url,item).success(function(data){
+                        if(data.status == 1) {
+                            item.distribution = 1;
+                            var des="";
+                            if(item.description){
+                                des = "《"+item.description+"》";
+                            }
+                            $.ajax({
+                                url:"http://feback.leanapp.cn/api/sendmsg",
+                                type:"POST",
+                                data:{"feedbackid":item.feedbackid,content:"您提的问题"+des+"已经计划于"+item.curSprint.name+"处理"},
+                                success:function(data){
+                                    console.log(data);
+                                }
+                            });
+                        }else{
+                            alert("同步失败");
+                        }
+                    });
+                }
+            }
+            $scope.finish = function(item){
+                var url = "/ajax?type=book";
+                $http.post(url,item).success(function(data){
+                    if(data.status == 1) {
+                        item.isBook = 1;
+                        var des="";
+                        if(item.description){
+                            des = "《"+item.description+"》";
+                        }
+                        $.ajax({
+                            url:"http://feback.leanapp.cn/api/sendmsg",
+                            type:"POST",
+                            data:{"feedbackid":item.feedbackid,content:"您提的问题"+des+"已经处理上线！谢谢您的宝贵意见"},
+                            success:function(data){
+                                console.log(data);
+                            }
+                        });
+                    }else{
+                        alert("归档失败");
+                    }
+                });
+            }
+        })
+    });
+</script>
+{%include "layout/footer"%}

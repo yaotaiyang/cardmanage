@@ -50,6 +50,7 @@ select{border: 1px solid #ccc;height:22px;color:#666;}
 .sort-ani{transition:transform 300ms ease-in-out}
 .header{height:39px;line-height:39px;padding:0 0 0 10px;font-size:12px;position:fixed;top:0;width:100%;background-color: #fff;z-index: 100}
 .header h2{float:left;font-size:130%;margin-right:0;}
+.header h2 a{color:inherit}
 .header .user{position:absolute;top:0;right:50px;background-color:#fff;cursor: pointer;}
 .header .user i{font-size: 10px;color:#07e;margin-left:2px;font-style: normal;}
 .header .user i.up{display: none;}
@@ -91,9 +92,10 @@ form.filter input[type='text']{width: 6em;padding:0 3px;}
 .content .view-line{padding: 10px;border-top:1px solid #ddd;background-color: #efefef;}
 .content .view-line .card{font-size:0;width:auto;float:none;background-color: transparent!important;padding: 0 10px;margin: 0;}
 .content .view-line .card .time{position: relative;}
-.content .view-line .card:hover{background-color: #f2f2f2!important;}
-.content .view-line .card[data-current='1']{background-color: #eee!important;}
-.content .view-line .card .tag{background-color:#35c1a4;width:40px;height: 20px;line-height:20px;display: inline-block;color:#fff;font-size: 12px; font-style: normal;text-align: center;border-radius: 4px;}
+.content .view-line .card:hover,.content .view-line tr.story-card:hover{background-color: #f2f2f2!important;}
+.content .view-line .card[data-current='1']{background-color: #CEEDFF!important;}
+.content .view-line .table tr.story-card[data-current='1']{background-color:#CEEDFF!important;}
+.content .view-line  .tag{background-color:#35c1a4;width:40px;height: 20px;line-height:20px;display: inline-block;color:#fff;font-size: 12px; font-style: normal;text-align: center;border-radius: 4px;}
 .content .view-line .card[classify='插入项'] .tag{background-color:#fd826e}
 .content .view-line .card[classify='优化项'] .tag{background-color:#9BCB40}
 .content .view-line .card[classify='bug']  .tag{background-color:#ffc153}

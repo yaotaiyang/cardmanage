@@ -1,0 +1,78 @@
+<style>
+    .content .story-card{color:#333;}
+    .content .view-line .fix-wrap{left:0;right:0;}
+    .table tbody td{padding: 5px;min-height:30px;}
+    .table td .tag{margin-right:4px;}
+    .content .view-line{padding: 10px 0 0;}
+    .content .view-line .table tr:nth-child(odd){background-color: #efefef!important;}
+    .align-center{text-align: center;}
+    .align-right{text-align:right;}
+    .pages{margin:10px 0;}
+    .pages li{display: inline-block;height: 20px;padding:0 6px;border:1px solid #ddd;margin:0 4px;cursor:pointer;}
+    .pages li:hover{background-color: #07e;color:#fff;border-color:#07e;}
+    .pages li[data-disable='true']{opacity:0.5;cursor:default;}
+    .pages li[data-iscurrent='true']{background-color:#07e!important;border-color:#07e!important;color:#fff!important;}
+    .pages li[data-disable='true']:hover{background-color:#fff;color:#333;border-color:#ddd;}
+</style>
+<div class="view-line">
+    <div class="fix-wrap">
+        <table class="story-wrap table">
+            <colgroup>
+                <col width="50"/>
+                <col/>
+                <col width="80"/>
+                <col width="100"/>
+                <col width="80"/>
+            </colgroup>
+            <thead>
+            <tr>
+                <td><em title="新建故事" ng-click="addcard({'type':'story'})">新增</em></td>
+                <td>故事名称</td>
+                <td>所属冲刺</td>
+                <td>操作</td>
+                <td>优先级</td>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="table">
+        <table class="story-table">
+            <colgroup>
+                <col width="50"/>
+                <col/>
+                <col width="80"/>
+                <col width="100"/>
+                <col width="80"/>
+            </colgroup>
+            <tr data-current="{{curCardId==story.objectId?1:0}}" class="story-card" ng-click="cardclick(story)"  ng-repeat="story in storyList">
+                <td class="align-center">
+                    {{page.pageNum * (page.curPage-1) + $index+1}}
+                </td>
+                <td>
+                    <i class="tag" ng-repeat="name in story.tags">{{name}}</i>
+                    {{story.title}}
+                </td>
+                <td>{{story.sprintId | getsprintname}}</td>
+                <td>
+                    <a href="javascript:void(0)" ng-if="story.isBook==0" ng-click="book(story);$event.stopPropagation();" class="link ">验收</a>
+                    <span ng-if="story.isBook==1">已验收</span>
+                </td>
+                <td class="align-right">
+                    {{story.weight}}
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="empty" ng-if="storyList.length==0">没有符合条件的故事(^_^)</div>
+<div class="empty" ng-if="cardList.length==0">暂无故事 <em title="新建故事" ng-click="addcard({'type':'story'})">+添加</em></div>
+<div class="empty gray" ng-if="!storyList">数据加载中…</div>
+<div ng-if="page.pages>1" class="pages">
+    <ul class="page-list">
+        <li ng-click="gotoPage($event)" data-disable="{{page.curPage==1}}" data-page="1">首页</li>
+        <li ng-click="gotoPage($event)" data-disable="{{page.curPage==1}}" data-page="{{page.curPage-1}}">上一页</li>
+        <li ng-click="gotoPage($event)" data-iscurrent="{{page.curPage==curp}}" data-disable="{{page.curPage==curp}}" ng-repeat="curp in page.pageList" data-page="{{curp}}">{{curp}}</li>
+        <li ng-click="gotoPage($event)" data-disable="{{page.curPage==page.maxPage}}" data-page="{{page.curPage+1}}">下一页</li>
+        <li ng-click="gotoPage($event)" data-disable="{{page.curPage==page.maxPage}}" data-page="{{page.maxPage}}">末页</li>
+    </ul>
+</div>

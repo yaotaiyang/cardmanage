@@ -39,7 +39,9 @@
             <div class="hoverpanel">
                 <a class="statistics" href="{{statistics}}">统计</a>
                 <a class="notice" target="_blank" href="/notice?teamId={%curTeam.id%}">公告</a>
-                {%if user.role=='admin'|| user.role=='superAdmin'%}<a href="/admin?teamId={%params.teamId%}">管理</a>{%/if%}
+                {%if user.role=='admin'|| user.role=='superAdmin'%}<a href="/admin?teamId={%params.teamId%}">配置管理</a>
+                <a href="/managestory?teamId={%curTeam.id%}">故事管理</a>
+                {%/if%}
                 <a href="/logout">退出</a>
             </div>
         </div>
@@ -366,7 +368,7 @@
                     });
                 }else if($scope.card.deleted !=1){
                     for(var key in $scope.card){//没删除就数据回滚
-                        if(key != "type" && key!="hasComments" && key !="deleted"){//type,是否有评论字段变化时时请求，不回滚
+                        if(key != "type" && key!="hasComments" && key !="deleted" && key != "filterResult"){//type,是否有评论字段变化时时请求，不回滚
                             $scope.card[key]=$scope.oldData[key];
                         }
                     }

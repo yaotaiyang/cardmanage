@@ -1,0 +1,474 @@
+{%include "layout/header"%}
+<link rel="stylesheet" href="/public/css/style.css"/>
+<style>
+    .header .user{right:20px;}
+</style>
+<div class="body cls" viewstyle="line"  ng-app="card" ng-controller="body">
+    <div id="header" class="header" ng-controller="head">
+        <h2><a href="/?teamId={%params.teamId%}">敏捷平台-{%curTeam.get("name")%}</a></h2>-故事管理
+        <form id="filter" class="filter">
+            <label> 标签：</label>
+            <select ng-cloak name="dateselect" id="tags" ng-model="filterTag" ng-change="change()">
+                <option ng-repeat="val in tags" value="{{val}}">{{val}}</option>
+            </select>
+            <label> 冲刺：</label>
+            <select ng-cloak name="dateselect" id="sprint" ng-model="sprint" ng-change="change()">
+                <option ng-repeat="val in sprints" value="{{val.id}}">{{val.name}}</option>
+            </select>
+            <label> 验收：</label>
+            <select ng-cloak name="dateselect" id="isbook" ng-model="isBook" ng-change="change()">
+                <option  value="全部">全部</option>
+                <option  value="0">未验收</option>
+                <option  value="1">已验收</option>
+            </select>
+        </form>
+        <div class="user" ng-cloak>{%user.displayName%}<i class="up">▲</i><i class="down">▼</i>
+            <div class="hoverpanel">
+                <a class="notice" target="_blank" href="/notice?teamId={%curTeam.id%}">公告</a>
+                {%if user.role=='admin'|| user.role=='superAdmin'%}<a href="/admin?teamId={%params.teamId%}">配置管理</a>
+                <a href="/managestory?teamId={%curTeam.id%}">故事管理</a>
+                {%/if%}
+                <a href="/logout">退出</a>
+            </div>
+        </div>
+    </div>
+    <div id="content" ng-cloak class="content cls" ng-controller="list">
+        {%include "index-story-list"%}
+    </div>
+    <div class="carddetail" ng-cloak ng-show="show" ng-controller="cardDetail" paste>
+        {%include "index-panel"%}
+    </div>
+</div>
+<script>
+    seajs.use(["angular","angular-animate","tools","directive"],function(){
+        tplData.pageConfig = JSON.parse(localStorage.getItem("pageConfig")) || { //页面配置信息
+                    viewType:"block"
+                };
+        var app = angular.module('card', ['ngAnimate','ngDirective']);
+        app.filter("tagchk",function(){
+            return function(str,list){
+                var res = 0;
+                if(list && list.length){
+                    for(var i=0;i<list.length;i++){
+                        if(str == list[i]){
+                            res = 1;
+                            break;
+                        }
+                    }
+                }
+                return res;
+            }
+        });
+        app.filter("getsprintname",function(){
+            return function(str){
+                var res = "";
+               if(str){
+                    for(var i=0;i<tplData.sprints.length;i++){
+                        if(str == tplData.sprints[i].id){
+                            res = tplData.sprints[i].name;
+                            break;
+                        }
+                    }
+               }
+                return res;
+            }
+        });
+        app.filter("iscurrentUser",function(){
+            return function(id){
+                if(tplData.user.role=="admin"){
+                    return 1;
+                }
+                if(tplData.user.id==id){
+                    return 1;
+                }else{
+                    return 0;
+                }
+            }
+        });
+        app.controller("body",function($scope,$rootScope){
+            $scope.curCardId = null;
+            $scope.$on("headChange",function (event, obj) {
+                $scope.$broadcast("filterChange", obj);
+            });
+            $scope.$on("addCard",function(event,data){
+                $scope.$broadcast("showDetail",data);
+            });
+            $scope.$on("addnewCard",function(event,data){
+                $scope.$broadcast("addedCard",data);
+            });
+            $scope.$on("modefyCard",function(event,data){
+                $scope.curCardId = data.objectId;
+                $scope.$broadcast("showDetail",data);
+            });
+            $scope.$on("drop",function(event,data){
+                $scope.$broadcast("dropcard",data);
+            });
+            $scope.viewstyle = tplData.pageConfig.viewType;
+            $scope.switchview = function(){
+                if($scope.viewstyle == "block"){
+                    $scope.viewstyle ="line";
+                }else{
+                    $scope.viewstyle = "block"
+                }
+                tplData.pageConfig.viewType = $scope.viewstyle;
+                localStorage.setItem("pageConfig",JSON.stringify(tplData.pageConfig));//配置信息重写入localstroage
+            }
+        });
+        app.controller('head', function($scope,$http) {
+            $scope.scope = $scope;
+            $scope.teams = tplData.teams;
+            $scope.teamId=tplData.teamId;
+            $scope.sprintId =tplData.sprintId;
+            $scope.sprints = [];
+            tplData.sprints.forEach(function(obj){
+                if(obj.deleted!=1){
+                    $scope.sprints.push(obj);
+                }
+            });
+            $scope.tags = [].concat(tplData.curTeam.storyTags);
+            $scope.tags.unshift("全部");
+            $scope.sprints.unshift({"id":"全部",name:"全部"});
+            $scope.filterTag="全部";
+            $scope.sprint="全部";
+            $scope.isBook="0";//默认显示未验收
+            $scope.change = function (isname) {
+                $scope.$emit("headChange", {
+                    filterTag:$scope.filterTag,
+                    sprint:$scope.sprint,
+                    isBook:$scope.isBook
+                });
+            };
+        });
+        app.controller('list', function($scope,$rootScope,$http) {
+            $scope.cardType = tplData.curTeam.cardType;
+            $scope.filterNum="…";
+            render({page:1,isBook:'0'});
+            function render(obj){
+                $scope.rendobj = obj;
+                var qarr = [];
+                for(var key in obj){
+                    qarr.push(key+"="+obj[key]);
+                }
+                $scope.storyList = null;
+                var url = "/ajax?type=get-story-list&card-type=story&teamId="+tplData.teamId+"&"+qarr.join("&");
+                $http.get(url).then(function(data){
+                    var res = data.data.result;
+                    tplData.storyList = $scope.storyList = res.list;
+                    $scope.page ={
+                        count: res.count,
+                        pages:res.pages,
+                        curPage:res.curPage,
+                        pageNum:res.pageNum,
+                        pageList:[]
+                    };
+                    if(res.curPage<res.pages+3){
+                        $scope.page.maxPage = res.pages;
+                    }else{
+                        $scope.page.maxPage = res.curPage+3;
+                    }
+                    if(res.curPage - 3 < 1){
+                        $scope.page.minPage= 1
+                    }else{
+                        $scope.page.minPage = res.curPage - 3;
+                    }
+                    for(var i = $scope.page.minPage;i<= $scope.page.maxPage;i++){
+                        $scope.page.pageList.push(i);
+                    }
+                },function(data){});
+            }
+            $scope.cardclick=function(data){
+                $scope.$emit("modefyCard",data);
+            };
+            $scope.book = function(story){
+                story.isBook = '1';
+                var url = "/ajax?type=update-card&teamId="+tplData.teamId+"&cardId="+story.objectId;
+                $http.post(url,story).success(function(data){
+                    if(data.status != 1) {
+                        story.isBook = '0';
+                        alert("归档失败！");
+                    }
+                });
+            }
+            $scope.gotoPage= function(event){
+                var cur_dom = event.target;
+                if(cur_dom.getAttribute("data-disable")=="true"){
+                    return;
+                }else{
+                    var page = parseInt(cur_dom.getAttribute("data-page"));
+                    $scope.rendobj.page = page;
+                    render($scope.rendobj);
+                }
+            }
+            $scope.addcard=function(data){
+                var cur_obj = JSON.parse(JSON.stringify(data));
+                cur_obj.cardList = $scope.cardList;
+                $scope.$emit("addCard",cur_obj);
+            };
+            $scope.screen=function(ind){
+                if($scope.expendind == ind){
+                    $scope.expendind =  undefined;
+                }else{
+                    $scope.expendind = ind;
+                }
+            }
+            $scope.orderfunc=function(data){
+                return (data.story && data.story.weight)||1;
+            };
+            $scope.$on("filterChange",function (event, obj) {
+                var rendobj={page:1};
+                if(obj.filterTag!="全部"){
+                    rendobj.tag = obj.filterTag;
+                }
+                if(obj.sprint!="全部"){
+                    rendobj.sprintId = obj.sprint;
+                }
+                if(obj.isBook!="全部"){
+                    rendobj.isBook = obj.isBook;
+                }
+                $scope.rendobj=rendobj;
+                render(rendobj);
+            });
+            $scope.$on("addedCard",function(event,obj){
+                if(!$scope.storyList){
+                    $scope.storyList=[];
+                }
+                $scope.storyList.unshift(obj);
+            });
+        });
+        app.controller('cardDetail',function($document,$scope,$rootScope,$http){
+            $scope.show = 0;
+            $scope.lockClose=0;//防止两次点击关闭
+            $scope.cardClassList = tplData.curTeam.cardClass;
+            $scope.storyList = [];
+            $scope.sprintList = [];
+            tplData.sprints.forEach(function(obj){
+                if(obj.deleted!=1){
+                    $scope.sprintList.push(obj);
+                }
+            });
+            $scope.closepanel= function(notclose){
+                $rootScope.curCardId = null;
+                if($scope.card.deleted !=1 && $scope.oldData){
+                    for(var key in $scope.card){//没删除就数据回滚
+                        if(key != "type" && key!="hasComments" && key !="deleted" && key != "filterResult"){//type,是否有评论字段变化时时请求，不回滚
+                            $scope.card[key]=$scope.oldData[key];
+                        }
+                    }
+                }
+                if(!notclose){
+                    $scope.show = 0;
+                }
+            };
+            $document.bind("click",function(event){//如果面板打开，自动关闭
+                var target = event.target;
+                var panel = $(target).closest(".carddetail");
+                if(!panel.size()){
+                    if($scope.show==1 && $scope.card.objectId && !$scope.lockClose){
+                        if(!diffObj($scope.oldData,$scope.card)){
+                            if(window.confirm("数据有改动，放弃不保存吗?")){
+                                clpanel()
+                            }
+                        }else{
+                            clpanel();
+                        }
+                    }
+                }
+                function clpanel(){
+                    setTimeout(function(){
+                        if(!$scope.lockClose){
+                            $scope.closepanel();
+                            $scope.$apply();
+                        }
+                    },200);
+                }
+            });
+            $scope.$on("showDetail",function(event,data){
+                if($scope.card && $scope.card.objectId){
+                    if(!diffObj($scope.oldData,$scope.card)){
+                        $scope.closepanel(1);//回滚数据，不关闭面板
+                    }
+                }
+                $scope.storyList = [];
+                $scope.oldData = JSON.parse(JSON.stringify(data));
+                $scope.show = 1;
+                $scope.ajaxing = 0;
+                $scope.cacheComment = "";
+                $scope.teamPeople =tplData.teamPeople;
+                $scope.tagsList = tplData.curTeam.tags;
+                $scope.storyTagsList = tplData.curTeam.storyTags;
+                if(data && data.hasComments == 1){
+                    //获取评论
+                    $http.get("/ajax?type=get-comments&cardId="+data.objectId).then(function(data){
+                        $scope.comments = data.data.result;
+                    });
+                }else{
+                    $scope.comments=[];
+                }
+                if(data && data.objectId){
+                    //修改卡片
+                    $scope.card = data;
+                    $scope.showTitle="";
+                    $scope.submit=function(e){
+                        $scope.ajaxing = 1;
+                        var url = "/ajax?type=update-card&teamId="+tplData.teamId+"&cardId="+$scope.card.objectId;
+                        $http.post(url,$scope.card).success(function(data){
+                            if(data.status == 1) {
+                                delete $scope.oldData;
+                                $scope.show = 0;
+                            }else{
+                                alert("修改卡片失败");
+                            }
+                            $scope.ajaxing = 0;
+                        });
+                    };
+
+                }else{
+                    //新建卡片
+                    $scope.showTitle="新建故事";
+                    $scope.card={images:[],owners:[],type:data.type,weight:1};
+                    $scope.submit=function(e){
+                        $scope.ajaxing = 1;
+                        var url = "/ajax?type=add-card&teamId="+tplData.teamId;
+                        $http.post(url,$scope.card).success(function(data){
+                            if(data.status == 1) {
+                                $scope.$emit("addnewCard",data.result);
+                                $scope.show = 0;
+                            }else{
+                                alert("新建卡片失败");
+                            }
+                            $scope.ajaxing = 0;
+                        });
+                    };
+                }
+                $scope.lockClose = 1;
+                setTimeout(function(){
+                    $scope.lockClose = 0;
+                },500)
+            });
+            $scope.chk = function(name,event){
+                var card = $scope.card;
+                if(event.target.getAttribute("data-check")=="0"){
+                    var isin = 0;
+                    for(var i=0;i<card.tags.length;i++){
+                        if(card.tags[i]==name){
+                            isin = 1;
+                            break;
+                        }
+                    }
+                    if(!isin){
+                        card.tags.push(name);
+                    }
+                }else{
+                    for(var i=0;i<card.tags.length;i++){
+                        if(card.tags[i]==name){
+                            card.tags.splice(i,1);
+                        }
+                    }
+                }
+            };
+            $scope.userChange=function(dom){
+                var id= dom.value,ret = 0;
+                dom.value="";
+                if(!id) return;
+                $scope.card.owners.forEach(function(obj){
+                    if(obj.objectId == id){
+                        ret = 1;
+                    }
+                });
+                if(ret){return};
+                for(var i=0;i<$scope.teamPeople.length;i++){
+                    if(id==$scope.teamPeople[i].objectId){
+                        $scope.card.owners.push($scope.teamPeople[i]);
+                        $scope.$apply();
+                        break;
+                    }
+                }
+            };
+            $scope.showimg=function(){
+                var url = location.origin+"/showimg";
+                var openwindow=window.open(url,"_blank","location=no,fullscreen=yes");
+                var cur_url = this.img.url,images=[];
+                $scope.card.images.forEach(function(obj){
+                    images.push(obj.url);
+                });
+                openwindow.onload=function(){
+                    openwindow.postMessage({images:images,curUrl:cur_url},url);
+                };
+            };
+            $scope.ctrlenter = function(ev) {
+                if($scope.commenting == 1) return;
+                var textarea = ev.target,val= textarea.value.trim();
+                if (ev.ctrlKey == true && (ev.keyCode == 13||ev.keyCode == 10) && val.length>0){
+                    $scope.commenting = 1;
+                    var url = "/ajax?type=add-comment&cardId="+$scope.card.objectId+"&description="+encodeURIComponent(val)+"&hasComments="+$scope.card.hasComments;
+                    $http.get(url).then(function(data){
+                        if(data.data.status == 1){
+                            $scope.card.hasComments = "1";
+                            $scope.comments.push(data.data.result);
+                            textarea.value="";
+                        }else{
+                            alert("添加评论失败！");
+                        }
+                        $scope.commenting=0;
+                    },function(data){
+                        $scope.commenting=0;
+                    });
+                }
+            };
+            $scope.deletePeo=function(card,objectId){
+                for(var i=0;i<card.owners.length;i++) {
+                    if (card.owners[i].objectId == objectId) {
+                        card.owners.splice(i, 1);
+                    }
+                }
+            };
+            $scope.deletePic=function(card,imgId){
+                for(var i=0;i<card.images.length;i++){
+                    if(card.images[i].id == imgId){
+                        card.images[i].deleted = 1;
+                        break;
+                    }
+                }
+            };
+            $scope.delcard=function(cardId){
+                var url = "/ajax?type=del-card&cardId="+$scope.card.objectId;
+                if(window.confirm("确认删除吗？")){
+                    $http.get(url).then(function(data){
+                        if(data.data.status == 1){
+                            $scope.card.deleted = "1";
+                            $scope.card.filterResult = "hide";
+                            $scope.show=0;
+                        }else{
+                            alert("删除失败！");
+                        }
+                        $scope.commenting=0;
+                    },function(data){
+                        $scope.commenting=0;
+                    });
+                }
+            }
+        });
+        function diffObj(obj1,obj2){
+            if(obj1 == obj2){
+                return 1;
+            }
+            if(!obj1||!obj2){
+                return 0;
+            }
+            var issame = 1;
+            for(var key in obj1){
+                var cur_obj = obj1[key];
+                if(key.indexOf("$$")==0){
+                }else if(typeof cur_obj == "object"){
+                    if(!diffObj(obj1[key],obj2[key])){
+                        issame = 0;
+                    };
+                }else if(obj1[key]!=obj2[key]){
+                    issame = 0;
+                }
+            }
+            return issame;
+        }
+    });
+</script>
+{%include "layout/footer"%}
