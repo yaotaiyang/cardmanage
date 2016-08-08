@@ -7,6 +7,8 @@
 
 首先确认本机已经安装 [Node.js](http://nodejs.org/) 运行环境
 
+该应用需要依赖[leancloud](https://leancloud.cn/?source=AKL71J1G) 请先点击左侧连接注册自己的leanclund账号，注册账号后，创建应用，会获取到下面的三个参数。
+
 在根目录下添加dev_conf.json文件
 
 ```
