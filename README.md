@@ -5,9 +5,9 @@
 
 ## 本地运行
 
-首先确认本机已经安装 [Node.js](http://nodejs.org/) 运行环境，然后执行下列指令：
+首先确认本机已经安装 [Node.js](http://nodejs.org/) 运行环境
 
-然后在根目录下添加dev_conf.json文件
+在根目录下添加dev_conf.json文件
 
 ```
 {
@@ -19,8 +19,7 @@
 } 
 
 ```
-
-安装依赖：
+然后执行下列指令，安装依赖：
 
 ```
 npm install
@@ -31,7 +30,7 @@ npm install
 启动项目：
 
 ```
-$ node server.js
+node server.js
 
 ```
 
